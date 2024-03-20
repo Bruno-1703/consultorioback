@@ -8,7 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class EstudioService {
-  constructor(private prisma: PrismaService ) {}
+  constructor(private prisma: PrismaService) {}
   private readonly logger = new Logger(EstudioService.name);
 
   async getEstudio(id: string): Promise<Estudio | null> {
@@ -31,25 +31,24 @@ export class EstudioService {
   ): Promise<EstudioResultadoBusqueda | null> {
     try {
       const estudios = await this.prisma.client.estudio.findMany({
-        where ,
+        where,
         skip,
         take: limit,
       });
-    
+
       const totalEstudios = await this.prisma.client.estudio.count({ where });
-    
+
       const resultadoBusqueda: EstudioResultadoBusqueda = {
-        edges: estudios.map((estudio) => ({ node: estudio, cursor: '' })), 
+        edges: estudios.map((estudio) => ({ node: estudio, cursor: '' })),
         aggregate: { count: totalEstudios },
       };
-    
+
       return resultadoBusqueda;
     } catch (error) {
       console.error('Error al buscar estudios', error);
       this.logger.error(error);
       throw new Error('Error al buscar estudios');
     }
-    
   }
 
   async createEstudio(data: EstudioInput): Promise<string> {

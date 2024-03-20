@@ -1,8 +1,8 @@
-import { ObjectType, Field, ID, Int } from "@nestjs/graphql";
-import { AggregateCount } from "../estudios/estudio.dto";
+import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
+import { AggregateCount } from '../estudios/estudio.dto';
 
 @ObjectType()
-export class Cita{
+export class Cita {
   @Field(() => String, { nullable: true })
   id?: string;
   @Field(() => String, { nullable: true })
@@ -14,12 +14,12 @@ export class Cita{
   @Field(() => Date, { nullable: true })
   fechaConfirmacion?: Date;
   @Field(() => String, { nullable: true })
-  observaciones?: string;   
+  observaciones?: string;
 }
 @ObjectType()
 export class CitaEdge {
   @Field(() => Cita)
-  node!: Cita
+  node!: Cita;
   @Field()
   cursor!: string;
 }

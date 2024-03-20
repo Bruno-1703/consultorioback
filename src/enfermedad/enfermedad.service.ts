@@ -1,16 +1,15 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from '@nestjs/common';
 //import { ObjectId } from "mongodb";
 
-import { PrismaService } from "src/prisma/prisma.service";
-import { Enfermedad, EnfermedadResultadoBusqueda } from "./enfermedad.dto";
-import { EnfermedadInput } from "./enfermedad.input";
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Enfermedad, EnfermedadResultadoBusqueda } from './enfermedad.dto';
+import { EnfermedadInput } from './enfermedad.input';
 
 @Injectable()
 export class EnfermedadService {
-  constructor(private prisma: PrismaService ) {}
+  constructor(private prisma: PrismaService) {}
   private readonly logger = new Logger(EnfermedadService.name);
 
-  
   async getEnfermedadById(id: string): Promise<Enfermedad | null> {
     try {
       this.logger.debug(`Recuperando enfermedad con ID ${id}`);
@@ -30,18 +29,24 @@ export class EnfermedadService {
     }
   }
 
-  async getEnfermedad(where?, skip?, limit?): Promise<EnfermedadResultadoBusqueda> {
+  async getEnfermedad(
+    where?,
+    skip?,
+    limit?,
+  ): Promise<EnfermedadResultadoBusqueda> {
     try {
       const filteredEnfermedad = await this.prisma.client.enfermedad.findMany({
         where,
         skip,
         take: limit,
       });
-  
-      const totalEnfermedades = await this.prisma.client.enfermedad.count({ where });
-  
+
+      const totalEnfermedades = await this.prisma.client.enfermedad.count({
+        where,
+      });
+
       const resultadoBusqueda: EnfermedadResultadoBusqueda = {
-        edges: filteredEnfermedad.map(enfermedad => ({
+        edges: filteredEnfermedad.map((enfermedad) => ({
           node: {
             id_enfermedad: enfermedad.id_enfermedad,
             nombre_enf: enfermedad.nombre_enf,
@@ -52,7 +57,7 @@ export class EnfermedadService {
         })),
         aggregate: { count: totalEnfermedades },
       };
-  
+
       return resultadoBusqueda;
     } catch (error) {
       console.error('Error al buscar citas', error);
@@ -63,11 +68,11 @@ export class EnfermedadService {
     try {
       await this.prisma.client.enfermedad.create({
         data: {
-          id_enfermedad: data.id_enfermedad ,
+          id_enfermedad: data.id_enfermedad,
           nombre_enf: data.nombre_enf,
-          sintomas:data.sintomas,
-          gravedad:data.gravedad,         
-        }
+          sintomas: data.sintomas,
+          gravedad: data.gravedad,
+        },
       });
       return 'Cita created successfully';
     } catch (error) {
@@ -75,9 +80,11 @@ export class EnfermedadService {
       throw new Error('Error creating cita');
     }
   }
-  
 
-  async updateEnfermedad(data: EnfermedadInput, enfermedadId: string): Promise<string> {
+  async updateEnfermedad(
+    data: EnfermedadInput,
+    enfermedadId: string,
+  ): Promise<string> {
     try {
       await this.prisma.client.enfermedad.update({
         where: { id_enfermedad: enfermedadId },

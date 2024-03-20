@@ -8,19 +8,18 @@ import { PrismaClient } from '@prisma/client';
 import { PacienteModule } from './paciente/paciente.module';
 
 @Module({
-  imports: [PrismaClient,
+  imports: [
+    PrismaClient,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'schema.graphql',
-
     }),
     CitaModule,
     EstudioModule,
     MedicamentoModule,
     PrismaClient,
-    PacienteModule    
+    PacienteModule,
   ],
-  controllers:[]
-  
+  controllers: [],
 })
 export class AppModule {}

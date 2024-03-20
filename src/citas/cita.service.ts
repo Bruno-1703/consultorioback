@@ -1,21 +1,20 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from '@nestjs/common';
 //import { ObjectId } from "mongodb";
-import { Cita, CitaResultadoBusqueda } from "./cita.dto";
-import { CitaInput, CitaWhereInput } from "./cita.input";
-import { PrismaService } from "src/prisma/prisma.service";
+import { Cita, CitaResultadoBusqueda } from './cita.dto';
+import { CitaInput, CitaWhereInput } from './cita.input';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class CitaService {
-  constructor(private prisma: PrismaService ) {}
+  constructor(private prisma: PrismaService) {}
   private readonly logger = new Logger(CitaService.name);
 
-  
   async getCita(id: string): Promise<Cita | null> {
     try {
       const cita = await this.prisma.client.cita.findUnique({
         where: { id_cita: id },
       });
-  
+
       return cita || null;
     } catch (error) {
       console.error('Error al obtener la cita', error);
@@ -31,14 +30,17 @@ export class CitaService {
         skip,
         take: limit,
       });
-  
+
       const totalCitas = await this.prisma.client.cita.count({ where });
-  
+
       const resultadoBusqueda: CitaResultadoBusqueda = {
-        edges: filteredCitas.map(cita => ({ node: {...cita, id: cita.id_cita}, cursor: cita.id_cita })),
+        edges: filteredCitas.map((cita) => ({
+          node: { ...cita, id: cita.id_cita },
+          cursor: cita.id_cita,
+        })),
         aggregate: { count: totalCitas },
-    };
-  
+      };
+
       return resultadoBusqueda;
     } catch (error) {
       console.error('Error al buscar citas', error);
@@ -50,12 +52,12 @@ export class CitaService {
     try {
       await this.prisma.client.cita.create({
         data: {
-         id_cita: data.id , 
+          id_cita: data.id,
           motivoConsulta: data.motivoConsulta,
           fechaSolicitud: data.fechaSolicitud,
           fechaConfirmacion: data.fechaConfirmacion,
           observaciones: data.observaciones,
-        }
+        },
       });
       return 'Cita created successfully';
     } catch (error) {
@@ -63,7 +65,6 @@ export class CitaService {
       throw new Error('Error creating cita');
     }
   }
-  
 
   async updateCita(data: CitaInput, citaId: string): Promise<string> {
     try {

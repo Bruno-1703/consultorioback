@@ -32,12 +32,12 @@ export class PacienteInput {
   alergias!: string;
   @Field(() => [CitaInput], { nullable: true })
   citas?: CitaInput[];
-  @Field(() =>[EstudioInput], { nullable: true })
+  @Field(() => [EstudioInput], { nullable: true })
   estudios?: EstudioInput;
   @Field(() => [MedicamentoInput], { nullable: true })
   medicamentos?: MedicamentoInput[];
   @Field(() => [EnfermedadInput], { nullable: true })
-  enfermedades?: EnfermedadInput[];  
+  enfermedades?: EnfermedadInput[];
 }
 @InputType()
 export class PacienteWhereInput {
@@ -66,10 +66,10 @@ export class PacienteWhereInput {
 
   @Field(() => [CitaInput], { nullable: true })
   cita?: CitaInput[];
-  @Field(() =>EstudioInput, { nullable: true })
+  @Field(() => EstudioInput, { nullable: true })
   estudios?: EstudioInput;
   @Field(() => [MedicamentoInput], { nullable: true })
   medicamentos?: [MedicamentoInput];
   @Field(() => [EnfermedadInput], { nullable: true })
-  enfermedades?: [EnfermedadInput];   
+  enfermedades?: [EnfermedadInput];
 }

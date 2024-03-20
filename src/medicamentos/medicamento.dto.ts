@@ -1,8 +1,8 @@
-import { ObjectType, Field, ID, Int } from "@nestjs/graphql";
-import { AggregateCount } from "../estudios/estudio.dto";
+import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
+import { AggregateCount } from '../estudios/estudio.dto';
 
 @ObjectType()
-export class Medicamento{
+export class Medicamento {
   @Field(() => String, { nullable: true })
   id_medicamento: string;
   @Field(() => String, { nullable: true })
@@ -16,14 +16,14 @@ export class Medicamento{
   @Field(() => String)
   agente_principal!: string;
   @Field(() => String)
-  efectos_secundarios!: string;   
+  efectos_secundarios!: string;
   @Field(() => Boolean, { nullable: true })
   lista_negra?: boolean | null;
   @Field(() => String) //Categoría o Tipo: Specify the category or type of the medication (e.g., analgesic, antibiotic, etc.).
   categoria?: string;
-  @Field(() => String, { nullable: true })//Contraindicaciones: Incluya información sobre cualquier contraindicación o situaciones en las que no se debe utilizar el medicamento.
+  @Field(() => String, { nullable: true }) //Contraindicaciones: Incluya información sobre cualquier contraindicación o situaciones en las que no se debe utilizar el medicamento.
   contraindicaciones?: string;
-  @Field(() => Boolean,{ nullable: true })
+  @Field(() => Boolean, { nullable: true })
   prescripcion_requerida?: boolean;
 }
 @ObjectType()
@@ -36,8 +36,8 @@ export class MedicamentoEdge {
 
 @ObjectType()
 export class MedicamentoResultadoBusqueda {
-  @Field(() => MedicamentoEdge) 
-  edges!: MedicamentoEdge [];
+  @Field(() => MedicamentoEdge)
+  edges!: MedicamentoEdge[];
   @Field(() => AggregateCount)
   aggregate!: AggregateCount;
 }

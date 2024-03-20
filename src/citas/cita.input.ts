@@ -17,7 +17,7 @@ export class CitaInput {
 }
 
 @InputType()
-export class CitaWhereInput { 
+export class CitaWhereInput {
   @Field(() => String, { nullable: true })
   id?: string;
   @Field(() => String, { nullable: true })
@@ -29,7 +29,5 @@ export class CitaWhereInput {
   @Field(() => Date, { nullable: true })
   fechaConfirmacion?: Date;
   @Field(() => String, { nullable: true })
-  observaciones?: string;  
-  
+  observaciones?: string;
 }
-

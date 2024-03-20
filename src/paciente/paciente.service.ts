@@ -23,19 +23,19 @@ export class PacienteService {
           estudios: true,
         },
       });
-  
+
       if (!paciente) {
         throw new Error(`No se encontró el paciente con ID ${id}`);
       }
       this.logger.debug('Paciente recuperado exitosamente');
-      console.log(paciente)
+      console.log(paciente);
       return paciente;
     } catch (error) {
       console.error('Error al recuperar paciente', error);
       this.logger.error(error);
       throw new Error('Error al recuperar paciente');
     }
-  }  
+  }
   async getPacientes(
     where?: PacienteWhereInput | undefined,
     skip?: number,
@@ -45,7 +45,7 @@ export class PacienteService {
       this.logger.debug('Buscando pacientes con criterios:', where);
 
       const pacientes = await this.prisma.client.paciente.findMany({
-        where:{},
+        where: {},
         skip,
         take: limit,
         include: {
@@ -54,9 +54,9 @@ export class PacienteService {
           estudios: true,
           Enfermedad: true,
         },
-      });  
-      const totalPacientes = await this.prisma.client.paciente.count({  });
-  
+      });
+      const totalPacientes = await this.prisma.client.paciente.count({});
+
       const resultadoBusqueda: PacientesResultadoBusqueda = {
         edges: pacientes.map((node) => ({
           node,
@@ -66,7 +66,7 @@ export class PacienteService {
           count: totalPacientes,
         },
       };
-  
+
       this.logger.debug('Pacientes encontrados:', resultadoBusqueda);
       return resultadoBusqueda;
     } catch (error) {
@@ -75,10 +75,10 @@ export class PacienteService {
       throw new Error('Error al buscar pacientes');
     }
   }
-  
+
   async createPaciente(data: PacienteInput): Promise<string> {
     try {
-      this.logger.debug('Creando paciente');  
+      this.logger.debug('Creando paciente');
       const pacienteData: Prisma.PacienteCreateInput = {
         dni: data.dni,
         nombre_paciente: data.nombre_paciente,
@@ -90,22 +90,22 @@ export class PacienteService {
         sexo: data.sexo,
         grupo_sanguineo: data.grupo_sanguineo,
         alergias: data.alergias,
-         cita: {
-           create: data.citas,
-         },
-         estudios: {
-           create: data.estudios,
-         },
-         medicamentos: {
+        cita: {
+          create: data.citas,
+        },
+        estudios: {
+          create: data.estudios,
+        },
+        medicamentos: {
           create: data.medicamentos,
-         },
-         Enfermedad: {
-           create: data.enfermedades,
-         },
-      };  
+        },
+        Enfermedad: {
+          create: data.enfermedades,
+        },
+      };
       const paciente = await this.prisma.client.paciente.create({
         data: pacienteData,
-      });  
+      });
       this.logger.debug('Paciente creado exitosamente');
       console.log(paciente);
       return 'Paciente creado exitosamente';
@@ -114,7 +114,7 @@ export class PacienteService {
       this.logger.error(error);
       throw new Error('Error al crear paciente');
     }
-  }  
+  }
   async updatePaciente(
     data: PacienteInput,
     pacienteId: string,

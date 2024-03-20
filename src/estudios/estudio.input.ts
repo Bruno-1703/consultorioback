@@ -20,16 +20,15 @@ export class EstudioInput {
   urgente?: boolean;
 }
 @InputType()
-export class EstudioWhereInput { 
-   @Field(() => String, { nullable: true })
+export class EstudioWhereInput {
+  @Field(() => String, { nullable: true })
   id_estudio?: string;
   @Field(() => Date)
   fecha_realizacion?: Date;
   @Field(() => String)
   tipo_estudio?: string;
-  @Field(() => String,{ nullable: true })
-  resultado?: string  
+  @Field(() => String, { nullable: true })
+  resultado?: string;
   @Field(() => String)
-  codigo_referencia?: string;  
+  codigo_referencia?: string;
 }
-
