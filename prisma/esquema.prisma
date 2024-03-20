@@ -1,0 +1,76 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Cita {
+  id_cita           String    @id @default(auto()) @map("_id") @db.ObjectId
+  motivoConsulta    String
+  fechaSolicitud    DateTime  @default(now()) @db.Date
+  fechaConfirmacion DateTime?
+  fechaModificacion DateTime? @default(now()) @db.Date
+  observaciones     String?
+  cancelada         Boolean   @default(false)
+  paciente          Paciente  @relation(fields: [citaIds], references: [id_paciente])
+  citaIds           String[]  @db.String
+}
+
+model Estudio {
+  id_estudio         String   @id @default(auto()) @map("_id") @db.ObjectId
+  fecha_realizacion  DateTime
+  tipo_estudio       String
+  resultado          String?
+  codigo_referencia  String
+  observaciones      String?
+  medico_solicitante String?
+  urgente            Boolean?
+  paciente           Paciente @relation(fields: [estudioIds], references: [id_paciente])
+  estudioIds         String[] @db.ObjectId
+}
+
+model Medicamento {
+  id_medicamento         String    @id @default(auto()) @map("_id") @db.ObjectId
+  nombre_med             String?
+  marca                  String
+  fecha_vencimiento      DateTime?
+  dosis_hs               String
+  agente_principal       String
+  efectos_secundarios    String?
+  lista_negra            Boolean?
+  categoria              String?
+  contraindicaciones     String?
+  prescripcion_requerida Boolean?
+  paciente               Paciente  @relation(fields: [medicamentoIds], references: [id_paciente])
+  medicamentoIds         String[]  @db.ObjectId
+}
+
+model Enfermedad {
+  id_enfermedad String   @id @default(auto()) @map("_id") @db.ObjectId
+  nombre_enf    String
+  sintomas      String
+  gravedad      String?
+  paciente      Paciente @relation(fields: [enfermedadIds], references: [id_paciente])
+  enfermedadIds String[] @db.ObjectId
+}
+
+model Paciente {
+  id_paciente       String        @id @default(auto()) @map("_id") @db.ObjectId
+  dni               String
+  nombre_paciente   String
+  apellido_paciente String
+  edad              Int
+  altura            Int
+  telefono          String
+  fecha_nacimiento  DateTime
+  sexo              String
+  grupo_sanguineo   String
+  alergias          String?
+  cita              Cita[]
+  estudios          Estudio[]
+  medicamentos      Medicamento[]
+  Enfermedad        Enfermedad[]
+}

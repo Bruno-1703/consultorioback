@@ -1,0 +1,238 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Estudio {
+  id_estudio: String!
+  fecha_realizacion: DateTime!
+  tipo_estudio: String!
+  resultado: String
+  codigo_referencia: String!
+  observaciones: String
+  medico_solicitante: String!
+  urgente: Boolean
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type EstudioEdge {
+  node: Estudio!
+  cursor: String!
+}
+
+type AggregateCount {
+  count: Float!
+}
+
+type EstudioResultadoBusqueda {
+  edges: [EstudioEdge!]!
+  aggregate: AggregateCount!
+}
+
+type Cita {
+  id: String
+  pacienteId: String
+  motivoConsulta: String!
+  fechaSolicitud: DateTime!
+  fechaConfirmacion: DateTime
+  observaciones: String
+}
+
+type CitaEdge {
+  node: Cita!
+  cursor: String!
+}
+
+type CitaResultadoBusqueda {
+  edges: [CitaEdge!]!
+  aggregate: AggregateCount!
+}
+
+type Medicamento {
+  id_medicamento: String
+  nombre_med: String
+  marca: String!
+  fecha_vencimiento: DateTime!
+  dosis_hs: String!
+  agente_principal: String!
+  efectos_secundarios: String!
+  lista_negra: Boolean
+  categoria: String!
+  contraindicaciones: String
+  prescripcion_requerida: Boolean
+}
+
+type MedicamentoEdge {
+  node: Medicamento!
+  cursor: String!
+}
+
+type MedicamentoResultadoBusqueda {
+  edges: MedicamentoEdge!
+  aggregate: AggregateCount!
+}
+
+type Enfermedad {
+  id_enfermedad: String
+  nombre_enf: String!
+  sintomas: String
+  gravedad: String!
+}
+
+type EnfermedadEdge {
+  node: Enfermedad!
+  cursor: String!
+}
+
+type Paciente {
+  id_paciente: String!
+  dni: String!
+  nombre_paciente: String
+  apellido_paciente: String!
+  edad: Int!
+  altura: Int
+  telefono: String!
+  fecha_nacimiento: DateTime!
+  sexo: String!
+  grupo_sanguineo: String!
+  alergias: String
+  citas: [Cita!]
+  medicamentos: [Medicamento!]
+  estudios: [Estudio!]
+  enfermedades: [Enfermedad!]
+}
+
+type PacienteEdge {
+  node: Paciente!
+  cursor: String!
+}
+
+type PacientesResultadoBusqueda {
+  edges: [PacienteEdge!]!
+  aggregate: AggregateCount!
+}
+
+type Query {
+  getCita(id: String!): Cita
+  getCitas(where: CitaWhereInput, skip: Int, limit: Int): CitaResultadoBusqueda!
+  getEstudio(id: String!): Estudio
+  getEstudios(where: EstudioWhereInput, skip: Int, limit: Int): EstudioResultadoBusqueda!
+  getMedicamento(id: String!): Medicamento
+  getMedicamentos(where: MedicamentoWhereInput, skip: Int, limit: Int): MedicamentoResultadoBusqueda!
+  getPaciente(id: String!): Paciente
+  getPacientes(where: PacienteWhereInput, skip: Int, limit: Int): PacientesResultadoBusqueda!
+  buscarPacientesPorNombreODNI(nombre: String!, dni: String!): [Paciente!]!
+}
+
+input CitaWhereInput {
+  id: String
+  id_paciente: String
+  motivoConsulta: String
+  fechaSolicitud: DateTime
+  fechaConfirmacion: DateTime
+  observaciones: String
+}
+
+input EstudioWhereInput {
+  id_estudio: String
+  fecha_realizacion: DateTime!
+  tipo_estudio: String!
+  resultado: String
+  codigo_referencia: String!
+}
+
+input MedicamentoWhereInput {
+  nombre_med: String
+  marca: String
+}
+
+input PacienteWhereInput {
+  id: String
+  dni: String
+  nombre_paciente: String
+  apellido_paciente: String
+  edad: Int
+  altura: Int
+  telefono: String
+  fecha_nacimiento: DateTime
+  sexo: String
+  grupo_sanguineo: String
+  alergias: String
+  cita: [CitaInput!]
+  estudios: EstudioInput
+  medicamentos: [MedicamentoInput!]
+  enfermedades: [EnfermedadInput!]
+}
+
+input CitaInput {
+  id: String
+  id_paciente: String
+  motivoConsulta: String!
+  fechaSolicitud: DateTime!
+  fechaConfirmacion: DateTime
+  observaciones: String
+}
+
+input EstudioInput {
+  id_estudio: String
+  fecha_realizacion: DateTime!
+  tipo_estudio: String!
+  resultado: String
+  codigo_referencia: String!
+  observaciones: String
+  medico_solicitante: String!
+  urgente: Boolean
+}
+
+input MedicamentoInput {
+  id_medicamento: String
+  nombre_med: String
+  marca: String
+  fecha_vencimiento: DateTime
+  dosis_hs: String
+  agente_principal: String
+  efectos_secundarios: String
+  lista_negra: Boolean
+  categoria: String
+  contraindicaciones: String
+  prescripcion_requerida: Boolean
+}
+
+input EnfermedadInput {
+  id_enfermedad: String
+  nombre_enf: String!
+  sintomas: String
+  gravedad: String!
+}
+
+type Mutation {
+  createCita(data: CitaInput!): String!
+  updateCita(data: CitaInput!, citaId: String!): String!
+  createEstudio(data: EstudioInput!): String!
+  updateEstudio(data: EstudioInput!, estudioId: String!): String!
+  createMedicamento(data: MedicamentoInput!): String!
+  updateMedicamento(data: MedicamentoInput!, medicamentoId: String!): String!
+  createPaciente(data: PacienteInput!): String!
+  updatePaciente(data: PacienteInput!, pacienteId: String!): String!
+}
+
+input PacienteInput {
+  id: String
+  dni: String!
+  nombre_paciente: String
+  apellido_paciente: String!
+  edad: Int!
+  altura: Int!
+  telefono: String!
+  fecha_nacimiento: DateTime!
+  sexo: String!
+  grupo_sanguineo: String!
+  alergias: String!
+  citas: [CitaInput!]
+  estudios: [EstudioInput!]
+  medicamentos: [MedicamentoInput!]
+  enfermedades: [EnfermedadInput!]
+}
