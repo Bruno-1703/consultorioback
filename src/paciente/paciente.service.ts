@@ -3,6 +3,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Paciente, PacientesResultadoBusqueda } from './paciente.dto';
 
 import { Prisma } from '@prisma/client';
+import { CitaInput } from '../citas/cita.input';
+import { EnfermedadInput } from '../enfermedad/enfermedad.input';
 import { PacienteInput, PacienteWhereInput } from './paciente.input';
 @Injectable()
 export class PacienteService {
@@ -90,18 +92,6 @@ export class PacienteService {
         sexo: data.sexo,
         grupo_sanguineo: data.grupo_sanguineo,
         alergias: data.alergias,
-        cita: {
-          create: data.citas,
-        },
-        estudios: {
-          create: data.estudios,
-        },
-        medicamentos: {
-          create: data.medicamentos,
-        },
-        Enfermedad: {
-          create: data.enfermedades,
-        },
       };
       const paciente = await this.prisma.client.paciente.create({
         data: pacienteData,
@@ -113,6 +103,77 @@ export class PacienteService {
       console.error('Error al crear paciente', error);
       this.logger.error(error);
       throw new Error('Error al crear paciente');
+    }
+  }
+  async createPacienteEnfermedad(
+    paciente: PacienteInput,
+    enfermedades: EnfermedadInput[],
+  ): Promise<string> {
+    this.logger.log({ action: 'CreatePacienteEnfermedad' });
+    try {
+      // Crear el paciente con las enfermedades agregadas
+      await this.prisma.client.paciente.create({
+        data: {
+          dni: paciente.dni,
+          nombre_paciente: paciente.nombre_paciente,
+          apellido_paciente: paciente.apellido_paciente,
+          edad: paciente.edad,
+          altura: paciente.altura,
+          telefono: paciente.telefono,
+          fecha_nacimiento: paciente.fecha_nacimiento,
+          sexo: paciente.sexo,
+          grupo_sanguineo: paciente.grupo_sanguineo,
+          alergias: paciente.alergias,
+          enfermedad: {
+            set: enfermedades.map((enfermedad) => ({
+              id_enfermedad: enfermedad.id_enfermedad,
+              nombre_enf: enfermedad.nombre_enf,
+              gravedad: enfermedad.gravedad,
+              sintomas: enfermedad.sintomas,
+            })),
+          },
+        },
+      });
+      return 'Enfermedades agregadas al paciente exitosamente';
+    } catch (error) {
+      console.error('Error al agregar enfermedades al paciente:', error);
+      throw new Error('No se pudieron agregar las enfermedades al paciente');
+    }
+  }
+  async createPacienteCitas(
+    paciente: PacienteInput,
+    citas: CitaInput[],
+  ): Promise<string> {
+    this.logger.log({ action: 'CreatePacienteCitas' });
+    try {
+      // Crear el paciente con las citas agregadas
+      await this.prisma.client.paciente.create({
+        data: {
+          dni: paciente.dni,
+          nombre_paciente: paciente.nombre_paciente,
+          apellido_paciente: paciente.apellido_paciente,
+          edad: paciente.edad,
+          altura: paciente.altura,
+          telefono: paciente.telefono,
+          fecha_nacimiento: paciente.fecha_nacimiento,
+          sexo: paciente.sexo,
+          grupo_sanguineo: paciente.grupo_sanguineo,
+          alergias: paciente.alergias,
+          cita: {
+            set: citas.map((cita) => ({
+              motivoConsulta: cita.motivoConsulta,
+              cancelada: cita.cancelada,
+              fechaSolicitud: cita.fechaSolicitud,
+              fechaConfirmacion: cita.fechaConfirmacion,
+              observaciones: cita.observaciones,
+            })),
+          },
+        },
+      });
+      return 'Citas agregadas al paciente exitosamente';
+    } catch (error) {
+      console.error('Error al agregar citas al paciente:', error);
+      throw new Error('No se pudieron agregar las citas al paciente');
     }
   }
   async updatePaciente(

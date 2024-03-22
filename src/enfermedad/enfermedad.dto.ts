@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
+import { ObjectType, Field } from '@nestjs/graphql';
 import { AggregateCount } from '../estudios/estudio.dto';
 
 @ObjectType()

@@ -7,6 +7,42 @@ generator client {
   provider = "prisma-client-js"
 }
 
+type PacienteEnfermedad {
+  id_enfermedad         String  @map("_id") @db.ObjectId
+  nombre_enf             String
+  fecha     DateTime @default(now()) @db.Date  
+}
+type PacienteEstudio{
+  id_estudio String  @map("_id") @db.ObjectId
+  fecha_realizacion DateTime
+  tipo_estudio String
+  resultado String?
+  codigo_referencia String
+  observaciones String?
+  medico_solicitante String?
+  urgente Boolean?
+}
+type PacienteCita {
+  id_cita String
+  motivoConsulta String
+  fechaSolicitud DateTime
+  fechaConfirmacion DateTime
+  fechaModificacion DateTime
+  observaciones String?
+  cancelada Boolean
+}
+type PacienteMedicamento {
+  id_medicamento String
+  nombre_med String?
+  marca String
+  fecha_vencimiento DateTime
+  dosis_hs String
+  agente_principal String
+  efectos_secundarios String?
+  categoria String
+  contraindicaciones String?
+  prescripcion_requerida Boolean?
+}
 model Cita {
   id_cita           String    @id @default(auto()) @map("_id") @db.ObjectId
   motivoConsulta    String
@@ -15,8 +51,6 @@ model Cita {
   fechaModificacion DateTime? @default(now()) @db.Date
   observaciones     String?
   cancelada         Boolean   @default(false)
-  paciente          Paciente  @relation(fields: [citaIds], references: [id_paciente])
-  citaIds           String[]  @db.String
 }
 
 model Estudio {
@@ -28,10 +62,7 @@ model Estudio {
   observaciones      String?
   medico_solicitante String?
   urgente            Boolean?
-  paciente           Paciente @relation(fields: [estudioIds], references: [id_paciente])
-  estudioIds         String[] @db.ObjectId
 }
-
 model Medicamento {
   id_medicamento         String    @id @default(auto()) @map("_id") @db.ObjectId
   nombre_med             String?
@@ -44,19 +75,13 @@ model Medicamento {
   categoria              String?
   contraindicaciones     String?
   prescripcion_requerida Boolean?
-  paciente               Paciente  @relation(fields: [medicamentoIds], references: [id_paciente])
-  medicamentoIds         String[]  @db.ObjectId
 }
-
 model Enfermedad {
   id_enfermedad String   @id @default(auto()) @map("_id") @db.ObjectId
   nombre_enf    String
   sintomas      String
   gravedad      String?
-  paciente      Paciente @relation(fields: [enfermedadIds], references: [id_paciente])
-  enfermedadIds String[] @db.ObjectId
 }
-
 model Paciente {
   id_paciente       String        @id @default(auto()) @map("_id") @db.ObjectId
   dni               String
@@ -69,8 +94,9 @@ model Paciente {
   sexo              String
   grupo_sanguineo   String
   alergias          String?
-  cita              Cita[]
-  estudios          Estudio[]
-  medicamentos      Medicamento[]
-  Enfermedad        Enfermedad[]
+  cita              PacienteCita[]
+  enfermedad        PacienteEnfermedad[]
+  medicamento       PacienteMedicamento[]
+  estudio           PacienteEstudio[]
+  
 }

@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
 import { AggregateCount, Estudio } from '../estudios/estudio.dto';
 import { Cita } from 'src/citas/cita.dto';
@@ -31,18 +32,16 @@ export class Paciente {
 
   @Field(() => [Cita], { nullable: true })
   citas?: Cita[];
-
   @Field(() => [Medicamento], { nullable: true })
   medicamentos?: Medicamento[];
-
   @Field(() => [Estudio], { nullable: true })
   estudios?: Estudio[];
-
   @Field(() => [Enfermedad], { nullable: true })
   enfermedades?: Enfermedad[];
 }
 @ObjectType()
 export class PacienteEdge {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   @Field((_) => Paciente)
   node!: Paciente;
   @Field()

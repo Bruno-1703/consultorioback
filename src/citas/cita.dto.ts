@@ -1,10 +1,10 @@
-import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
+import { ObjectType, Field } from '@nestjs/graphql';
 import { AggregateCount } from '../estudios/estudio.dto';
 
 @ObjectType()
 export class Cita {
   @Field(() => String, { nullable: true })
-  id?: string;
+  id_cita?: string;
   @Field(() => String, { nullable: true })
   pacienteId?: string;
   @Field(() => String)
@@ -15,6 +15,8 @@ export class Cita {
   fechaConfirmacion?: Date;
   @Field(() => String, { nullable: true })
   observaciones?: string;
+  @Field(() => Boolean, { nullable: true })
+  cancelada?: boolean;
 }
 @ObjectType()
 export class CitaEdge {

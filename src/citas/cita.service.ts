@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 //import { ObjectId } from "mongodb";
 import { Cita, CitaResultadoBusqueda } from './cita.dto';
-import { CitaInput, CitaWhereInput } from './cita.input';
+import { CitaInput } from './cita.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -52,7 +52,7 @@ export class CitaService {
     try {
       await this.prisma.client.cita.create({
         data: {
-          id_cita: data.id,
+          id_cita: data.id_cita,
           motivoConsulta: data.motivoConsulta,
           fechaSolicitud: data.fechaSolicitud,
           fechaConfirmacion: data.fechaConfirmacion,

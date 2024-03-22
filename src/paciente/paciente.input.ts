@@ -1,6 +1,4 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { Estudio } from '../estudios/estudio.dto';
-import { Medicamento } from '../medicamentos/medicamento.dto';
 import { CitaInput } from 'src/citas/cita.input';
 import { EstudioInput } from 'src/estudios/estudio.input';
 import { MedicamentoInput } from 'src/medicamentos/medicamento.input';
