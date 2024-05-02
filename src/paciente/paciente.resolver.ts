@@ -28,17 +28,7 @@ export class PacienteResolver {
   ): Promise<string> {
     return this.pacienteService.createPaciente(data);
   }
-  @Mutation(() => String)
-  async createPacienteEnfermedad(
-    @Args('paciente') paciente: PacienteInput,
-    @Args('enfermedades', { type: () => [EnfermedadInput] })
-    enfermedades: EnfermedadInput[],
-  ): Promise<string> {
-    return this.pacienteService.createPacienteEnfermedad(
-      paciente,
-      enfermedades,
-    );
-  }
+
 
   @Mutation(() => String)
   async createPacienteCitas(

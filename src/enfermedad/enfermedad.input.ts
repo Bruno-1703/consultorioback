@@ -4,12 +4,12 @@ import { InputType, Field } from '@nestjs/graphql';
 export class EnfermedadInput {
   @Field(() => String, { nullable: true })
   id_enfermedad?: string;
-  @Field(() => String)
-  nombre_enf: string;
+  @Field(() => String,{ nullable: true })
+  nombre_enf?: string;
   @Field(() => String, { nullable: true })
-  sintomas: string;
-  @Field(() => String)
-  gravedad: string;
+  sintomas?: string;
+  @Field(() => String,{ nullable: true })
+  gravedad?: string;
 }
 
 @InputType()
@@ -17,9 +17,9 @@ export class EnfermedadWhereInput {
   @Field(() => String, { nullable: true })
   id_enfermedad?: string;
   @Field(() => String)
-  nombre_enf: string;
+  nombre_enf?: string;
   @Field(() => String, { nullable: true })
   sintomas: string;
   @Field(() => String)
-  gravedad: string;
+  gravedad?: string;
 }

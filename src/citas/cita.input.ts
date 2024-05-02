@@ -1,21 +1,20 @@
 import { InputType, Field } from '@nestjs/graphql';
+import { EnfermedadInput } from 'src/enfermedad/enfermedad.input';
+import { EstudioInput } from 'src/estudios/estudio.input';
+import { MedicamentoInput } from 'src/medicamentos/medicamento.input';
 
 @InputType()
 export class CitaInput {
   @Field(() => String, { nullable: true })
-  id_cita?: string;
-  @Field(() => String, { nullable: true })
-  id_paciente?: string;
-  @Field(() => String, { nullable: true })
-  motivoConsulta: string;
-  @Field(() => Date)
-  fechaSolicitud: Date;
-  @Field(() => Date, { nullable: true })
-  fechaConfirmacion?: Date;
+  motivoConsulta?: string;
   @Field(() => String, { nullable: true })
   observaciones?: string;
-  @Field(() => Boolean, { nullable: true })
-  cancelada?: boolean;
+  @Field(() => [EstudioInput], { nullable: true })
+  estudios?: EstudioInput;
+  @Field(() => [MedicamentoInput], { nullable: true })
+  medicamentos?: MedicamentoInput[];
+  @Field(() => [EnfermedadInput], { nullable: true })
+  enfermedades?: EnfermedadInput[];
 }
 @InputType()
 export class CitaWhereInput {
@@ -24,11 +23,9 @@ export class CitaWhereInput {
   @Field(() => String, { nullable: true })
   id_paciente?: string;
   @Field(() => String, { nullable: true })
-  motivoConsulta: string;
+  motivoConsulta?: string;
   @Field(() => Date, { nullable: true })
   fechaSolicitud?: Date;
-  @Field(() => Date, { nullable: true })
-  fechaConfirmacion?: Date;
   @Field(() => String, { nullable: true })
   observaciones?: string;
   @Field(() => Boolean, { nullable: true })

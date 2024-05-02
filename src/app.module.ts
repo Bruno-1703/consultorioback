@@ -6,6 +6,7 @@ import { EstudioModule } from './estudios/estudio.module';
 import { MedicamentoModule } from './medicamentos/medicamento.module';
 import { PrismaClient } from '@prisma/client';
 import { PacienteModule } from './paciente/paciente.module';
+import { EnfermedadModule } from './enfermedad/enfermedad.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PacienteModule } from './paciente/paciente.module';
     MedicamentoModule,
     PrismaClient,
     PacienteModule,
+    EnfermedadModule
   ],
   controllers: [],
 })

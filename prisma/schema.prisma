@@ -7,50 +7,39 @@ generator client {
   provider = "prisma-client-js"
 }
 
-type PacienteEnfermedad {
-  id_enfermedad         String  @map("_id") @db.ObjectId
-  nombre_enf             String
-  fecha     DateTime @default(now()) @db.Date  
+type CitaEnfermedad {
+  id_enfermedad String   @map("_id") @db.ObjectId
+  nombre_enf    String
+  fecha         DateTime @default(now()) @db.Date
 }
-type PacienteEstudio{
-  id_estudio String  @map("_id") @db.ObjectId
-  fecha_realizacion DateTime
-  tipo_estudio String
-  resultado String?
-  codigo_referencia String
-  observaciones String?
-  medico_solicitante String?
-  urgente Boolean?
+
+type CitaEstudio {
+  id_estudio         String   @map("_id") @db.ObjectId
+  fecha_realizacion  DateTime
+  codigo_referencia  String
 }
+
 type PacienteCita {
-  id_cita String
-  motivoConsulta String
-  fechaSolicitud DateTime
-  fechaConfirmacion DateTime
-  fechaModificacion DateTime
-  observaciones String?
-  cancelada Boolean
+  id_paciente           String
+  motivoConsulta    String?
 }
-type PacienteMedicamento {
-  id_medicamento String
-  nombre_med String?
-  marca String
-  fecha_vencimiento DateTime
-  dosis_hs String
-  agente_principal String
-  efectos_secundarios String?
-  categoria String
-  contraindicaciones String?
-  prescripcion_requerida Boolean?
+
+type CitaMedicamento {
+  id_medicamento         String
+  nombre_med             String?
+
 }
+
 model Cita {
-  id_cita           String    @id @default(auto()) @map("_id") @db.ObjectId
+  id_cita           String            @id @default(auto()) @map("_id") @db.ObjectId
   motivoConsulta    String
-  fechaSolicitud    DateTime  @default(now()) @db.Date
-  fechaConfirmacion DateTime?
-  fechaModificacion DateTime? @default(now()) @db.Date
+  fechaSolicitud    DateTime          @default(now()) @db.Date
+  fechaModificacion DateTime?        
   observaciones     String?
-  cancelada         Boolean   @default(false)
+  cancelada         Boolean           @default(false)
+  enfermedad        CitaEnfermedad[]
+  medicamento       CitaMedicamento[]
+  estudio           CitaEstudio[]
 }
 
 model Estudio {
@@ -63,6 +52,7 @@ model Estudio {
   medico_solicitante String?
   urgente            Boolean?
 }
+
 model Medicamento {
   id_medicamento         String    @id @default(auto()) @map("_id") @db.ObjectId
   nombre_med             String?
@@ -76,14 +66,16 @@ model Medicamento {
   contraindicaciones     String?
   prescripcion_requerida Boolean?
 }
+
 model Enfermedad {
-  id_enfermedad String   @id @default(auto()) @map("_id") @db.ObjectId
+  id_enfermedad String  @id @default(auto()) @map("_id") @db.ObjectId
   nombre_enf    String
   sintomas      String
   gravedad      String?
 }
+
 model Paciente {
-  id_paciente       String        @id @default(auto()) @map("_id") @db.ObjectId
+  id_paciente       String         @id @default(auto()) @map("_id") @db.ObjectId
   dni               String
   nombre_paciente   String
   apellido_paciente String
@@ -95,8 +87,4 @@ model Paciente {
   grupo_sanguineo   String
   alergias          String?
   cita              PacienteCita[]
-  enfermedad        PacienteEnfermedad[]
-  medicamento       PacienteMedicamento[]
-  estudio           PacienteEstudio[]
-  
 }

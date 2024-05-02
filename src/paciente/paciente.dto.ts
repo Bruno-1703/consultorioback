@@ -32,12 +32,7 @@ export class Paciente {
 
   @Field(() => [Cita], { nullable: true })
   citas?: Cita[];
-  @Field(() => [Medicamento], { nullable: true })
-  medicamentos?: Medicamento[];
-  @Field(() => [Estudio], { nullable: true })
-  estudios?: Estudio[];
-  @Field(() => [Enfermedad], { nullable: true })
-  enfermedades?: Enfermedad[];
+ 
 }
 @ObjectType()
 export class PacienteEdge {

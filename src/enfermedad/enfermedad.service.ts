@@ -61,7 +61,7 @@ export class EnfermedadService {
       return resultadoBusqueda;
     } catch (error) {
       console.error('Error al buscar citas', error);
-      throw new Error('Error al buscar citas');
+      throw new Error('Error al buscar enfermedad');
     }
   }
   async createEnfermedad(data: EnfermedadInput): Promise<string> {
@@ -74,10 +74,10 @@ export class EnfermedadService {
           gravedad: data.gravedad,
         },
       });
-      return 'Cita created successfully';
+      return 'ENFERMEDAD created successfully';
     } catch (error) {
-      console.error('Error creating cita', error);
-      throw new Error('Error creating cita');
+      console.error('Error creating enfermedad', error);
+      throw new Error('Error creating enfermedad');
     }
   }
 

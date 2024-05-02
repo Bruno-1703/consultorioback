@@ -2,6 +2,8 @@ import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Cita, CitaResultadoBusqueda } from './cita.dto';
 import { CitaInput, CitaWhereInput } from './cita.input';
 import { CitaService } from './cita.service';
+import { EnfermedadInput } from 'src/enfermedad/enfermedad.input';
+import { MedicamentoInput } from 'src/medicamentos/medicamento.input';
 
 @Resolver(() => Cita)
 export class CitaResolver {
@@ -34,5 +36,21 @@ export class CitaResolver {
     @Args({ name: 'citaId', type: () => String }) citaId: string,
   ): Promise<string> {
     return this.citaService.updateCita(data, citaId);
+  }
+  @Mutation(() => String)
+  async createCitaEnfermedad(
+    @Args('citaId') citaId: string,
+    @Args('enfermedades', { type: () => [EnfermedadInput] })
+    enfermedades: EnfermedadInput[],
+  ): Promise<string> {
+    return this.citaService.createCitaEnfermedad(citaId, enfermedades,);
+  }
+  @Mutation(() => String)
+  async createCitaMedicamento(
+    @Args('citaId') citaId: string,
+    @Args('medicamentos', { type: () => [MedicamentoInput] })
+    medicamentos: MedicamentoInput[],
+  ): Promise<string> {
+    return this.citaService.createCitaMedicametos(citaId, medicamentos,);
   }
 }

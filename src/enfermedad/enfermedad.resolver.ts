@@ -12,7 +12,7 @@ export class EnfermedadResolver {
   }
 
   @Query(() => EnfermedadResultadoBusqueda)
-  async getCitas(
+  async getEnfermedades(
     @Args({ name: 'where', type: () => EnfermedadWhereInput, nullable: true })
     where?: EnfermedadWhereInput,
     @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,

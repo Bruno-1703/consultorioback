@@ -9,7 +9,7 @@ export class Enfermedad {
   nombre_enf: string;
   @Field(() => String, { nullable: true })
   sintomas: string;
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   gravedad: string;
 }
 @ObjectType()

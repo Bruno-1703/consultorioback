@@ -7,7 +7,7 @@ import { EnfermedadInput } from 'src/enfermedad/enfermedad.input';
 @InputType()
 export class PacienteInput {
   @Field(() => String, { nullable: true })
-  id?: string;
+  id_paciente?: string;
   @Field(() => String)
   dni!: string;
   @Field(() => String, { nullable: true })
@@ -30,12 +30,7 @@ export class PacienteInput {
   alergias!: string;
   @Field(() => [CitaInput], { nullable: true })
   citas?: CitaInput[];
-  @Field(() => [EstudioInput], { nullable: true })
-  estudios?: EstudioInput;
-  @Field(() => [MedicamentoInput], { nullable: true })
-  medicamentos?: MedicamentoInput[];
-  @Field(() => [EnfermedadInput], { nullable: true })
-  enfermedades?: EnfermedadInput[];
+
 }
 @InputType()
 export class PacienteWhereInput {
