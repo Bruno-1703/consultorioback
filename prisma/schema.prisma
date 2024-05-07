@@ -14,27 +14,26 @@ type CitaEnfermedad {
 }
 
 type CitaEstudio {
-  id_estudio         String   @map("_id") @db.ObjectId
-  fecha_realizacion  DateTime
-  codigo_referencia  String
+  id_estudio        String   @map("_id") @db.ObjectId
+  fecha_realizacion DateTime
+  codigo_referencia String
 }
 
 type PacienteCita {
-  id_paciente           String
-  motivoConsulta    String?
+  id_paciente    String
+  motivoConsulta String?
 }
 
 type CitaMedicamento {
-  id_medicamento         String
-  nombre_med             String?
-
+  id_medicamento String
+  nombre_med     String?
 }
 
 model Cita {
   id_cita           String            @id @default(auto()) @map("_id") @db.ObjectId
   motivoConsulta    String
   fechaSolicitud    DateTime          @default(now()) @db.Date
-  fechaModificacion DateTime?        
+  fechaModificacion DateTime?
   observaciones     String?
   cancelada         Boolean           @default(false)
   enfermedad        CitaEnfermedad[]
@@ -87,4 +86,13 @@ model Paciente {
   grupo_sanguineo   String
   alergias          String?
   cita              PacienteCita[]
+}
+
+model Usuario {
+  id_Usuario     String  @id @default(auto()) @map("_id") @db.ObjectId
+  nombre_usuario String
+  email          String
+  password       String
+  deletLogico    Boolean @default(false)
+  rol_usuario    String
 }
