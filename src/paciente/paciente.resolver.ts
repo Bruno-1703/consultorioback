@@ -4,6 +4,9 @@ import { PacienteInput, PacienteWhereInput } from './paciente.input';
 import { PacienteService } from './paciente.service';
 import { EnfermedadInput } from '../enfermedad/enfermedad.input';
 import { CitaInput } from '../citas/cita.input';
+import { Role } from 'src/common/enums/rol.enum';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+
 
 @Resolver(() => Paciente)
 export class PacienteResolver {
@@ -22,6 +25,8 @@ export class PacienteResolver {
   ): Promise<PacientesResultadoBusqueda | null> {
     return this.pacienteService.getPacientes(where, skip, limit);
   }
+  
+  @Auth(Role.USER)
   @Mutation(() => String)
   async createPaciente(
     @Args({ name: 'data', type: () => PacienteInput }) data: PacienteInput,
@@ -29,9 +34,8 @@ export class PacienteResolver {
     return this.pacienteService.createPaciente(data);
   }
 
-
   @Mutation(() => String)
-  async createPacienteCitas(
+  async createPacienteCitas(    
     @Args('paciente') paciente: PacienteInput,
     @Args('citas', { type: () => [CitaInput] }) citas: CitaInput[],
   ): Promise<string> {

@@ -16,13 +16,11 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     
     const user = await this.userService.getUsuario(registerDto.email);
-    console.log(user)
     if (user) {
       throw new BadRequestException('El usuario ya existe');
     }
     try {
       const hashedPassword = await bcryptjs.hash(registerDto.password, 10);
-      console.log(hashedPassword)
       await this.userService.createUsuario({
         nombre_usuario: registerDto.email,
         password: hashedPassword,
@@ -45,9 +43,15 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    const payload = { userId: user.id_Usuario, email: user.email };
+    const payload = { userId: user.id_Usuario, email: user.email, role: user.rol_usuario };
     const accessToken = await this.jwtService.signAsync(payload)
 
     return { accessToken };
+  }
+  async profile ({ email, rol}: {email: string; rol:string}){
+
+    // if (rol !== 'admin')
+
+    return await this.userService.getUsuario(email)
   }
 }

@@ -9,7 +9,7 @@ export class Usuario {
   nombre_usuario: string;
   @Field(() => String,{ nullable: true })
   email: string;
-  @Field(() => String)
+  @Field(() => String, )
   password?: string;
   @Field(() => Boolean, { nullable: true })
   deletLogico?: boolean;
