@@ -5,7 +5,13 @@ import { Paciente, PacientesResultadoBusqueda } from './paciente.dto';
 import { Prisma } from '@prisma/client';
 import { CitaInput } from '../citas/cita.input';
 import { EnfermedadInput } from '../enfermedad/enfermedad.input';
-import { PacienteInput, PacienteWhereInput } from './paciente.input';
+import {
+  CitaInputPaciente,
+  PacienteInput,
+  PacienteWhereInput,
+} from './paciente.input';
+import { getPacientes } from 'src/mongo/pacientes/getPacientes';
+import { getPacienteById } from 'src/mongo/pacientes/getPaciente';
 @Injectable()
 export class PacienteService {
   constructor(private prisma: PrismaService) {}
@@ -14,17 +20,8 @@ export class PacienteService {
   async getPaciente(id: string): Promise<Paciente | null> {
     try {
       this.logger.debug(`Recuperando paciente con ID ${id}`);
-      const paciente = await this.prisma.client.paciente.findUnique({
-        where: {
-          id_paciente: id,
-        },
-        include: {
-          medicamentos: false,
-          cita: false,
-          Enfermedad: true,
-          estudios: true,
-        },
-      });
+
+      const paciente = await getPacienteById(this.prisma.mongodb, id);
 
       if (!paciente) {
         throw new Error(`No se encontró el paciente con ID ${id}`);
@@ -41,36 +38,21 @@ export class PacienteService {
   async getPacientes(
     where?: PacienteWhereInput | undefined,
     skip?: number,
-    limit?: number,
+    take?: number,
   ): Promise<PacientesResultadoBusqueda | null> {
     try {
       this.logger.debug('Buscando pacientes con criterios:', where);
 
-      const pacientes = await this.prisma.client.paciente.findMany({
-        where: {},
+      const pacientes = await getPacientes(
+        this.prisma.mongodb,
         skip,
-        take: limit,
-        include: {
-          cita: true,
-          medicamentos: true,
-          estudios: true,
-          Enfermedad: true,
-        },
-      });
-      const totalPacientes = await this.prisma.client.paciente.count({});
+        take,
+        where,
+      );
 
-      const resultadoBusqueda: PacientesResultadoBusqueda = {
-        edges: pacientes.map((node) => ({
-          node,
-          cursor: node.id_paciente,
-        })),
-        aggregate: {
-          count: totalPacientes,
-        },
-      };
+      this.logger.debug('Pacientes encontrados:', pacientes);
 
-      this.logger.debug('Pacientes encontrados:', resultadoBusqueda);
-      return resultadoBusqueda;
+      return pacientes;
     } catch (error) {
       console.error('Error al buscar pacientes', error);
       this.logger.error(error);
@@ -97,57 +79,39 @@ export class PacienteService {
         data: pacienteData,
       });
       this.logger.debug('Paciente creado exitosamente');
-      console.log(paciente);
       return 'Paciente creado exitosamente';
     } catch (error) {
       console.error('Error al crear paciente', error);
       this.logger.error(error);
       throw new Error('Error al crear paciente');
     }
-  } 
-  
+  }
   async createPacienteCitas(
-    paciente: PacienteInput,
-    citas: CitaInput[],
+    pacienteId: string,
+    cita: CitaInputPaciente,
   ): Promise<string> {
     this.logger.log({ action: 'CreatePacienteCitas' });
     try {
       const existingPaciente = await this.prisma.client.paciente.findUnique({
         where: {
-          id_paciente: paciente.id_paciente,
+          id_paciente: pacienteId,
         },
       });
       if (!existingPaciente) {
-        throw new Error(`No se encontró el paciente con ID ${paciente.id_paciente}`);
+        throw new Error(`No se encontró el paciente con ID ${pacienteId}`);
       }
-       await this.prisma.client.paciente.update({
-         where: { id_paciente: existingPaciente.id_paciente },
-         data: {
-           dni: paciente.dni || existingPaciente.dni,
-           nombre_paciente:
-           paciente.nombre_paciente || existingPaciente.nombre_paciente,
-           apellido_paciente:
-           paciente.apellido_paciente || existingPaciente.apellido_paciente,
-           edad: paciente.edad || existingPaciente.edad,
-           altura: paciente.altura || existingPaciente.altura,
-           telefono: paciente.telefono || existingPaciente.telefono,
-           fecha_nacimiento:
-           paciente.fecha_nacimiento || existingPaciente.fecha_nacimiento,
-           sexo: paciente.sexo || existingPaciente.sexo,
-           grupo_sanguineo:
-           paciente.grupo_sanguineo || existingPaciente.grupo_sanguineo,
-           alergias: paciente.alergias || existingPaciente.alergias,
-          //  cita: {
-          //   set: citas.map((cita) => ({
-          //     motivoConsulta: cita.motivoConsulta,
-          //     cancelada: cita.cancelada,
-          //     fechaSolicitud: new Date(cita.fechaSolicitud),
-          //     fechaConfirmacion: new Date(cita.fechaConfirmacion),
-          //     observaciones: cita.observaciones,
-          //   })),
-          // },          
-         },
-       });
+      await this.prisma.client.paciente.update({
+        where: { id_paciente: existingPaciente.id_paciente },
+        data: {
+          cita: {
+            set: {
+              id_paciente: pacienteId,
+              motivoConsulta: cita.motivoConsulta,
+              id_cita: cita.id_cita,
+            },
+          },
+        },
+      });
       return 'Citas agregadas al paciente exitosamente';
     } catch (error) {
       console.error('Error al agregar citas al paciente:', error);

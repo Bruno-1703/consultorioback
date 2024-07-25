@@ -20,8 +20,10 @@ type CitaEstudio {
 }
 
 type PacienteCita {
-  id_paciente    String
+  id_cita    String
   motivoConsulta String?
+  id_paciente String?
+  
 }
 
 type CitaMedicamento {

@@ -20,7 +20,7 @@ export class CitaResolver {
     @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
     @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
   ): Promise<CitaResultadoBusqueda> {
-    return this.citaService.getCitas(where, skip, limit);
+    return this.citaService.getCitas( skip, limit,where);
   }
 
   @Mutation(() => String)

@@ -1,10 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 //import { ObjectId } from "mongodb";
 import { Cita, CitaResultadoBusqueda } from './cita.dto';
-import { CitaInput } from './cita.input';
+import { CitaInput, CitaWhereInput } from './cita.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { EnfermedadInput } from 'src/enfermedad/enfermedad.input';
 import { MedicamentoInput } from 'src/medicamentos/medicamento.input';
+import { getCitaById } from 'src/mongo/citas/getCita';
+import { getCitas } from 'src/mongo/citas/getCitas';
 
 @Injectable()
 export class CitaService {
@@ -13,35 +15,33 @@ export class CitaService {
 
   async getCita(id: string): Promise<Cita | null> {
     try {
-      const cita = await this.prisma.client.cita.findUnique({
-        where: { id_cita: id },
-      });
+      const cita = await getCitaById(this.prisma.mongodb, id);
+      // const cita = await this.prisma.client.cita.findUnique({
+      //   where: { id_cita: id },
+      // });
+
       return cita || null;
     } catch (error) {
       console.error('Error al obtener la cita', error);
       throw new Error('Error al obtener la cita');
     }
   }
-
-  async getCitas(where?, skip?, limit?): Promise<CitaResultadoBusqueda> {
+  async getCitas
+  ( take: number,
+    skip: number, 
+    where: CitaInput, 
+  ): Promise<CitaResultadoBusqueda> {
     try {
-      const filteredCitas = await this.prisma.client.cita.findMany({
-        where,
+
+      const citas = await getCitas (
+        this.prisma.mongodb,        
         skip,
-        take: limit,
-      });
+        take,
+        where,
+    );
 
-      const totalCitas = await this.prisma.client.cita.count({ where });
 
-      const resultadoBusqueda: CitaResultadoBusqueda = {
-        edges: filteredCitas.map((cita) => ({
-          node: { ...cita, id: cita.id_cita },
-          cursor: cita.id_cita,
-        })),
-        aggregate: { count: totalCitas },
-      };
-
-      return resultadoBusqueda;
+      return citas;
     } catch (error) {
       console.error('Error al buscar citas', error);
       throw new Error('Error al buscar citas');
@@ -56,10 +56,10 @@ export class CitaService {
           cancelada: false,
         },
       });
-      return 'Cita created successfully';
+      return 'Cita creada Exitosamente';
     } catch (error) {
-      console.error('Error creating cita', error);
-      throw new Error('Error creating cita');
+      console.error('Error crear cita', error);
+      throw new Error('Error crear cita');
     }
   }
 
@@ -80,23 +80,23 @@ export class CitaService {
     citaId: string,
     enfermedades: EnfermedadInput[],
   ): Promise<string> {
-    this.logger.log({ action: 'CreateCitaEnfermedad' });
-    try {      
-        await this.prisma.client.cita.update({
-          where: {
-            id_cita: citaId,
+    this.logger.log({ action: 'CrearCitaEnfermedad' });
+    try {
+      await this.prisma.client.cita.update({
+        where: {
+          id_cita: citaId,
+        },
+        data: {
+          enfermedad: {
+            push: enfermedades.map((enfermedad) => ({
+              id_enfermedad: enfermedad?.id_enfermedad,
+              nombre_enf: enfermedad?.nombre_enf,
+              fecha: new Date(),
+            })),
           },
-          data: {             
-            enfermedad: {
-              push: enfermedades.map((enfermedad) => ({
-                id_enfermedad: enfermedad?.id_enfermedad,
-                nombre_enf: enfermedad?.nombre_enf,
-                fecha: new Date()
-              })),
-            },
-          },
-        });     
-          
+        },
+      });
+
       return 'Cita actualizada exitosamente con las enfermedades agregadas';
     } catch (error) {
       console.error('Error al agregar enfermedades a la cita:', error);
@@ -107,23 +107,22 @@ export class CitaService {
     citaId: string,
     medicamenetos: MedicamentoInput[],
   ): Promise<string> {
-    this.logger.log({ action:'createCitaMedicametos' });
+    this.logger.log({ action: 'crearCitaMedicametos' });
     try {
-     
-        await this.prisma.client.cita.update({
-          where: {
-            id_cita: citaId,
+      await this.prisma.client.cita.update({
+        where: {
+          id_cita: citaId,
+        },
+        data: {
+          medicamento: {
+            push: medicamenetos.map((medicamento) => ({
+              id_medicamento: medicamento?.id_medicamento,
+              nombre_med: medicamento?.nombre_med,
+            })),
           },
-          data: {             
-            medicamento: {
-              push: medicamenetos.map((medicamento) => ({
-                id_medicamento: medicamento?.id_medicamento,
-                nombre_med: medicamento?.nombre_med,
-              })),
-            },
-          },
-        });   
-          
+        },
+      });
+
       return 'Cita actualizada exitosamente con los medicamentos agregados';
     } catch (error) {
       console.error('Error al agregar enfermedades a la cita:', error);

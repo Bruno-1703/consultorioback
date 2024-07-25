@@ -29,10 +29,8 @@ export class Paciente {
   grupo_sanguineo!: string;
   @Field(() => String, { nullable: true })
   alergias?: string;
-
   @Field(() => [Cita], { nullable: true })
-  citas?: Cita[];
- 
+  citas?: Cita[]; 
 }
 @ObjectType()
 export class PacienteEdge {

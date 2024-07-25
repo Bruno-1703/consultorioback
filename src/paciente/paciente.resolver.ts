@@ -1,6 +1,6 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Paciente, PacientesResultadoBusqueda } from './paciente.dto';
-import { PacienteInput, PacienteWhereInput } from './paciente.input';
+import { CitaInputPaciente, PacienteInput, PacienteWhereInput } from './paciente.input';
 import { PacienteService } from './paciente.service';
 import { EnfermedadInput } from '../enfermedad/enfermedad.input';
 import { CitaInput } from '../citas/cita.input';
@@ -21,25 +21,17 @@ export class PacienteResolver {
     @Args({ name: 'where', type: () => PacienteWhereInput, nullable: true })
     where?: PacienteWhereInput,
     @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
-    @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
+    @Args({ name: 'take', type: () => Int, nullable: true }) take?: number,
   ): Promise<PacientesResultadoBusqueda | null> {
-    return this.pacienteService.getPacientes(where, skip, limit);
+    return this.pacienteService.getPacientes(where, skip, take);
   }
   
-  @Auth(Role.USER)
+  // @Auth(Role.USER)
   @Mutation(() => String)
   async createPaciente(
     @Args({ name: 'data', type: () => PacienteInput }) data: PacienteInput,
   ): Promise<string> {
     return this.pacienteService.createPaciente(data);
-  }
-
-  @Mutation(() => String)
-  async createPacienteCitas(    
-    @Args('paciente') paciente: PacienteInput,
-    @Args('citas', { type: () => [CitaInput] }) citas: CitaInput[],
-  ): Promise<string> {
-    return this.pacienteService.createPacienteCitas(paciente, citas);
   }
   @Mutation(() => String)
   async updatePaciente(
@@ -48,6 +40,15 @@ export class PacienteResolver {
   ): Promise<string> {
     return this.pacienteService.updatePaciente(data, pacienteId);
   }
+
+  @Mutation(() => String)
+  async createPacienteCitas(    
+    @Args('pacienteId') pacienteId: string,
+    @Args('cita', { type: () => CitaInputPaciente }) cita: CitaInputPaciente,
+  ): Promise<string> {
+    return this.pacienteService.createPacienteCitas(pacienteId, cita);
+  }
+
   @Query(() => [Paciente])
   async buscarPacientesPorNombreODNI(
     @Args({ name: 'nombre', type: () => String }) nombre: string,

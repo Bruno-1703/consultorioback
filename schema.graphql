@@ -142,7 +142,7 @@ type Query {
   getMedicamento(id: String!): Medicamento
   getMedicamentos(where: MedicamentoWhereInput, skip: Int, limit: Int): MedicamentoResultadoBusqueda!
   getPaciente(id: String!): Paciente
-  getPacientes(where: PacienteWhereInput, skip: Int, limit: Int): PacientesResultadoBusqueda!
+  getPacientes(where: PacienteWhereInput, skip: Int, take: Int): PacientesResultadoBusqueda!
   buscarPacientesPorNombreODNI(nombre: String!, dni: String!): [Paciente!]!
   getEnfermedad(id: String!): Enfermedad
   getEnfermedades(where: EnfermedadWhereInput, skip: Int, limit: Int): EnfermedadResultadoBusqueda!
@@ -151,11 +151,11 @@ type Query {
 
 input CitaWhereInput {
   id: String
-  id_paciente: String
   motivoConsulta: String
   fechaSolicitud: DateTime
   observaciones: String
   cancelada: Boolean
+  buscar: String
 }
 
 input EstudioWhereInput {
@@ -172,7 +172,6 @@ input MedicamentoWhereInput {
 }
 
 input PacienteWhereInput {
-  id: String
   dni: String
   nombre_paciente: String
   apellido_paciente: String
@@ -246,8 +245,8 @@ type Mutation {
   createMedicamento(data: MedicamentoInput!): String!
   updateMedicamento(data: MedicamentoInput!, medicamentoId: String!): String!
   createPaciente(data: PacienteInput!): String!
-  createPacienteCitas(paciente: PacienteInput!, citas: [CitaInput!]!): String!
   updatePaciente(data: PacienteInput!, pacienteId: String!): String!
+  createPacienteCitas(pacienteId: String!, cita: CitaInputPaciente!): String!
   createEnfermedad(data: EnfermedadInput!): String!
   updateEnfermedad(data: EnfermedadInput!, citaId: String!): String!
   createUsuario(data: UsuarioInput!): String!
@@ -267,7 +266,12 @@ input PacienteInput {
   sexo: String!
   grupo_sanguineo: String!
   alergias: String!
-  citas: [CitaInput!]
+  citas: CitaInput
+}
+
+input CitaInputPaciente {
+  id_cita: String
+  motivoConsulta: String
 }
 
 input UsuarioInput {

@@ -15,13 +15,12 @@ export class CitaInput {
   medicamentos?: MedicamentoInput[];
   @Field(() => [EnfermedadInput], { nullable: true })
   enfermedades?: EnfermedadInput[];
+
 }
 @InputType()
 export class CitaWhereInput {
   @Field(() => String, { nullable: true })
   id?: string;
-  @Field(() => String, { nullable: true })
-  id_paciente?: string;
   @Field(() => String, { nullable: true })
   motivoConsulta?: string;
   @Field(() => Date, { nullable: true })
@@ -30,4 +29,8 @@ export class CitaWhereInput {
   observaciones?: string;
   @Field(() => Boolean, { nullable: true })
   cancelada?: boolean;
+  @Field(() => String, { nullable: true })
+  buscar?: string | undefined;
+ 
+
 }

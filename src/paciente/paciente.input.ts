@@ -28,14 +28,20 @@ export class PacienteInput {
   grupo_sanguineo!: string;
   @Field(() => String)
   alergias!: string;
-  @Field(() => [CitaInput], { nullable: true })
-  citas?: CitaInput[];
+  @Field(() => CitaInput, { nullable: true })
+  citas?: CitaInput;
 
 }
 @InputType()
-export class PacienteWhereInput {
+export class CitaInputPaciente {
   @Field(() => String, { nullable: true })
-  id?: string;
+  id_cita?: string;
+  @Field(() => String, { nullable: true })
+  motivoConsulta?: string;
+}
+
+@InputType()
+export class PacienteWhereInput {
   @Field(() => String, { nullable: true })
   dni?: string;
   @Field(() => String, { nullable: true })
