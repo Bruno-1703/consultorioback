@@ -2,6 +2,7 @@ import { ObjectType, Field } from '@nestjs/graphql';
 import { AggregateCount, Estudio } from '../estudios/estudio.dto';
 import { Medicamento } from 'src/medicamentos/medicamento.dto';
 import { Enfermedad } from 'src/enfermedad/enfermedad.dto';
+import { Paciente } from 'src/paciente/paciente.dto';
 
 @ObjectType()
 export class Cita {
@@ -22,7 +23,7 @@ export class Cita {
   @Field(() => [Estudio], { nullable: true })
   estudios?: Estudio[];
   @Field(() => [Enfermedad], { nullable: true })
-  enfermedades?: Enfermedad[];
+  enfermedades?: Enfermedad[]; 
 }
 @ObjectType()
 export class CitaEdge {

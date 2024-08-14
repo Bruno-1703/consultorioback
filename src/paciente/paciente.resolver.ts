@@ -1,11 +1,7 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Paciente, PacientesResultadoBusqueda } from './paciente.dto';
-import { CitaInputPaciente, PacienteInput, PacienteWhereInput } from './paciente.input';
+import { PacienteInput, PacienteWhereInput } from './paciente.input';
 import { PacienteService } from './paciente.service';
-import { EnfermedadInput } from '../enfermedad/enfermedad.input';
-import { CitaInput } from '../citas/cita.input';
-import { Role } from 'src/common/enums/rol.enum';
-import { Auth } from 'src/auth/decorators/auth.decorator';
 
 
 @Resolver(() => Paciente)
@@ -39,14 +35,6 @@ export class PacienteResolver {
     @Args({ name: 'pacienteId', type: () => String }) pacienteId: string,
   ): Promise<string> {
     return this.pacienteService.updatePaciente(data, pacienteId);
-  }
-
-  @Mutation(() => String)
-  async createPacienteCitas(    
-    @Args('pacienteId') pacienteId: string,
-    @Args('cita', { type: () => CitaInputPaciente }) cita: CitaInputPaciente,
-  ): Promise<string> {
-    return this.pacienteService.createPacienteCitas(pacienteId, cita);
   }
 
   @Query(() => [Paciente])

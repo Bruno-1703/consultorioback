@@ -2,6 +2,7 @@ import { InputType, Field } from '@nestjs/graphql';
 import { EnfermedadInput } from 'src/enfermedad/enfermedad.input';
 import { EstudioInput } from 'src/estudios/estudio.input';
 import { MedicamentoInput } from 'src/medicamentos/medicamento.input';
+import { PacienteInput } from 'src/paciente/paciente.input';
 
 @InputType()
 export class CitaInput {
@@ -9,12 +10,8 @@ export class CitaInput {
   motivoConsulta?: string;
   @Field(() => String, { nullable: true })
   observaciones?: string;
-  @Field(() => [EstudioInput], { nullable: true })
-  estudios?: EstudioInput;
-  @Field(() => [MedicamentoInput], { nullable: true })
-  medicamentos?: MedicamentoInput[];
-  @Field(() => [EnfermedadInput], { nullable: true })
-  enfermedades?: EnfermedadInput[];
+
+
 
 }
 @InputType()
@@ -31,6 +28,18 @@ export class CitaWhereInput {
   cancelada?: boolean;
   @Field(() => String, { nullable: true })
   buscar?: string | undefined;
- 
+
+  @Field(() => [EstudioInput], { nullable: true })
+  estudios?: EstudioInput;
+
+  @Field(() => [MedicamentoInput], { nullable: true })
+  medicamentos?: MedicamentoInput[];
+  
+  @Field(() => [EnfermedadInput], { nullable: true })
+  enfermedades?: EnfermedadInput[];
+  
+  @Field(() =>PacienteInput , { nullable: true })
+  paciente?: PacienteInput;
 
 }
+

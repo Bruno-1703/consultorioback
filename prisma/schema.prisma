@@ -20,10 +20,9 @@ type CitaEstudio {
 }
 
 type PacienteCita {
-  id_cita    String
-  motivoConsulta String?
   id_paciente String?
-  
+  dni             String?
+  nombre_paciente String?
 }
 
 type CitaMedicamento {
@@ -33,14 +32,16 @@ type CitaMedicamento {
 
 model Cita {
   id_cita           String            @id @default(auto()) @map("_id") @db.ObjectId
-  motivoConsulta    String
+  motivoConsulta    String?
   fechaSolicitud    DateTime          @default(now()) @db.Date
+  hora              String?
   fechaModificacion DateTime?
   observaciones     String?
   cancelada         Boolean           @default(false)
-  enfermedad        CitaEnfermedad[]
-  medicamento       CitaMedicamento[]
-  estudio           CitaEstudio[]
+  enfermedades        CitaEnfermedad[]
+  medicamentos       CitaMedicamento[]
+  estudios           CitaEstudio[]
+  paciente          PacienteCita
 }
 
 model Estudio {
@@ -87,7 +88,6 @@ model Paciente {
   sexo              String
   grupo_sanguineo   String
   alergias          String?
-  cita              PacienteCita[]
 }
 
 model Usuario {

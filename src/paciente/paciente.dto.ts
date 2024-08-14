@@ -1,9 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
 import { AggregateCount, Estudio } from '../estudios/estudio.dto';
-import { Cita } from 'src/citas/cita.dto';
-import { Medicamento } from 'src/medicamentos/medicamento.dto';
-import { Enfermedad } from 'src/enfermedad/enfermedad.dto';
 
 @ObjectType()
 export class Paciente {
@@ -29,8 +26,7 @@ export class Paciente {
   grupo_sanguineo!: string;
   @Field(() => String, { nullable: true })
   alergias?: string;
-  @Field(() => [Cita], { nullable: true })
-  citas?: Cita[]; 
+
 }
 @ObjectType()
 export class PacienteEdge {

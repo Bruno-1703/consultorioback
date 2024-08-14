@@ -1,23 +1,22 @@
 import { Logger } from '@nestjs/common';
 import { Db } from 'mongodb';
+import { MedicamentoWhereInput } from 'src/medicamentos/medicamento.input';
 import {
   PacienteEdge,
   PacientesResultadoBusqueda,
 } from 'src/paciente/paciente.dto';
-import { PacienteWhereInput } from 'src/paciente/paciente.input';
 
-export async function getPacientes(
+export async function getMedicamento(
   mongoConnection: Db,
   take: number,
   skip: number,
-  where: PacienteWhereInput,
+  where: MedicamentoWhereInput,
 ): Promise<PacientesResultadoBusqueda | null> {
   const logger = new Logger();
   try {
     logger.log({ action: 'getPacientes' });
 
-    const buscar = where ? where.nombre_paciente : null;
-    const dni = where ? where.dni : null;
+    const buscar = where ? where.nombre_med : null;
 
     const query: any[] = [];
     if (buscar) {
@@ -30,7 +29,7 @@ export async function getPacientes(
         ],
       });
     }
-    const consulta = mongoConnection.collection('Paciente').aggregate(
+    const consulta = mongoConnection.collection('medicamento').aggregate(
       [
         { $match: { $and: query } },
         { $sort: { dni: -1 } },
@@ -43,7 +42,7 @@ export async function getPacientes(
     );
 
     const cantidad = await mongoConnection
-      .collection('Paciente')
+      .collection('medicamento')
       .countDocuments({ $and: query });
 
     const pacientes = await consulta.toArray();

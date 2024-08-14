@@ -3,7 +3,6 @@ import { Db, ObjectId } from "mongodb";
 import { Cita } from "src/citas/cita.dto";
 
 export async function getCitaById(
-  //usuario: UsuarioExpedientes,
   mongoConnection: Db,
   citaId: string
 ): Promise<Cita | null> {
@@ -12,22 +11,18 @@ export async function getCitaById(
     logger.debug({
       action: "getCiintaById",
       citaId,
-      // usuario,
     });
 
-    const emailQuery = await mongoConnection.collection("cita").findOne({
-      _id: new ObjectId(citaId),   
-            
+    const citaQuery = await mongoConnection.collection("Cita").findOne({
+      _id: new ObjectId(citaId),            
    
     });
-
-    if (emailQuery) {
-      const cita: any = Object.assign({}, emailQuery, {
-        id: emailQuery._id,
-        // mensajes: emailQuery.mensajes?.map((mensaje) => ({
-        //   ...mensaje,
-        // })),
+    if (citaQuery) {
+      const cita: any = Object.assign({}, citaQuery, {
+        id: citaQuery._id,
+   
       });
+      console.log(cita)
       return cita as Cita;
     }
     return null;

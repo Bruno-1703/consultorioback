@@ -107,7 +107,6 @@ type Paciente {
   sexo: String!
   grupo_sanguineo: String!
   alergias: String
-  citas: [Cita!]
 }
 
 type PacienteEdge {
@@ -156,44 +155,10 @@ input CitaWhereInput {
   observaciones: String
   cancelada: Boolean
   buscar: String
-}
-
-input EstudioWhereInput {
-  id_estudio: String
-  fecha_realizacion: DateTime!
-  tipo_estudio: String!
-  resultado: String
-  codigo_referencia: String!
-}
-
-input MedicamentoWhereInput {
-  nombre_med: String
-  marca: String
-}
-
-input PacienteWhereInput {
-  dni: String
-  nombre_paciente: String
-  apellido_paciente: String
-  edad: Int
-  altura: Int
-  telefono: String
-  fecha_nacimiento: DateTime
-  sexo: String
-  grupo_sanguineo: String
-  alergias: String
-  cita: [CitaInput!]
-  estudios: EstudioInput
-  medicamentos: [MedicamentoInput!]
-  enfermedades: [EnfermedadInput!]
-}
-
-input CitaInput {
-  motivoConsulta: String
-  observaciones: String
   estudios: [EstudioInput!]
   medicamentos: [MedicamentoInput!]
   enfermedades: [EnfermedadInput!]
+  paciente: PacienteInput
 }
 
 input EstudioInput {
@@ -228,6 +193,63 @@ input EnfermedadInput {
   gravedad: String
 }
 
+input PacienteInput {
+  id_paciente: String
+  dni: String
+  nombre_paciente: String
+  apellido_paciente: String
+  edad: Int
+  altura: Int
+  telefono: String
+  fecha_nacimiento: DateTime
+  sexo: String
+  grupo_sanguineo: String
+  alergias: String
+}
+
+input EstudioWhereInput {
+  id_estudio: String
+  fecha_realizacion: DateTime!
+  tipo_estudio: String!
+  resultado: String
+  codigo_referencia: String!
+}
+
+input MedicamentoWhereInput {
+  nombre_med: String
+  marca: String
+  fecha_vencimiento: DateTime
+  dosis_hs: String
+  agente_principal: String
+  efectos_secundarios: String
+  lista_negra: Boolean
+  categoria: String
+  contraindicaciones: String
+  prescripcion_requerida: Boolean
+}
+
+input PacienteWhereInput {
+  dni: String
+  nombre_paciente: String
+  apellido_paciente: String
+  edad: Int
+  altura: Int
+  telefono: String
+  fecha_nacimiento: DateTime
+  sexo: String
+  grupo_sanguineo: String
+  alergias: String
+  cita: [CitaInput!]
+  estudios: EstudioInput
+  medicamentos: [MedicamentoInput!]
+  enfermedades: [EnfermedadInput!]
+}
+
+input CitaInput {
+  motivoConsulta: String
+  observaciones: String
+}
+
 input EnfermedadWhereInput {
   id_enfermedad: String
   nombre_enf: String!
@@ -236,42 +258,22 @@ input EnfermedadWhereInput {
 }
 
 type Mutation {
-  createCita(data: CitaInput!): String!
+  createCita(data: CitaInput!, paciente: PacienteInput!): String!
   updateCita(data: CitaInput!, citaId: String!): String!
   createCitaEnfermedad(citaId: String!, enfermedades: [EnfermedadInput!]!): String!
   createCitaMedicamento(citaId: String!, medicamentos: [MedicamentoInput!]!): String!
+  createCitaEstudio(citaId: String!, estudios: [EstudioInput!]!): String!
   createEstudio(data: EstudioInput!): String!
   updateEstudio(data: EstudioInput!, estudioId: String!): String!
   createMedicamento(data: MedicamentoInput!): String!
   updateMedicamento(data: MedicamentoInput!, medicamentoId: String!): String!
   createPaciente(data: PacienteInput!): String!
   updatePaciente(data: PacienteInput!, pacienteId: String!): String!
-  createPacienteCitas(pacienteId: String!, cita: CitaInputPaciente!): String!
   createEnfermedad(data: EnfermedadInput!): String!
   updateEnfermedad(data: EnfermedadInput!, citaId: String!): String!
   createUsuario(data: UsuarioInput!): String!
   updateUsuario(data: UsuarioInput!, usuarioId: String!): String!
   deleteUsuario(id: String!): String!
-}
-
-input PacienteInput {
-  id_paciente: String
-  dni: String!
-  nombre_paciente: String
-  apellido_paciente: String!
-  edad: Int!
-  altura: Int!
-  telefono: String!
-  fecha_nacimiento: DateTime!
-  sexo: String!
-  grupo_sanguineo: String!
-  alergias: String!
-  citas: CitaInput
-}
-
-input CitaInputPaciente {
-  id_cita: String
-  motivoConsulta: String
 }
 
 input UsuarioInput {

@@ -4,6 +4,8 @@ import { CitaInput, CitaWhereInput } from './cita.input';
 import { CitaService } from './cita.service';
 import { EnfermedadInput } from 'src/enfermedad/enfermedad.input';
 import { MedicamentoInput } from 'src/medicamentos/medicamento.input';
+import { PacienteInput } from 'src/paciente/paciente.input';
+import { EstudioInput } from 'src/estudios/estudio.input';
 
 @Resolver(() => Cita)
 export class CitaResolver {
@@ -26,8 +28,10 @@ export class CitaResolver {
   @Mutation(() => String)
   async createCita(
     @Args({ name: 'data', type: () => CitaInput }) data: CitaInput,
+    @Args('paciente', { type: () => PacienteInput })
+    paciente: PacienteInput,
   ): Promise<string> {
-    return this.citaService.createCita(data);
+    return this.citaService.createCita(data,paciente);
   }
 
   @Mutation(() => String)
@@ -52,5 +56,16 @@ export class CitaResolver {
     medicamentos: MedicamentoInput[],
   ): Promise<string> {
     return this.citaService.createCitaMedicametos(citaId, medicamentos,);
+
   }
+  @Mutation(() => String)
+  async createCitaEstudio(
+    @Args('citaId') citaId: string,
+    @Args('estudios', { type: () => [EstudioInput] })
+    estudios: EstudioInput[],
+  ): Promise<string> {
+    return this.citaService.createCitaEstudios(citaId, estudios,);
+
+  }  
+
 }

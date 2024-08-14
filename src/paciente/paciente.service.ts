@@ -3,15 +3,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Paciente, PacientesResultadoBusqueda } from './paciente.dto';
 
 import { Prisma } from '@prisma/client';
-import { CitaInput } from '../citas/cita.input';
-import { EnfermedadInput } from '../enfermedad/enfermedad.input';
 import {
-  CitaInputPaciente,
   PacienteInput,
   PacienteWhereInput,
 } from './paciente.input';
 import { getPacientes } from 'src/mongo/pacientes/getPacientes';
-import { getPacienteById } from 'src/mongo/pacientes/getPaciente';
+import { getPacienteById } from 'src/mongo/pacientes/getPacienteById';
 @Injectable()
 export class PacienteService {
   constructor(private prisma: PrismaService) {}
@@ -84,38 +81,6 @@ export class PacienteService {
       console.error('Error al crear paciente', error);
       this.logger.error(error);
       throw new Error('Error al crear paciente');
-    }
-  }
-  async createPacienteCitas(
-    pacienteId: string,
-    cita: CitaInputPaciente,
-  ): Promise<string> {
-    this.logger.log({ action: 'CreatePacienteCitas' });
-    try {
-      const existingPaciente = await this.prisma.client.paciente.findUnique({
-        where: {
-          id_paciente: pacienteId,
-        },
-      });
-      if (!existingPaciente) {
-        throw new Error(`No se encontró el paciente con ID ${pacienteId}`);
-      }
-      await this.prisma.client.paciente.update({
-        where: { id_paciente: existingPaciente.id_paciente },
-        data: {
-          cita: {
-            set: {
-              id_paciente: pacienteId,
-              motivoConsulta: cita.motivoConsulta,
-              id_cita: cita.id_cita,
-            },
-          },
-        },
-      });
-      return 'Citas agregadas al paciente exitosamente';
-    } catch (error) {
-      console.error('Error al agregar citas al paciente:', error);
-      throw new Error('No se pudieron agregar las citas al paciente');
     }
   }
   async updatePaciente(

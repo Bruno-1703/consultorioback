@@ -7,7 +7,7 @@ export class EstudioInput {
   @Field(() => Date)
   fecha_realizacion: Date;
   @Field(() => String)
-  tipo_estudio!: string;
+  tipo_estudio: string;
   @Field(() => String, { nullable: true })
   resultado?: string;
   @Field(() => String)

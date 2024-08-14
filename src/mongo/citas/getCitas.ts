@@ -2,6 +2,7 @@ import { Logger } from "@nestjs/common";
 import { Db } from "mongodb";
 import { CitaEdge, CitaResultadoBusqueda } from "src/citas/cita.dto";
 import { CitaWhereInput } from "src/citas/cita.input";
+import { Enfermedad } from "src/enfermedad/enfermedad.dto";
 
 export async function getCitas(
   mongoConnection: Db,
@@ -14,20 +15,26 @@ export async function getCitas(
     logger.log({ action: "getCitas" });
 
     const buscar = where ? where.buscar : null;
+    const fechaSolicitud = where ? where.fechaSolicitud : null;
 
     const query: any[] = [];
     if (buscar) {
       const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
       query.push({
          "motivoConsulta": regexBuscar }, 
-         {"observaciones": regexBuscar });
+         {
+          "observaciones": regexBuscar
+         });
     }
 
+    // Construir la consulta MongoDB
+    const matchStage = query.length > 0 ? { $and: query } : {};
+
     const consulta = mongoConnection
-      .collection("cita")
+      .collection("Cita")
       .aggregate(
         [
-          { $match: { $and: query } },
+          { $match: matchStage },
           { $sort: { fechaSolicitud: -1 } },
           { $skip: skip ? skip : 0 },
           { $limit: take ? take : 0 },       
@@ -36,8 +43,8 @@ export async function getCitas(
       );
 
     const cantidad = await mongoConnection
-      .collection("cita")
-      .countDocuments({ $and: query });
+      .collection("Cita")
+      .countDocuments(matchStage);
 
     const citas = await consulta.toArray();
     const edges: CitaEdge[] = citas.map((cita: any) => ({
