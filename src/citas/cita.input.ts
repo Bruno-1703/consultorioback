@@ -10,9 +10,6 @@ export class CitaInput {
   motivoConsulta?: string;
   @Field(() => String, { nullable: true })
   observaciones?: string;
-
-
-
 }
 @InputType()
 export class CitaWhereInput {

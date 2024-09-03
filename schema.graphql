@@ -35,13 +35,13 @@ type EstudioResultadoBusqueda {
 type Medicamento {
   id_medicamento: String
   nombre_med: String
-  marca: String!
-  fecha_vencimiento: DateTime!
-  dosis_hs: String!
-  agente_principal: String!
-  efectos_secundarios: String!
+  marca: String
+  fecha_vencimiento: DateTime
+  dosis_hs: String
+  agente_principal: String
+  efectos_secundarios: String
   lista_negra: Boolean
-  categoria: String!
+  categoria: String
   contraindicaciones: String
   prescripcion_requerida: Boolean
 }
@@ -73,39 +73,17 @@ type EnfermedadResultadoBusqueda {
   aggregate: AggregateCount!
 }
 
-type Cita {
-  id_cita: String
-  pacienteId: String
-  motivoConsulta: String!
-  fechaSolicitud: DateTime!
-  observaciones: String
-  cancelada: Boolean
-  medicamentos: [Medicamento!]
-  estudios: [Estudio!]
-  enfermedades: [Enfermedad!]
-}
-
-type CitaEdge {
-  node: Cita!
-  cursor: String!
-}
-
-type CitaResultadoBusqueda {
-  edges: [CitaEdge!]!
-  aggregate: AggregateCount!
-}
-
 type Paciente {
   id_paciente: String!
   dni: String!
   nombre_paciente: String
-  apellido_paciente: String!
-  edad: Int!
+  apellido_paciente: String
+  edad: Int
   altura: Int
-  telefono: String!
-  fecha_nacimiento: DateTime!
-  sexo: String!
-  grupo_sanguineo: String!
+  telefono: String
+  fecha_nacimiento: DateTime
+  sexo: String
+  grupo_sanguineo: String
   alergias: String
 }
 
@@ -116,6 +94,29 @@ type PacienteEdge {
 
 type PacientesResultadoBusqueda {
   edges: [PacienteEdge!]!
+  aggregate: AggregateCount!
+}
+
+type Cita {
+  id_cita: String
+  pacienteId: String
+  motivoConsulta: String!
+  fechaSolicitud: DateTime!
+  observaciones: String
+  cancelada: Boolean
+  medicamentos: [Medicamento!]
+  estudios: [Estudio!]
+  enfermedades: [Enfermedad!]
+  paciente: Paciente
+}
+
+type CitaEdge {
+  node: Cita!
+  cursor: String!
+}
+
+type CitaResultadoBusqueda {
+  edges: [CitaEdge!]!
   aggregate: AggregateCount!
 }
 
@@ -141,7 +142,7 @@ type Query {
   getMedicamento(id: String!): Medicamento
   getMedicamentos(where: MedicamentoWhereInput, skip: Int, limit: Int): MedicamentoResultadoBusqueda!
   getPaciente(id: String!): Paciente
-  getPacientes(where: PacienteWhereInput, skip: Int, take: Int): PacientesResultadoBusqueda!
+  getPacientes(skip: Int, take: Int, where: PacienteWhereInput): PacientesResultadoBusqueda!
   buscarPacientesPorNombreODNI(nombre: String!, dni: String!): [Paciente!]!
   getEnfermedad(id: String!): Enfermedad
   getEnfermedades(where: EnfermedadWhereInput, skip: Int, limit: Int): EnfermedadResultadoBusqueda!
@@ -239,15 +240,6 @@ input PacienteWhereInput {
   sexo: String
   grupo_sanguineo: String
   alergias: String
-  cita: [CitaInput!]
-  estudios: EstudioInput
-  medicamentos: [MedicamentoInput!]
-  enfermedades: [EnfermedadInput!]
-}
-
-input CitaInput {
-  motivoConsulta: String
-  observaciones: String
 }
 
 input EnfermedadWhereInput {
@@ -274,6 +266,11 @@ type Mutation {
   createUsuario(data: UsuarioInput!): String!
   updateUsuario(data: UsuarioInput!, usuarioId: String!): String!
   deleteUsuario(id: String!): String!
+}
+
+input CitaInput {
+  motivoConsulta: String
+  observaciones: String
 }
 
 input UsuarioInput {

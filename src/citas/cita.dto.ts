@@ -24,7 +24,11 @@ export class Cita {
   estudios?: Estudio[];
   @Field(() => [Enfermedad], { nullable: true })
   enfermedades?: Enfermedad[]; 
+  @Field(() => Paciente, { nullable: true })
+  paciente?: Paciente; 
 }
+//FIX: LUCAS ACA DEBERIAN SER REQUERIDO TODO
+
 @ObjectType()
 export class CitaEdge {
   @Field(() => Cita)

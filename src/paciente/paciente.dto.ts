@@ -9,28 +9,27 @@ export class Paciente {
   @Field(() => String)
   dni!: string;
   @Field(() => String, { nullable: true })
-  nombre_paciente!: string;
-  @Field(() => String)
-  apellido_paciente!: string;
-  @Field(() => Int)
-  edad!: number;
+  nombre_paciente: string;
+  @Field(() => String,  { nullable: true })
+  apellido_paciente: string;
+  @Field(() => Int,  { nullable: true })
+  edad?: number;
   @Field(() => Int, { nullable: true })
   altura?: number;
-  @Field(() => String)
+  @Field(() => String,  { nullable: true })
   telefono: string;
-  @Field(() => Date)
-  fecha_nacimiento!: Date;
-  @Field(() => String)
-  sexo!: string;
-  @Field(() => String)
-  grupo_sanguineo!: string;
+  @Field(() => Date,  { nullable: true })
+  fecha_nacimiento: Date;
+  @Field(() => String,  { nullable: true })
+  sexo: string;
+  @Field(() => String,  { nullable: true })
+  grupo_sanguineo: string;
   @Field(() => String, { nullable: true })
   alergias?: string;
 
 }
 @ObjectType()
 export class PacienteEdge {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   @Field((_) => Paciente)
   node!: Paciente;
   @Field()

@@ -33,22 +33,19 @@ export class PacienteService {
     }
   }
   async getPacientes(
-    where?: PacienteWhereInput | undefined,
     skip?: number,
     take?: number,
+    where?: PacienteWhereInput ,
+
   ): Promise<PacientesResultadoBusqueda | null> {
     try {
       this.logger.debug('Buscando pacientes con criterios:', where);
-
       const pacientes = await getPacientes(
         this.prisma.mongodb,
         skip,
         take,
         where,
       );
-
-      this.logger.debug('Pacientes encontrados:', pacientes);
-
       return pacientes;
     } catch (error) {
       console.error('Error al buscar pacientes', error);

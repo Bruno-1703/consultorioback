@@ -2,8 +2,7 @@ import { Logger } from "@nestjs/common";
 import { Db } from "mongodb";
 import { CitaEdge, CitaResultadoBusqueda } from "src/citas/cita.dto";
 import { CitaWhereInput } from "src/citas/cita.input";
-import { Enfermedad } from "src/enfermedad/enfermedad.dto";
-
+ 
 export async function getCitas(
   mongoConnection: Db,
   take: number,
@@ -20,13 +19,12 @@ export async function getCitas(
     const query: any[] = [];
     if (buscar) {
       const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
-      query.push({
-         "motivoConsulta": regexBuscar }, 
+      query.push(
+        {"motivoConsulta": regexBuscar }, 
          {
           "observaciones": regexBuscar
          });
     }
-
     // Construir la consulta MongoDB
     const matchStage = query.length > 0 ? { $and: query } : {};
 

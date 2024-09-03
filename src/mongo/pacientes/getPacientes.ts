@@ -14,46 +14,43 @@ export async function getPacientes(
 ): Promise<PacientesResultadoBusqueda | null> {
   const logger = new Logger();
   try {
-    logger.log({ action: 'getPacientes' });
+    logger.log('Iniciando búsqueda de pacientes');
 
-    const buscar = where ? where.nombre_paciente : null;
-    const dni = where ? where.dni : null;
+    const buscar = where?.nombre_paciente || '';
+    const dni = where?.dni || '';
 
     const query: any[] = [];
-    if (buscar) {
-      const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
-      query.push({
-        $or: [
-          { dni: regexBuscar },
-          { nombre_paciente: regexBuscar },
-          { apellido_paciente: regexBuscar },
+    // if (dni) {
+    //   query.push({ dni: dni });
+    // }
+    // if (buscar) {
+    //   const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
+    //   query.push({ nombre_paciente: regexBuscar });
+    //   query.push({ apellido_paciente: regexBuscar });
+    // }
+    const matchStage = query.length > 0 ? { $and: query } : {};
+
+    const consulta = mongoConnection
+      .collection("Paciente")
+      .aggregate(
+        [
+          { $match: matchStage },
+          { $skip: skip >= 0  },
+          { $limit: take >= 0  },
         ],
-      });
-    }
-    const consulta = mongoConnection.collection('Paciente').aggregate(
-      [
-        { $match: { $and: query } },
-        { $sort: { dni: -1 } },
-        { $skip: skip ? skip : 0 },
-        { $limit: take ? take : 0 },
-        // { $project: { mensajes: 0 } }
-        // Proyección de los valores que solo necesitas
-      ],
-      { allowDiskUse: true },
-    );
+        { allowDiskUse: true },
+      );
 
+    // Contar los documentos que coinciden con el matchStage
     const cantidad = await mongoConnection
-      .collection('Paciente')
-      .countDocuments({ $and: query });
-
+      .collection("Paciente")
+      .countDocuments(matchStage);
+      console.log(consulta)
     const pacientes = await consulta.toArray();
     const edges: PacienteEdge[] = pacientes.map((paciente: any) => ({
-      node: Object.assign({}, paciente, {
-        id: paciente._id,
-      }),
+      node: Object.assign({}, paciente, { id: paciente._id }),
       cursor: paciente._id,
     }));
-
     return {
       aggregate: {
         count: cantidad,
@@ -61,8 +58,8 @@ export async function getPacientes(
       edges,
     };
   } catch (error) {
-    logger.error(error);
-    throw new Error('Error al buscar el dato estático del paciente');
+    logger.error('Error al buscar pacientes: ', error);
+    throw new Error('Error al realizar la búsqueda de pacientes.');
   }
 }
 

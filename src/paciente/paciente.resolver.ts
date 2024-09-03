@@ -14,15 +14,15 @@ export class PacienteResolver {
   }
   @Query(() => PacientesResultadoBusqueda)
   async getPacientes(
-    @Args({ name: 'where', type: () => PacienteWhereInput, nullable: true })
-    where?: PacienteWhereInput,
+   
     @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
     @Args({ name: 'take', type: () => Int, nullable: true }) take?: number,
+    @Args({ name: 'where', type: () => PacienteWhereInput, nullable: true })
+    where?: PacienteWhereInput
   ): Promise<PacientesResultadoBusqueda | null> {
-    return this.pacienteService.getPacientes(where, skip, take);
+    return this.pacienteService.getPacientes(skip, take,where);
   }
   
-  // @Auth(Role.USER)
   @Mutation(() => String)
   async createPaciente(
     @Args({ name: 'data', type: () => PacienteInput }) data: PacienteInput,

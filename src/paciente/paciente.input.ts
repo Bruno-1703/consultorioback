@@ -1,8 +1,5 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { CitaInput } from 'src/citas/cita.input';
-import { EstudioInput } from 'src/estudios/estudio.input';
-import { MedicamentoInput } from 'src/medicamentos/medicamento.input';
-import { EnfermedadInput } from 'src/enfermedad/enfermedad.input';
+
 
 @InputType()
 export class PacienteInput {
@@ -53,12 +50,5 @@ export class PacienteWhereInput {
   @Field(() => String, { nullable: true })
   alergias?: string;
 
-  @Field(() => [CitaInput], { nullable: true })
-  cita?: CitaInput[];
-  @Field(() => EstudioInput, { nullable: true })
-  estudios?: EstudioInput;
-  @Field(() => [MedicamentoInput], { nullable: true })
-  medicamentos?: [MedicamentoInput];
-  @Field(() => [EnfermedadInput], { nullable: true })
-  enfermedades?: [EnfermedadInput];
+
 }
