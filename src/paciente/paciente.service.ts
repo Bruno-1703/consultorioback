@@ -3,10 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Paciente, PacientesResultadoBusqueda } from './paciente.dto';
 
 import { Prisma } from '@prisma/client';
-import {
-  PacienteInput,
-  PacienteWhereInput,
-} from './paciente.input';
+import { PacienteInput, PacienteWhereInput } from './paciente.input';
 import { getPacientes } from 'src/mongo/pacientes/getPacientes';
 import { getPacienteById } from 'src/mongo/pacientes/getPacienteById';
 @Injectable()
@@ -35,8 +32,7 @@ export class PacienteService {
   async getPacientes(
     skip?: number,
     take?: number,
-    where?: PacienteWhereInput ,
-
+    where?: PacienteWhereInput,
   ): Promise<PacientesResultadoBusqueda | null> {
     try {
       this.logger.debug('Buscando pacientes con criterios:', where);

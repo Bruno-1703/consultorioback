@@ -15,40 +15,37 @@ export async function getPacientes(
   const logger = new Logger();
   try {
     logger.log('Iniciando búsqueda de pacientes');
+    const query: any = [{}];
 
     const buscar = where?.nombre_paciente || '';
     const dni = where?.dni || '';
 
-    const query: any[] = [];
-    // if (dni) {
-    //   query.push({ dni: dni });
-    // }
-    // if (buscar) {
-    //   const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
-    //   query.push({ nombre_paciente: regexBuscar });
-    //   query.push({ apellido_paciente: regexBuscar });
-    // }
-    const matchStage = query.length > 0 ? { $and: query } : {};
-
+    if (dni) {
+      query.push({ dni: dni });
+    }
+    if (buscar) {
+      const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
+      query.push({ nombre_paciente: regexBuscar });
+      query.push({ apellido_paciente: regexBuscar });
+    }
     const consulta = mongoConnection
-      .collection("Paciente")
-      .aggregate(
-        [
-          { $match: matchStage },
-          { $skip: skip >= 0  },
-          { $limit: take >= 0  },
-        ],
-        { allowDiskUse: true },
-      );
+      .collection('Paciente')
+      .aggregate([
+        { $match: { $and: query } },
+        { $sort: { dni: -1 } },
+        { $skip: 0 },
+        { $limit: 10 },
+      ]);
 
     // Contar los documentos que coinciden con el matchStage
-    const cantidad = await mongoConnection
-      .collection("Paciente")
-      .countDocuments(matchStage);
-      console.log(consulta)
+    const consultaCantidad = await mongoConnection
+      .collection('Paciente')
+      .aggregate([{ $match: { $and: query } }, { $count: 'cantidad' }])
+      .toArray();
+    const cantidad = consultaCantidad[0]?.['cantidad'] || 0;
     const pacientes = await consulta.toArray();
     const edges: PacienteEdge[] = pacientes.map((paciente: any) => ({
-      node: Object.assign({}, paciente, { id: paciente._id }),
+      node: Object.assign({}, paciente, { id_paciente: paciente._id }),
       cursor: paciente._id,
     }));
     return {
