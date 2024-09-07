@@ -1,9 +1,9 @@
 ﻿import { Injectable, Logger } from '@nestjs/common';
-//import { PrismaService } from "../prisma/prisma.service";
-//import { ObjectId } from "mongodb";
 import { Medicamento, MedicamentoResultadoBusqueda } from './medicamento.dto';
 import { MedicamentoInput, MedicamentoWhereInput } from './medicamento.input';
 import { PrismaService } from '../prisma/prisma.service';
+import { getMedicamentos } from 'src/mongo/medicamentos/getMedicamentos';
+import { getMedicamentoById } from 'src/mongo/medicamentos/getMedicamentoById';
 
 @Injectable()
 export class MedicamentosService {
@@ -14,9 +14,12 @@ export class MedicamentosService {
     try {
       this.logger.debug(`Recuperando medicamento con ID ${id}`);
 
-      const medicamento = await this.prisma.client.medicamento.findUnique({
-        where: { id_medicamento: id },
-      });
+      const medicamento = await getMedicamentoById(
+        this.prisma.mongodb, id
+      );
+      if (!medicamento) {
+        throw new Error(`No se encontró el medicamento con ID ${id}`);
+      }
 
       this.logger.debug('Medicamento encontrado:', medicamento);
       return medicamento;
@@ -32,25 +35,9 @@ export class MedicamentosService {
     limit?: number,
   ): Promise<MedicamentoResultadoBusqueda | null> {
     try {
-      const medicamentos = await this.prisma.client.medicamento.findMany({
-        where,
-        skip,
-        take: limit,
-      });
-
-      const totalMedicamentos = await this.prisma.client.medicamento.count({
-        where,
-      });
-
-      const resultadoBusqueda: MedicamentoResultadoBusqueda = {
-        edges: medicamentos.map((medicamento) => ({
-          node: medicamento,
-          cursor: '',
-        })), // Aquí debes proporcionar los valores adecuados para 'cursor'
-        aggregate: { count: totalMedicamentos },
-      };
-
-      return resultadoBusqueda;
+      const medicamentos = await getMedicamentos(this.prisma.mongodb, skip, limit, where
+      );
+      return medicamentos;
     } catch (error) {
       console.error('Error al buscar medicamentos', error);
       this.logger.error(error);

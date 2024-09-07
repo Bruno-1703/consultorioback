@@ -4,10 +4,10 @@
 
 type Estudio {
   id_estudio: String!
-  fecha_realizacion: DateTime!
-  tipo_estudio: String!
+  fecha_realizacion: DateTime
+  tipo_estudio: String
   resultado: String
-  codigo_referencia: String!
+  codigo_referencia: String
   observaciones: String
   medico_solicitante: String!
   urgente: Boolean
@@ -74,8 +74,8 @@ type EnfermedadResultadoBusqueda {
 }
 
 type Paciente {
-  id_paciente: String!
-  dni: String!
+  id_paciente: String
+  dni: String
   nombre_paciente: String
   apellido_paciente: String
   edad: Int
@@ -164,12 +164,12 @@ input CitaWhereInput {
 
 input EstudioInput {
   id_estudio: String
-  fecha_realizacion: DateTime!
-  tipo_estudio: String!
+  fecha_realizacion: DateTime
+  tipo_estudio: String
   resultado: String
-  codigo_referencia: String!
+  codigo_referencia: String
   observaciones: String
-  medico_solicitante: String!
+  medico_solicitante: String
   urgente: Boolean
 }
 
@@ -210,13 +210,14 @@ input PacienteInput {
 
 input EstudioWhereInput {
   id_estudio: String
-  fecha_realizacion: DateTime!
-  tipo_estudio: String!
+  fecha_realizacion: DateTime
+  tipo_estudio: String
   resultado: String
-  codigo_referencia: String!
+  codigo_referencia: String
 }
 
 input MedicamentoWhereInput {
+  id_medicamento: String
   nombre_med: String
   marca: String
   fecha_vencimiento: DateTime

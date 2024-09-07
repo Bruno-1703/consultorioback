@@ -4,10 +4,10 @@ import { AggregateCount, Estudio } from '../estudios/estudio.dto';
 
 @ObjectType()
 export class Paciente {
-  @Field(() => String)
+  @Field(() => String,{ nullable: true })
   id_paciente?: string;
-  @Field(() => String)
-  dni!: string;
+  @Field(() => String,{ nullable: true })
+  dni: string;
   @Field(() => String, { nullable: true })
   nombre_paciente: string;
   @Field(() => String,  { nullable: true })

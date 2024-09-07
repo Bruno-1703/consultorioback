@@ -19,7 +19,7 @@ export async function getPacientes(
 
     const buscar = where?.nombre_paciente || '';
     const dni = where?.dni || '';
-
+    console.log(dni)
     if (dni) {
       query.push({ dni: dni });
     }
@@ -33,8 +33,8 @@ export async function getPacientes(
       .aggregate([
         { $match: { $and: query } },
         { $sort: { dni: -1 } },
-        { $skip: 0 },
-        { $limit: 10 },
+        { $skip: skip ? skip : 0 },
+        { $limit: take ? take : 0 },      
       ]);
 
     // Contar los documentos que coinciden con el matchStage

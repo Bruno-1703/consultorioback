@@ -4,13 +4,13 @@ import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
 export class Estudio {
   @Field(() => String)
   id_estudio: string;
-  @Field(() => Date)
+  @Field(() => Date , { nullable: true })
   fecha_realizacion?: Date;
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   tipo_estudio?: string;
   @Field(() => String, { nullable: true })
   resultado?: string;
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   codigo_referencia?: string;
   @Field(() => String, { nullable: true })
   observaciones?: string;

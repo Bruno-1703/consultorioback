@@ -15,8 +15,11 @@ export async function getCitas(
 
     const buscar = where ? where.buscar : null;
     const fechaSolicitud = where ? where.fechaSolicitud : null;
-
+    console.log(fechaSolicitud)
     const query: any[] = [];
+    if(fechaSolicitud){
+      query.push({fechaSolicitud:fechaSolicitud})
+    }
     if (buscar) {
       const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
       query.push(

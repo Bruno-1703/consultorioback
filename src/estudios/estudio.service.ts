@@ -5,6 +5,8 @@ import { Prisma } from '@prisma/client';
 import { Estudio, EstudioResultadoBusqueda } from './estudio.dto';
 import { EstudioInput, EstudioWhereInput } from './estudio.input';
 import { PrismaService } from '../prisma/prisma.service';
+import { getEstudios } from 'src/mongo/estudios/getEstudios';
+import { getEstudioById } from 'src/mongo/estudios/getEstudiosById';
 
 @Injectable()
 export class EstudioService {
@@ -13,10 +15,11 @@ export class EstudioService {
 
   async getEstudio(id: string): Promise<Estudio | null> {
     try {
-      const estudio = await this.prisma.client.estudio.findUnique({
-        where: { id_estudio: id },
-      });
+      const estudio = await getEstudioById(this.prisma.mongodb, id );
 
+      if (!estudio) {
+        throw new Error(`No se encontró el estudio con ID ${id}`);
+      }
       return estudio;
     } catch (error) {
       console.error('Error al obtener el estudio', error);
@@ -30,20 +33,11 @@ export class EstudioService {
     limit?: number,
   ): Promise<EstudioResultadoBusqueda | null> {
     try {
-      const estudios = await this.prisma.client.estudio.findMany({
-        where,
-        skip,
-        take: limit,
-      });
+      const medicamentos = await getEstudios(
+        this.prisma.mongodb, skip, limit, where
+      );   
 
-      const totalEstudios = await this.prisma.client.estudio.count({ where });
-
-      const resultadoBusqueda: EstudioResultadoBusqueda = {
-        edges: estudios.map((estudio) => ({ node: estudio, cursor: '' })),
-        aggregate: { count: totalEstudios },
-      };
-
-      return resultadoBusqueda;
+      return medicamentos;
     } catch (error) {
       console.error('Error al buscar estudios', error);
       this.logger.error(error);

@@ -1,57 +1,56 @@
 import { Logger } from '@nestjs/common';
 import { Db } from 'mongodb';
+import { MedicamentoEdge, MedicamentoResultadoBusqueda } from 'src/medicamentos/medicamento.dto';
 import { MedicamentoWhereInput } from 'src/medicamentos/medicamento.input';
-import {
-  PacienteEdge,
-  PacientesResultadoBusqueda,
-} from 'src/paciente/paciente.dto';
 
-export async function getMedicamento(
+export async function getMedicamentos(
   mongoConnection: Db,
   take: number,
   skip: number,
   where: MedicamentoWhereInput,
-): Promise<PacientesResultadoBusqueda | null> {
+): Promise<MedicamentoResultadoBusqueda | null> {
   const logger = new Logger();
   try {
-    logger.log({ action: 'getPacientes' });
+    logger.log({ action: 'getMedicamentos' });
+    const query: any = [{}];
 
     const buscar = where ? where.nombre_med : null;
 
-    const query: any[] = [];
     if (buscar) {
       const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
       query.push({
         $or: [
-          { dni: regexBuscar },
-          { nombre_paciente: regexBuscar },
-          { apellido_paciente: regexBuscar },
+          { nombre_med: regexBuscar },
+          { marca: regexBuscar },
         ],
       });
     }
-    const consulta = mongoConnection.collection('medicamento').aggregate(
+    const consulta = mongoConnection.collection('Medicamento').aggregate(
       [
         { $match: { $and: query } },
-        { $sort: { dni: -1 } },
-        { $skip: skip ? skip : 0 },
-        { $limit: take ? take : 0 },
-        // { $project: { mensajes: 0 } }
-        // Proyección de los valores que solo necesitas
+        // { $sort: { nombre_med: -1 } },
+         { $skip: skip ? skip : 0 },
+         { $limit: take ? take : 0 },
+ 
       ],
       { allowDiskUse: true },
     );
 
-    const cantidad = await mongoConnection
-      .collection('medicamento')
-      .countDocuments({ $and: query });
+    const consultaCantidad = await mongoConnection
+      .collection('Medicamento')
+      .aggregate([{ $match: { $and: query } }, { $count: 'cantidad' }])
+      .toArray();
 
-    const pacientes = await consulta.toArray();
-    const edges: PacienteEdge[] = pacientes.map((paciente: any) => ({
-      node: Object.assign({}, paciente, {
-        id: paciente._id,
-      }),
-      cursor: paciente._id,
-    }));
+      const cantidad = consultaCantidad[0]?.['cantidad'] || 0;
+      const medicamentos = await consulta.toArray();
+
+      const edges: MedicamentoEdge[] = medicamentos.map((medicamento: any) => ({
+        node: Object.assign({}, medicamento, {
+          id_medicamento: medicamento._id,
+        }),
+        cursor: medicamento._id,
+      }));
+      
 
     return {
       aggregate: {
@@ -61,7 +60,7 @@ export async function getMedicamento(
     };
   } catch (error) {
     logger.error(error);
-    throw new Error('Error al buscar el dato estático del paciente');
+    throw new Error('Error al buscar el dato estático del medicamento');
   }
 }
 

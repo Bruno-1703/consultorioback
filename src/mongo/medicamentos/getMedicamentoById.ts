@@ -1,11 +1,11 @@
 import { Logger } from '@nestjs/common';
 import { Db, ObjectId } from 'mongodb';
-import { Paciente } from 'src/paciente/paciente.dto';
+import { Medicamento } from 'src/medicamentos/medicamento.dto';
 
 export async function getMedicamentoById(
   mongoConnection: Db,
   medicamentoId: string,
-): Promise<Paciente | null> {
+): Promise<Medicamento | null> {
   const logger = new Logger();
   try {
     logger.debug({
@@ -19,8 +19,8 @@ export async function getMedicamentoById(
       _id: new ObjectId(medicamentoId),
     });
     if (medicamentoQuery) {
-      const paciente: any = { ...medicamentoQuery, id: medicamentoQuery._id };
-      return paciente as Paciente;
+      const medicamento: any = { ...medicamentoQuery, id: medicamentoQuery._id };
+      return medicamento as Medicamento;
     }
     return null;
   } catch (error) {
