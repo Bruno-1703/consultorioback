@@ -10,6 +10,8 @@ export class CitaInput {
   motivoConsulta?: string;
   @Field(() => String, { nullable: true })
   observaciones?: string;
+  @Field(() =>PacienteInput , { nullable: true })
+  paciente?: PacienteInput;
 }
 @InputType()
 export class CitaWhereInput {
@@ -24,7 +26,7 @@ export class CitaWhereInput {
   @Field(() => Boolean, { nullable: true })
   cancelada?: boolean;
   @Field(() => String, { nullable: true })
-  buscar?: string | undefined;
+  buscar?: string ;
 
   @Field(() => [EstudioInput], { nullable: true })
   estudios?: EstudioInput;

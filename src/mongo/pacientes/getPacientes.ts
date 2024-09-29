@@ -8,7 +8,7 @@ import { PacienteWhereInput } from 'src/paciente/paciente.input';
 
 export async function getPacientes(
   mongoConnection: Db,
-  take: number,
+  limit: number,
   skip: number,
   where: PacienteWhereInput,
 ): Promise<PacientesResultadoBusqueda | null> {
@@ -31,10 +31,10 @@ export async function getPacientes(
     const consulta = mongoConnection
       .collection('Paciente')
       .aggregate([
-        { $match: { $and: query } },
+        { $match: query.lenthg > 0?  { $and: query } : {} },
         { $sort: { dni: -1 } },
         { $skip: skip ? skip : 0 },
-        { $limit: take ? take : 0 },      
+        { $limit: limit ? limit : 10 },      
       ]);
 
     // Contar los documentos que coinciden con el matchStage
@@ -45,7 +45,7 @@ export async function getPacientes(
     const cantidad = consultaCantidad[0]?.['cantidad'] || 0;
     const pacientes = await consulta.toArray();
     const edges: PacienteEdge[] = pacientes.map((paciente: any) => ({
-      node: Object.assign({}, paciente, { id_paciente: paciente._id }),
+      node: Object.assign({}, paciente, { id: paciente._id }),
       cursor: paciente._id,
     }));
     return {

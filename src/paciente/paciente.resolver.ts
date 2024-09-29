@@ -16,11 +16,11 @@ export class PacienteResolver {
   async getPacientes(
    
     @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
-    @Args({ name: 'take', type: () => Int, nullable: true }) take?: number,
+    @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
     @Args({ name: 'where', type: () => PacienteWhereInput, nullable: true })
     where?: PacienteWhereInput
   ): Promise<PacientesResultadoBusqueda | null> {
-    return this.pacienteService.getPacientes(skip, take,where);
+    return this.pacienteService.getPacientes(skip, limit,where);
   }
   
   @Mutation(() => String)

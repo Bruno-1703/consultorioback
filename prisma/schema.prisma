@@ -58,7 +58,7 @@ model Estudio {
 model Medicamento {
   id_medicamento         String    @id @default(auto()) @map("_id") @db.ObjectId
   nombre_med             String?
-  marca                  String
+  marca                  String?
   fecha_vencimiento      DateTime?
   dosis_hs               String?
   agente_principal       String?

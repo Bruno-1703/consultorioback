@@ -40,7 +40,7 @@ export class MedicamentoWhereInput {
   @Field(() => String, { nullable: true })
   agente_principal?: string;
   @Field(() => String, { nullable: true })
-  efectos_secundarios: string;
+  efectos_secundarios?: string;
   @Field(() => Boolean, { nullable: true })
   lista_negra?: boolean | null;
   @Field(() => String, { nullable: true }) 

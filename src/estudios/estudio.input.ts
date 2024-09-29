@@ -21,8 +21,7 @@ export class EstudioInput {
 }
 @InputType()
 export class EstudioWhereInput {
-  @Field(() => String, { nullable: true })
-  id_estudio?: string;
+
   @Field(() => Date, { nullable: true })
   fecha_realizacion?: Date;
   @Field(() => String, { nullable: true })

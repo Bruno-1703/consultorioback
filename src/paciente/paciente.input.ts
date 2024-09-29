@@ -50,5 +50,4 @@ export class PacienteWhereInput {
   @Field(() => String, { nullable: true })
   alergias?: string;
 
-
 }

@@ -5,8 +5,9 @@ import { EstudioWhereInput } from 'src/estudios/estudio.input';
 
 export async function getEstudios(
   mongoConnection: Db,
-  take: number,
   skip: number,
+  limit: number,
+
   where: EstudioWhereInput,
 ): Promise<EstudioResultadoBusqueda | null> {
   const logger = new Logger();
@@ -15,7 +16,6 @@ export async function getEstudios(
     const query: any = [{}];
 
     const buscar = where ? where.codigo_referencia : null;
-
     if (buscar) {
       const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
       query.push({
@@ -26,10 +26,10 @@ export async function getEstudios(
     }
     const consulta = mongoConnection.collection('Estudio').aggregate(
       [
-        { $match: { $and: query } },
-        { $sort: { fecha_realizacion: -1 } },
-        { $skip: skip },
-        { $limit: take},
+        { $match: query.length > 0 ? { $and: query } : {} },
+        //{ $sort: { fecha_realizacion: -1 } },
+        { $skip: skip  },
+        { $limit: limit }, 
       ],
       { allowDiskUse: true },
     );
