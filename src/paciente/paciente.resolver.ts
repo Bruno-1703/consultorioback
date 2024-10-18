@@ -14,7 +14,7 @@ export class PacienteResolver {
   }
   @Query(() => PacientesResultadoBusqueda)
   async getPacientes(
-   
+       
     @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
     @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
     @Args({ name: 'where', type: () => PacienteWhereInput, nullable: true })
@@ -37,11 +37,26 @@ export class PacienteResolver {
     return this.pacienteService.updatePaciente(data, pacienteId);
   }
 
-  @Query(() => [Paciente])
-  async buscarPacientesPorNombreODNI(
-    @Args({ name: 'nombre', type: () => String }) nombre: string,
-    @Args({ name: 'dni', type: () => String }) dni: string,
-  ): Promise<Paciente[]> {
-    return this.pacienteService.buscarPacientesPorNombreO_DNI(nombre, dni);
+  @Mutation(() => String)
+  async ElimiarPacienteLog(
+    @Args({ name: 'pacienteId', type: () => String }) pacienteId: string,
+  ): Promise<string> {
+    return this.pacienteService.ElimiarPacienteLog(pacienteId);
   }
+  
+  @Mutation(() => String)
+  async EliminarPaciente(
+    @Args({ name: 'pacienteId', type: () => String }) pacienteId: string,
+  ): Promise<string> {
+    return this.pacienteService.EliminarPaciente(pacienteId);
+  }  
+
+
+  // @Query(() => [Paciente])
+  // async buscarPacientesPorNombreODNI(
+  //   @Args({ name: 'nombre', type: () => String }) nombre: string,
+  //   @Args({ name: 'dni', type: () => String }) dni: string,
+  // ): Promise<Paciente[]> {
+  //   return this.pacienteService.buscarPacientesPorNombreO_DNI(nombre, dni);
+  // }
 }

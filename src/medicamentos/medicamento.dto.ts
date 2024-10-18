@@ -1,5 +1,5 @@
 import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
-import { AggregateCount } from '../estudios/estudio.dto';
+import { AggregateCount } from 'src/estudios/estudio.dto';
 
 @ObjectType()
 export class Medicamento {
@@ -25,11 +25,13 @@ export class Medicamento {
   contraindicaciones?: string;
   @Field(() => Boolean, { nullable: true })
   prescripcion_requerida?: boolean;
+  @Field(() => Boolean, { nullable: true })
+  eliminadoLog?: Boolean;
 }
 @ObjectType()
 export class MedicamentoEdge {
-  @Field((_) => Medicamento)
-  node!: Medicamento;
+  @Field(() => Medicamento, { nullable: true })
+  node?: Medicamento;
   @Field()
   cursor!: string;
 }
@@ -38,6 +40,6 @@ export class MedicamentoEdge {
 export class MedicamentoResultadoBusqueda {
   @Field(() => MedicamentoEdge)
   edges!: MedicamentoEdge[];
-  @Field(() => AggregateCount)
-  aggregate!: AggregateCount;
+   @Field(() => AggregateCount)
+   aggregate!: AggregateCount;
 }

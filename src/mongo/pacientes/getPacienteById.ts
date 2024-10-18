@@ -12,6 +12,7 @@ export async function getPacienteById(
       action: 'getPacienteById',
       pacienteId,
     });
+
     //  if (!ObjectId.isValid(pacienteId)) {
     //    throw new Error("ID de paciente no válido");
     //  }
@@ -19,7 +20,7 @@ export async function getPacienteById(
       _id: new ObjectId(pacienteId),
     });
     if (pacienteQuery) {
-      const paciente: any = { ...pacienteQuery, id: pacienteQuery._id };
+      const paciente: any = { ...pacienteQuery, id: pacienteQuery._id.toString };
       return paciente as Paciente;
     }
     return null;

@@ -33,11 +33,11 @@ export class EstudioService {
     limit?: number,
   ): Promise<EstudioResultadoBusqueda | null> {
     try {
-      const medicamentos = await getEstudios(
+      const estudios = await getEstudios(
         this.prisma.mongodb, skip, limit, where
       );   
 
-      return medicamentos;
+      return estudios;
     } catch (error) {
       console.error('Error al buscar estudios', error);
       this.logger.error(error);

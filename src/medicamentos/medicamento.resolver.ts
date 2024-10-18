@@ -20,7 +20,7 @@ export class MedicamentoResolver {
     @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
     @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
   ): Promise<MedicamentoResultadoBusqueda> {
-    return this.medicamentoService.getMedicamentos(where, skip, limit);
+    return this.medicamentoService.getMedicamentos( skip, limit,where);
   }
 
   @Mutation(() => String)
@@ -38,5 +38,19 @@ export class MedicamentoResolver {
     @Args({ name: 'medicamentoId', type: () => String }) medicamentoId: string,
   ): Promise<string> {
     return this.medicamentoService.updateMedicamento(data, medicamentoId);
+  }
+  @Mutation(() => String)
+  async deleteMedicamentoLog(
+    @Args({ name: 'id', type: () => String }) id: string,
+  ): Promise<string> {
+    return this.medicamentoService.deleteMedicamentoLog(id);
+  }
+
+  // Mutación para la eliminación definitiva
+  @Mutation(() => String)
+  async deleteMedicamento(
+    @Args({ name: 'id', type: () => String }) id: string,
+  ): Promise<string> {
+    return this.medicamentoService.deleteMedicamento(id);
   }
 }

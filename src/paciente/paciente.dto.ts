@@ -4,7 +4,7 @@ import { AggregateCount, Estudio } from '../estudios/estudio.dto';
 
 @ObjectType()
 export class Paciente {
-  @Field(() => String,{ nullable: true })
+  @Field(() => ID,{ nullable: true })
   id_paciente?: string;
   @Field(() => String,{ nullable: true })
   dni: string;
@@ -26,7 +26,8 @@ export class Paciente {
   grupo_sanguineo: string;
   @Field(() => String, { nullable: true })
   alergias?: string;
-
+ @Field(() => Boolean, { nullable: true })
+  eliminadoLog?: Boolean;
 }
 @ObjectType()
 export class PacienteEdge {

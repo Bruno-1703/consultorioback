@@ -1,10 +1,9 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
+import { InputType, Field, Int, ID } from '@nestjs/graphql';
 
 
 @InputType()
 export class PacienteInput {
-  @Field(() => String, { nullable: true })
-  id_paciente?: string;
+
   @Field(() => String,{ nullable: true })
   dni: string;
   @Field(() => String, { nullable: true })
@@ -26,9 +25,22 @@ export class PacienteInput {
   @Field(() => String,  { nullable: true })
   alergias?: string;
 }
+@InputType()
+export class PacienteCitaInput {
+  @Field(() => ID,{ nullable: true })
+  id_paciente?: string;
+  @Field(() => String,{ nullable: true })
+  dni: string;
+  @Field(() => String, { nullable: true })
+  nombre_paciente?: string;
+  @Field(() => String,  { nullable: true })
+  apellido_paciente?: string;
+}
 
 @InputType()
 export class PacienteWhereInput {
+  @Field(() => String,{ nullable: true } )
+  id_paciente?: string;
   @Field(() => String, { nullable: true })
   dni?: string;
   @Field(() => String, { nullable: true })
@@ -49,5 +61,6 @@ export class PacienteWhereInput {
   grupo_sanguineo?: string;
   @Field(() => String, { nullable: true })
   alergias?: string;
-
+  @Field(() => Boolean, { nullable: true })
+  eliminadoLog?: Boolean;
 }

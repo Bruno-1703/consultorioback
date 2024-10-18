@@ -1,8 +1,8 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field, ID } from '@nestjs/graphql';
 import { EnfermedadInput } from 'src/enfermedad/enfermedad.input';
 import { EstudioInput } from 'src/estudios/estudio.input';
 import { MedicamentoInput } from 'src/medicamentos/medicamento.input';
-import { PacienteInput } from 'src/paciente/paciente.input';
+import { PacienteCitaInput, PacienteInput } from 'src/paciente/paciente.input';
 
 @InputType()
 export class CitaInput {
@@ -10,13 +10,15 @@ export class CitaInput {
   motivoConsulta?: string;
   @Field(() => String, { nullable: true })
   observaciones?: string;
-  @Field(() =>PacienteInput , { nullable: true })
-  paciente?: PacienteInput;
+  @Field(() =>PacienteCitaInput , { nullable: true })
+  paciente?: PacienteCitaInput;
+  @Field(() => Date,{ nullable: true })
+  fechaSolicitud?: Date;
 }
 @InputType()
 export class CitaWhereInput {
-  @Field(() => String, { nullable: true })
-  id?: string;
+  @Field(() => ID, { nullable: true }) 
+  id_cita?: string;
   @Field(() => String, { nullable: true })
   motivoConsulta?: string;
   @Field(() => Date, { nullable: true })
@@ -37,8 +39,8 @@ export class CitaWhereInput {
   @Field(() => [EnfermedadInput], { nullable: true })
   enfermedades?: EnfermedadInput[];
   
-  @Field(() =>PacienteInput , { nullable: true })
-  paciente?: PacienteInput;
+  @Field(() =>PacienteCitaInput , { nullable: true })
+  paciente?: PacienteCitaInput;
 
 }
 

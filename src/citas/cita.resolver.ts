@@ -4,7 +4,7 @@ import { CitaInput, CitaWhereInput } from './cita.input';
 import { CitaService } from './cita.service';
 import { EnfermedadInput } from 'src/enfermedad/enfermedad.input';
 import { MedicamentoInput } from 'src/medicamentos/medicamento.input';
-import { PacienteInput } from 'src/paciente/paciente.input';
+import { PacienteCitaInput } from 'src/paciente/paciente.input';
 import { EstudioInput } from 'src/estudios/estudio.input';
 
 @Resolver(() => Cita)
@@ -17,19 +17,20 @@ export class CitaResolver {
 
   @Query(() => CitaResultadoBusqueda)
   async getCitas(
-    @Args({ name: 'where', type: () => CitaWhereInput, nullable: true })
-    where?: CitaWhereInput,
+    
     @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
     @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
+    @Args({ name: 'where', type: () => CitaWhereInput, nullable: true })
+    where?: CitaWhereInput
   ): Promise<CitaResultadoBusqueda> {
-    return this.citaService.getCitas( skip, limit,where);
+    return this.citaService.getCitas( skip,limit,where);
   }
 
   @Mutation(() => String)
   async createCita(
     @Args({ name: 'data', type: () => CitaInput }) data: CitaInput,
-    @Args('paciente', { type: () => PacienteInput })
-    paciente: PacienteInput,
+    @Args('paciente', { type: () => PacienteCitaInput })
+    paciente: PacienteCitaInput,
   ): Promise<string> {
     return this.citaService.createCita(data,paciente);
   }

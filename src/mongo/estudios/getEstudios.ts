@@ -15,15 +15,15 @@ export async function getEstudios(
     logger.log({ action: 'getEstudios' });
     const query: any = [{}];
 
-    const buscar = where ? where.codigo_referencia : null;
-    if (buscar) {
-      const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
-      query.push({
-        $or: [
-          { codigo_referencia: regexBuscar },
-        ],
-      });
-    }
+    // const buscar = where ? where.codigo_referencia : null;
+    // if (buscar) {
+    //   const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
+    //   query.push({
+    //     $or: [
+    //       { codigo_referencia: regexBuscar },
+    //     ],
+    //   });
+    // }
     const consulta = mongoConnection.collection('Estudio').aggregate(
       [
         { $match: query.length > 0 ? { $and: query } : {} },
@@ -44,9 +44,9 @@ export async function getEstudios(
 
       const edges: EstudioEdge[] = estudios.map((estudio: any) => ({
       node: Object.assign({}, estudio, {
-        id: estudio._id,
+        id: estudio._id.toString(),
       }),
-      cursor: estudio._id,
+      cursor: estudio._id.toString(),
     }));
 
     return {

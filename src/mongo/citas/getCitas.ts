@@ -5,7 +5,7 @@ import { CitaWhereInput } from 'src/citas/cita.input';
 
 export async function getCitas(
   mongoConnection: Db,
-  take: number,
+  limit: number,
   skip: number,
   where: CitaWhereInput,
 ): Promise<CitaResultadoBusqueda | null> {
@@ -13,10 +13,9 @@ export async function getCitas(
   try {
     logger.log({ action: 'getCitas' });
 
-    const buscar = where ? where.buscar : null;
-    const fechaSolicitud = where ? where.fechaSolicitud : null;
-    console.log(fechaSolicitud);
-    const query: any = [{}];
+    // const buscar = where ? where.buscar : null;
+    //  const fechaSolicitud = where ? where.fechaSolicitud : null;
+     const query: any = [{}];
     // if (fechaSolicitud) {
     //   query.push({ fechaSolicitud: fechaSolicitud });
     // }
@@ -29,34 +28,30 @@ export async function getCitas(
     //     },
     //   );
     // }
-    console.log(query)
 
     const consulta = mongoConnection
       .collection('Cita')
       .aggregate(
         [
           { $match: query.length > 0 ? { $and: query } : {} },
-          //{ $sort: { fechaSolicitud: -1 } },
+           { $sort: { fechaSolicitud: -1 } },
           { $skip: skip ? skip : 0 },
-          { $limit: take ? take : 10 },
+          { $limit: limit ? limit : 10 },
         ],
         { allowDiskUse: true },
       );
-
     const consultaCantidad = await mongoConnection
       .collection('Cita')
       .aggregate([{ $match: { $and: query } }, { $count: 'cantidad' }])
       .toArray();
 
     const cantidad = consultaCantidad[0]?.['cantidad'] || 0;
-    const estudios = await consulta.toArray();
-
     const citas = await consulta.toArray();
     const edges: CitaEdge[] = citas.map((cita: any) => ({
       node: Object.assign({}, cita, {
-        id: cita._id,
+        id_cita: cita._id.toString(),
       }),
-      cursor: cita._id,
+      cursor: cita._id.toString(),
     }));
 
     return {

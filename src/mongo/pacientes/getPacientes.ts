@@ -19,19 +19,26 @@ export async function getPacientes(
 
     const buscar = where?.nombre_paciente || '';
     const dni = where?.dni || '';
-    console.log(dni)
-    if (dni) {
-      query.push({ dni: dni });
-    }
-    if (buscar) {
-      const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
-      query.push({ nombre_paciente: regexBuscar });
-      query.push({ apellido_paciente: regexBuscar });
-    }
+
+
+    // if (dni) {
+    //   query.push({ dni: dni });
+    // }
+    // if (buscar) {
+    //   const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
+    //   query.push({
+    //     $or: [
+    //       { nombre_paciente: regexBuscar },
+    //       { apellido_paciente: regexBuscar }
+    //     ]
+    //   });
+    // }
+    
+    //  query.push({ eliminadoLog: false });
     const consulta = mongoConnection
       .collection('Paciente')
       .aggregate([
-        { $match: query.lenthg > 0?  { $and: query } : {} },
+        { $match: query.length > 0 ?  { $and: query } : {} },
         { $sort: { dni: -1 } },
         { $skip: skip ? skip : 0 },
         { $limit: limit ? limit : 10 },      
@@ -45,9 +52,10 @@ export async function getPacientes(
     const cantidad = consultaCantidad[0]?.['cantidad'] || 0;
     const pacientes = await consulta.toArray();
     const edges: PacienteEdge[] = pacientes.map((paciente: any) => ({
-      node: Object.assign({}, paciente, { id: paciente._id }),
-      cursor: paciente._id,
+      node: Object.assign({}, paciente, { id_paciente: paciente._id.toString() }), // Asigna _id a id_paciente
+      cursor: paciente._id.toString(), // Convierte ObjectId a string si es necesario
     }));
+    
     return {
       aggregate: {
         count: cantidad,

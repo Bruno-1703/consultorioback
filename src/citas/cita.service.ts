@@ -7,7 +7,7 @@ import { EnfermedadInput } from 'src/enfermedad/enfermedad.input';
 import { MedicamentoInput } from 'src/medicamentos/medicamento.input';
 import { getCitaById } from 'src/mongo/citas/getCitaById';
 import { getCitas } from 'src/mongo/citas/getCitas';
-import { PacienteInput } from 'src/paciente/paciente.input';
+import { PacienteCitaInput, PacienteInput } from 'src/paciente/paciente.input';
 import { EstudioInput } from 'src/estudios/estudio.input';
 
 @Injectable()
@@ -21,7 +21,6 @@ export class CitaService {
       // const cita = await this.prisma.client.cita.findUnique({
       //   where: { id_cita: id },
       // });
-
       return cita || null;
     } catch (error) {
       console.error('Error al obtener la cita', error);
@@ -29,25 +28,26 @@ export class CitaService {
     }
   }
   async getCitas(
-    take: number,
+    limit: number,
     skip: number,
     where: CitaInput,
   ): Promise<CitaResultadoBusqueda> {
     try {
-      const citas = await getCitas(this.prisma.mongodb, skip, take, where);
+      const citas = await getCitas(this.prisma.mongodb,skip,limit , where);
       return citas;
     } catch (error) {
       console.error('Error al buscar citas', error);
       throw new Error('Error al buscar citas');
     }
   }
-  async createCita(data: CitaInput,  paciente: PacienteInput,): Promise<string> {
+  async createCita(data: CitaInput,  paciente: PacienteCitaInput,): Promise<string> {
     try {
       await this.prisma.client.cita.create({
         data: {
           motivoConsulta: data.motivoConsulta,
           observaciones: data.observaciones,
           cancelada: false,
+          fechaSolicitud: data.fechaSolicitud,
           paciente: {
             set: {
               id_paciente: paciente.id_paciente,

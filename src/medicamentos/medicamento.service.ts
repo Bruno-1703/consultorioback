@@ -30,12 +30,13 @@ export class MedicamentosService {
     }
   }
   async getMedicamentos(
-    where?: MedicamentoWhereInput | undefined,
     skip?: number,
     limit?: number,
+    where?: MedicamentoWhereInput,
+
   ): Promise<MedicamentoResultadoBusqueda | null> {
     try {
-      const medicamentos = await getMedicamentos(this.prisma.mongodb, skip, limit, where
+      const medicamentos = await getMedicamentos(this.prisma.mongodb, skip,limit, where
       );
       return medicamentos;
     } catch (error) {
@@ -83,5 +84,20 @@ export class MedicamentosService {
       this.logger.error(error);
       throw new Error('Error al actualizar medicamento');
     }
+  }
+  async deleteMedicamentoLog(id: string) {
+    await this.prisma.client.medicamento.update({
+      where: { id_medicamento:id },
+       data: { eliminadoLog: true }, //Cambiar el campo "eliminado" a true
+    });
+    return `Medicamento con ID ${id} eliminado lógicamente.`;
+  }
+
+  // Eliminación definitiva: Borrar el medicamento de la base de datos
+  async deleteMedicamento(id: string) {
+    await this.prisma.client.medicamento.delete({
+      where: { id_medicamento:id },
+    });
+    return `Medicamento con ID ${id} eliminado definitivamente.`;
   }
 }

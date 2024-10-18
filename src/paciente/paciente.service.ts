@@ -35,7 +35,6 @@ export class PacienteService {
     where?: PacienteWhereInput,
   ): Promise<PacientesResultadoBusqueda | null> {
     try {
-      console.log(  limit , skip)     
        this.logger.debug('Buscando pacientes con criterios:', where);
       const pacientes = await getPacientes(
         this.prisma.mongodb,
@@ -114,42 +113,89 @@ export class PacienteService {
       this.logger.debug('Paciente actualizado exitosamente');
       return 'Paciente actualizado exitosamente';
     } catch (error) {
-      console.error('Error al actualizar paciente', error);
       this.logger.error(error);
       throw new Error('Error al actualizar paciente');
     }
   }
-  async buscarPacientesPorNombreO_DNI(
-    nombre: string,
-    dni: string,
-  ): Promise<Paciente[] | null> {
+  async ElimiarPacienteLog(pacienteId: string): Promise<string> {
     try {
-      this.logger.debug(
-        `Buscando pacientes con nombre: ${nombre} o DNI: ${dni}`,
-      );
-      const pacientes = await this.prisma.client.paciente.findMany({
-        where: {
-          OR: [
-            {
-              nombre_paciente: {
-                contains: nombre,
-              },
-            },
-            {
-              dni: {
-                contains: dni,
-              },
-            },
-          ],
+      this.logger.debug(`Eliminando lógicamente el paciente con ID ${pacienteId}`);
+      const existingPaciente = await this.prisma.client.paciente.findUnique({
+        where: { id_paciente: pacienteId },
+      });
+      if (!existingPaciente) {
+        throw new Error(`No se encontró el paciente con ID ${pacienteId}`);
+      }
+      
+      await this.prisma.client.paciente.update({
+        where: { id_paciente: pacienteId },
+        data: {
+          eliminadoLog: true,
         },
       });
-
-      this.logger.debug('Pacientes encontrados:', pacientes);
-      return null;
+  
+      this.logger.debug('Paciente eliminado lógicamente exitosamente');
+      return 'Paciente eliminado lógicamente';
     } catch (error) {
-      console.error('Error al buscar pacientes por nombre o DNI', error);
+      console.error('Error al eliminar lógicamente el paciente', error);
       this.logger.error(error);
-      throw new Error('Error al buscar pacientes por nombre o DNI');
+      throw new Error('Error al eliminar lógicamente el paciente');
     }
   }
+  
+  async EliminarPaciente(pacienteId: string): Promise<string> {
+    try {
+      this.logger.debug(`Eliminando definitivamente el paciente con ID ${pacienteId}`);
+      const existingPaciente = await this.prisma.client.paciente.findUnique({
+        where: { id_paciente: pacienteId },
+      });
+      if (!existingPaciente) {
+        throw new Error(`No se encontró el paciente con ID ${pacienteId}`);
+      }
+  
+      await this.prisma.client.paciente.delete({
+        where: { id_paciente: pacienteId },
+      });
+  
+      this.logger.debug('Paciente eliminado definitivamente exitosamente');
+      return 'Paciente eliminado definitivamente';
+    } catch (error) {
+      console.error('Error al eliminar definitivamente el paciente', error);
+      this.logger.error(error);
+      throw new Error('Error al eliminar definitivamente el paciente');
+    }
+  }
+  // async buscarPacientesPorNombreO_DNI(
+  //   nombre: string,
+  //   dni: string,
+  // ): Promise<Paciente[] | null> {
+  //   try {
+  //     this.logger.debug(
+  //       `Buscando pacientes con nombre: ${nombre} o DNI: ${dni}`,
+  //     );
+  //     const pacientes = await this.prisma.client.paciente.findMany({
+  //       where: {
+  //         OR: [
+  //           {
+  //             nombre_paciente: {
+  //               contains: nombre,
+  //             },
+  //           },
+  //           {
+  //             dni: {
+  //               contains: dni,
+  //             },
+  //           },
+  //         ],
+  //       },
+  //     });
+
+  //     this.logger.debug('Pacientes encontrados:', pacientes);
+  //     return null;
+  //   } catch (error) {
+  //     console.error('Error al buscar pacientes por nombre o DNI', error);
+  //     this.logger.error(error);
+  //     throw new Error('Error al buscar pacientes por nombre o DNI');
+  //   }
+  // }
 }

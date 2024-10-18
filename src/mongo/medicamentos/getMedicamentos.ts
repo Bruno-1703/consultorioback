@@ -5,9 +5,8 @@ import { MedicamentoWhereInput } from 'src/medicamentos/medicamento.input';
 
 export async function getMedicamentos(
   mongoConnection: Db,
-  skip: number,
+  skip: number, 
   limit: number,
-
   where: MedicamentoWhereInput,
 ): Promise<MedicamentoResultadoBusqueda | null> {
   const logger = new Logger();
@@ -15,7 +14,7 @@ export async function getMedicamentos(
     logger.log({ action: 'getMedicamentos' });
     const query: any = [{}];
 
-    const buscar = where ? where.nombre_med : null;
+    // const buscar = where ? where.nombre_med : null;
 
     // if (buscar) {
     //   const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
@@ -28,11 +27,9 @@ export async function getMedicamentos(
     // }
     const consulta = mongoConnection.collection('Medicamento').aggregate(
       [
-        { $match: query.lenthg > 0  ? { $and: query } : {} },
-         //{ $sort: { nombre_med: -1 } },
-         { $skip: skip ? skip : 0 },
-         { $limit: limit ? limit: 10 },
- 
+        { $match: query.length > 0 ? { $and: query } : {} },  // Ajuste aquí
+        { $skip: skip ? skip : 0 },
+        { $limit: limit ? limit : 10 },
       ],
       { allowDiskUse: true },
     );
@@ -46,9 +43,9 @@ export async function getMedicamentos(
 
       const edges: MedicamentoEdge[] = medicamentos.map((medicamento: any) => ({
         node: Object.assign({}, medicamento, {
-          id: medicamento._id,
+          id: medicamento._id.toString(),
         }),
-        cursor: medicamento._id,
+        cursor: medicamento._id.toString(),
       }));
       
 

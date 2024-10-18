@@ -1,4 +1,4 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { AggregateCount, Estudio } from '../estudios/estudio.dto';
 import { Medicamento } from 'src/medicamentos/medicamento.dto';
 import { Enfermedad } from 'src/enfermedad/enfermedad.dto';
@@ -6,10 +6,8 @@ import { Paciente } from 'src/paciente/paciente.dto';
 
 @ObjectType()
 export class Cita {
-  @Field(() => String, { nullable: true })
-  id_cita?: string;
-  @Field(() => String, { nullable: true })
-  pacienteId?: string;
+  @Field(() => ID)
+  id_cita: string;
   @Field(() => String)
   motivoConsulta: string;
   @Field(() => Date)
@@ -27,8 +25,6 @@ export class Cita {
   @Field(() => Paciente, { nullable: true })
   paciente?: Paciente; 
 }
-//FIX: LUCAS ACA DEBERIAN SER REQUERIDO TODO
-
 @ObjectType()
 export class CitaEdge {
   @Field(() => Cita)
