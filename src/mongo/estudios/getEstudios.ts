@@ -1,13 +1,15 @@
 import { Logger } from '@nestjs/common';
 import { Db } from 'mongodb';
-import { EstudioEdge, EstudioResultadoBusqueda } from 'src/estudios/estudio.dto';
+import {
+  EstudioEdge,
+  EstudioResultadoBusqueda,
+} from 'src/estudios/estudio.dto';
 import { EstudioWhereInput } from 'src/estudios/estudio.input';
 
 export async function getEstudios(
   mongoConnection: Db,
-  skip: number,
   limit: number,
-
+  skip: number,
   where: EstudioWhereInput,
 ): Promise<EstudioResultadoBusqueda | null> {
   const logger = new Logger();
@@ -28,8 +30,8 @@ export async function getEstudios(
       [
         { $match: query.length > 0 ? { $and: query } : {} },
         //{ $sort: { fecha_realizacion: -1 } },
-        { $skip: skip  },
-        { $limit: limit }, 
+        { $skip: skip ? skip : 0 },
+        { $limit: limit ? limit : 10 },
       ],
       { allowDiskUse: true },
     );
@@ -39,10 +41,10 @@ export async function getEstudios(
       .aggregate([{ $match: { $and: query } }, { $count: 'cantidad' }])
       .toArray();
 
-      const cantidad = consultaCantidad[0]?.['cantidad'] || 0;
-      const estudios = await consulta.toArray();
+    const cantidad = consultaCantidad[0]?.['cantidad'] || 0;
+    const estudios = await consulta.toArray();
 
-      const edges: EstudioEdge[] = estudios.map((estudio: any) => ({
+    const edges: EstudioEdge[] = estudios.map((estudio: any) => ({
       node: Object.assign({}, estudio, {
         id: estudio._id.toString(),
       }),

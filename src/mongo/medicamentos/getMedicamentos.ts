@@ -5,8 +5,8 @@ import { MedicamentoWhereInput } from 'src/medicamentos/medicamento.input';
 
 export async function getMedicamentos(
   mongoConnection: Db,
-  skip: number, 
   limit: number,
+  skip: number, 
   where: MedicamentoWhereInput,
 ): Promise<MedicamentoResultadoBusqueda | null> {
   const logger = new Logger();

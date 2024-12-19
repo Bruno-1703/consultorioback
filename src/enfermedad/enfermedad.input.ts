@@ -16,10 +16,10 @@ export class EnfermedadInput {
 export class EnfermedadWhereInput {
   @Field(() => String, { nullable: true })
   id_enfermedad?: string;
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   nombre_enf?: string;
   @Field(() => String, { nullable: true })
-  sintomas: string;
-  @Field(() => String)
+  sintomas?: string;
+  @Field(() => String, { nullable: true })
   gravedad?: string;
 }

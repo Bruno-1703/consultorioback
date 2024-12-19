@@ -19,7 +19,7 @@ export class EstudioResolver {
     @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
     @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
   ): Promise<EstudioResultadoBusqueda | null> {
-    return this.estudioService.getEstudios(where, skip, limit);
+    return this.estudioService.getEstudios( skip, limit ,where);
   }
 
   @Mutation(() => String)

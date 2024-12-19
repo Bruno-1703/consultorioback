@@ -3,7 +3,7 @@
 # ------------------------------------------------------
 
 type Estudio {
-  id_estudio: String!
+  id_estudio: ID
   fecha_realizacion: DateTime
   tipo_estudio: String
   resultado: String
@@ -141,7 +141,7 @@ type Query {
   getEstudio(id: String!): Estudio
   getEstudios(where: EstudioWhereInput, skip: Int, limit: Int): EstudioResultadoBusqueda!
   getMedicamento(id: String!): Medicamento
-  getMedicamentos(where: MedicamentoWhereInput, skip: Int, limit: Int): MedicamentoResultadoBusqueda!
+  getMedicamentos(skip: Int, limit: Int, where: MedicamentoWhereInput): MedicamentoResultadoBusqueda!
   getPaciente(id: String!): Paciente
   getPacientes(skip: Int, limit: Int, where: PacienteWhereInput): PacientesResultadoBusqueda!
   getEnfermedad(id: String!): Enfermedad
@@ -163,7 +163,7 @@ input CitaWhereInput {
 }
 
 input EstudioInput {
-  id_estudio: String
+  id_estudio: ID
   fecha_realizacion: DateTime
   tipo_estudio: String
   resultado: String
@@ -202,6 +202,7 @@ input PacienteCitaInput {
 }
 
 input EstudioWhereInput {
+  id_estudio: ID
   fecha_realizacion: DateTime
   tipo_estudio: String
   resultado: String
@@ -240,9 +241,9 @@ input PacienteWhereInput {
 
 input EnfermedadWhereInput {
   id_enfermedad: String
-  nombre_enf: String!
+  nombre_enf: String
   sintomas: String
-  gravedad: String!
+  gravedad: String
 }
 
 type Mutation {

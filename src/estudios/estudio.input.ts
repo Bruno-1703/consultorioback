@@ -1,8 +1,8 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
+import { InputType, Field, Int, ID } from '@nestjs/graphql';
 
 @InputType()
 export class EstudioInput {
-  @Field(() => String, { nullable: true })
+  @Field(() => ID, { nullable: true })
   id_estudio?: string;
   @Field(() => Date, { nullable: true })
   fecha_realizacion: Date;
@@ -21,7 +21,8 @@ export class EstudioInput {
 }
 @InputType()
 export class EstudioWhereInput {
-
+  @Field(() => ID, { nullable: true })
+  id_estudio?: string;
   @Field(() => Date, { nullable: true })
   fecha_realizacion?: Date;
   @Field(() => String, { nullable: true })

@@ -30,14 +30,16 @@ export class MedicamentosService {
     }
   }
   async getMedicamentos(
-    skip?: number,
-    limit?: number,
+    limit: number,
+    skip: number,
     where?: MedicamentoWhereInput,
 
   ): Promise<MedicamentoResultadoBusqueda | null> {
     try {
       const medicamentos = await getMedicamentos(this.prisma.mongodb, skip,limit, where
       );
+      console.log('Resultado de getMedicamentos:', medicamentos);
+
       return medicamentos;
     } catch (error) {
       console.error('Error al buscar medicamentos', error);

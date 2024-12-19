@@ -28,9 +28,10 @@ export class EstudioService {
     }
   }
   async getEstudios(
-    where?: EstudioWhereInput,
-    skip?: number,
     limit?: number,
+    skip?: number,
+    where?: EstudioWhereInput,
+
   ): Promise<EstudioResultadoBusqueda | null> {
     try {
       const estudios = await getEstudios(

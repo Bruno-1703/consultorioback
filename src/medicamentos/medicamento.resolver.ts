@@ -15,10 +15,11 @@ export class MedicamentoResolver {
 
   @Query(() => MedicamentoResultadoBusqueda)
   async getMedicamentos(
-    @Args({ name: 'where', type: () => MedicamentoWhereInput, nullable: true })
-    where?: MedicamentoWhereInput,
     @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
     @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
+    @Args({ name: 'where', type: () => MedicamentoWhereInput, nullable: true })
+    where?: MedicamentoWhereInput,
+ 
   ): Promise<MedicamentoResultadoBusqueda> {
     return this.medicamentoService.getMedicamentos( skip, limit,where);
   }
