@@ -6,7 +6,7 @@ import { Paciente } from 'src/paciente/paciente.dto';
 
 @ObjectType()
 export class Cita {
-  @Field(() => ID)
+  @Field(() => ID,{ nullable: true })
   id_cita: string;
   @Field(() => String)
   motivoConsulta: string;
@@ -24,6 +24,9 @@ export class Cita {
   enfermedades?: Enfermedad[]; 
   @Field(() => Paciente, { nullable: true })
   paciente?: Paciente; 
+  @Field(() => ID,{ nullable: true })
+  id_userDoctor?: string;
+  
 }
 @ObjectType()
 export class CitaEdge {

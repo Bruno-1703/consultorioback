@@ -3,8 +3,8 @@ import { AggregateCount } from 'src/estudios/estudio.dto';
 
 @ObjectType()
 export class Medicamento {
-  @Field(() => String, { nullable: true })
-  id_medicamento?: string;
+  @Field(() => ID, { nullable: true })
+  id_medicamento: string;
   @Field(() => String, { nullable: true })
   nombre_med?: string;
   @Field(() => String, { nullable: true })
@@ -30,16 +30,16 @@ export class Medicamento {
 }
 @ObjectType()
 export class MedicamentoEdge {
-  @Field(() => Medicamento, { nullable: true })
-  node?: Medicamento;
+  @Field(() => Medicamento)
+  node!: Medicamento;
   @Field()
   cursor!: string;
 }
 
 @ObjectType()
 export class MedicamentoResultadoBusqueda {
-  @Field(() => MedicamentoEdge)
+  @Field(() => [MedicamentoEdge])
   edges!: MedicamentoEdge[];
-   @Field(() => AggregateCount)
-   aggregate!: AggregateCount;
+  @Field(() => AggregateCount)
+  aggregate!: AggregateCount;
 }

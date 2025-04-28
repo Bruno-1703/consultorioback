@@ -13,9 +13,11 @@ export async function getCitas(
   try {
     logger.log({ action: 'getCitas' });
 
-    // const buscar = where ? where.buscar : null;
-    //  const fechaSolicitud = where ? where.fechaSolicitud : null;
-     const query: any = [{}];
+    const buscar = where ? where.buscar : null;
+    const fechaSolicitud = where ? where.fechaSolicitud : null;
+    console.log(fechaSolicitud)
+    
+    const query: any = [{}];
     // if (fechaSolicitud) {
     //   query.push({ fechaSolicitud: fechaSolicitud });
     // }
@@ -34,7 +36,7 @@ export async function getCitas(
       .aggregate(
         [
           { $match: query.length > 0 ? { $and: query } : {} },
-           { $sort: { fechaSolicitud: -1 } },
+          { $sort: { fechaSolicitud: -1 } },
           { $skip: skip ? skip : 0 },
           { $limit: limit ? limit : 10 },
         ],

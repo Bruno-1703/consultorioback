@@ -18,6 +18,7 @@ export class CitaResolver {
   @Query(() => CitaResultadoBusqueda)
   async getCitas(
     
+    //@Usuario() usuario: any,
     @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
     @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
     @Args({ name: 'where', type: () => CitaWhereInput, nullable: true })
@@ -28,6 +29,7 @@ export class CitaResolver {
 
   @Mutation(() => String)
   async createCita(
+   //@Usuario() usuario: any,
     @Args({ name: 'data', type: () => CitaInput }) data: CitaInput,
     @Args('paciente', { type: () => PacienteCitaInput })
     paciente: PacienteCitaInput,
@@ -68,5 +70,12 @@ export class CitaResolver {
     return this.citaService.createCitaEstudios(citaId, estudios,);
 
   }  
+  @Mutation(() => String)
+async cancelarCita(
+  @Args('id', { type: () => String }) id: string,
+): Promise<string> {
+  return this.citaService.cancelarCita(id);
+}
+
 
 }

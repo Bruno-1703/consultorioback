@@ -35,6 +35,7 @@ export class PacienteCitaInput {
   nombre_paciente?: string;
   @Field(() => String,  { nullable: true })
   apellido_paciente?: string;
+  
 }
 
 @InputType()

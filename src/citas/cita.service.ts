@@ -47,7 +47,8 @@ export class CitaService {
           motivoConsulta: data.motivoConsulta,
           observaciones: data.observaciones,
           cancelada: false,
-          fechaSolicitud: data.fechaSolicitud,
+          fechaSolicitud: data.fechaSolicitud,     
+          id_userDoctor:  ""    ,
           paciente: {
             set: {
               id_paciente: paciente.id_paciente,
@@ -57,6 +58,17 @@ export class CitaService {
           },
         },
       });
+      await this.prisma.client.auditoria.create({
+        data: {
+          accion: 'CREATE', // Asegúrate de usar el valor correcto del enum, en este caso 'CREAR'
+          usuarioId: "", // Si es obligatorio, asegúrate de asignar un ID válido o manejarlo como null
+          usuarioNom: "usuarioNombre", // Asumí que 'usuarioNom' es el campo correcto para el nombre del usuario
+          detalles: `Se creó una nueva cita con ID ${data.id_cita}.`, // Detalles de la acción realizada
+          model: 'Cita', // El modelo afectado
+          registro_id: data.id_cita, // ID de la cita afectada
+        },
+      });
+      
       return 'Cita creada Exitosamente';
     } catch (error) {
       console.error('Error crear cita', error);
@@ -70,7 +82,16 @@ export class CitaService {
         where: { id_cita: citaId },
         data,
       });
-
+      await this.prisma.client.auditoria.create({
+        data: {
+          accion: 'UPDATE', 
+          usuarioId:"",
+          usuarioNom: "usuarioNombre",
+          detalles: `Se actualizó la cita con ID ${data.id_cita}.`,
+          model: 'Cita',
+          registro_id: data.id_cita,
+        },
+      });
       return 'Cita actualizada exitosamente';
     } catch (error) {
       console.error('Error al actualizar la cita', error);
@@ -97,6 +118,7 @@ export class CitaService {
           },
         },
       });
+  
 
       return 'Cita actualizada exitosamente con las enfermedades agregadas';
     } catch (error) {
@@ -136,6 +158,7 @@ export class CitaService {
   ): Promise<string> {
     this.logger.log({ action: 'crearCitaEstudios' });
     try {
+  
       await this.prisma.client.cita.update({
         where: {
           id_cita: citaId,
@@ -144,18 +167,36 @@ export class CitaService {
           estudios: {
             push: estudios.map((estudio) => ({
               codigo_referencia: estudio?.codigo_referencia,
-              id_estudio: estudio?.id_estudio,
-              fecha_realizacion: estudio?.fecha_realizacion
+              id_estudio: estudio?.id_estudio || "",
+              fecha_realizacion: estudio?.fecha_realizacion,
+              observaciones: estudio?.observaciones,
+              tipo_estudio: estudio?.tipo_estudio,
+              medico_solicitante: estudio?.medico_solicitante
             })),
           },
         },
       });
 
-      return 'Cita actualizada exitosamente con los medicamentos agregados';
+      return 'Cita actualizada exitosamente con los Estudios agregados';
     } catch (error) {
-      console.error('Error al agregar enfermedades a la cita:', error);
-      throw new Error('No se pudieron agregar  con los medicamentos a la cita');
+      console.error('Error al agregar Estudios a la cita:', error);
+      throw new Error('No se pudieron agregar  con los Estudios a la cita');
     }
   }
+  async cancelarCita(id: string): Promise<string> {
+    const cita = await this.prisma.client.cita.findUnique({ where: { id_cita: id } });
+  
+    if (!cita) {
+      throw new Error('La cita no existe');
+    }
+  
+    await this.prisma.client.cita.update({
+      where: { id_cita: id },
+      data: { cancelada: true },
+    });
+  
+    return 'Cita cancelada correctamente';
+  }
+  
 
 }

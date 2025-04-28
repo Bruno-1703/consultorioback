@@ -7,15 +7,19 @@ import { EstudioInput, EstudioWhereInput } from './estudio.input';
 import { PrismaService } from '../prisma/prisma.service';
 import { getEstudios } from 'src/mongo/estudios/getEstudios';
 import { getEstudioById } from 'src/mongo/estudios/getEstudiosById';
+import { CitaService } from 'src/citas/cita.service';
 
 @Injectable()
 export class EstudioService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private citaService: CitaService, // Inyección de CitaService
+  ) {}
   private readonly logger = new Logger(EstudioService.name);
 
   async getEstudio(id: string): Promise<Estudio | null> {
     try {
-      const estudio = await getEstudioById(this.prisma.mongodb, id );
+      const estudio = await getEstudioById(this.prisma.mongodb, id);
 
       if (!estudio) {
         throw new Error(`No se encontró el estudio con ID ${id}`);
@@ -31,12 +35,14 @@ export class EstudioService {
     limit?: number,
     skip?: number,
     where?: EstudioWhereInput,
-
   ): Promise<EstudioResultadoBusqueda | null> {
     try {
       const estudios = await getEstudios(
-        this.prisma.mongodb, skip, limit, where
-      );   
+        this.prisma.mongodb,
+        skip,
+        limit,
+        where,
+      );
 
       return estudios;
     } catch (error) {
@@ -46,11 +52,25 @@ export class EstudioService {
     }
   }
 
-  async createEstudio(data: EstudioInput): Promise<string> {
+  async createEstudio(data: EstudioInput,idCita:string): Promise<string> {
     try {
       const nuevoEstudio = await this.prisma.client.estudio.create({
         data,
       });
+
+         // 2. Llamar a `createCitaEstudios` desde CitaService
+    await this.citaService.createCitaEstudios(idCita, [
+      {
+        id_estudio: nuevoEstudio.id_estudio,
+        codigo_referencia: nuevoEstudio.codigo_referencia,
+        fecha_realizacion: nuevoEstudio.fecha_realizacion,
+        tipo_estudio: nuevoEstudio.tipo_estudio,
+        medico_solicitante: nuevoEstudio.medico_solicitante,
+        observaciones: nuevoEstudio.observaciones,
+        resultado: nuevoEstudio.resultado
+
+      },
+    ]);
       this.logger.debug('Estudio creado:', nuevoEstudio);
       return 'Estudio creado exitosamente';
     } catch (error) {

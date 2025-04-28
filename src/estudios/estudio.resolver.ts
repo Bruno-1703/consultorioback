@@ -5,7 +5,10 @@ import { EstudioInput, EstudioWhereInput } from './estudio.input';
 
 @Resolver(() => Estudio)
 export class EstudioResolver {
-  constructor(private estudioService: EstudioService) {}
+  constructor(
+    private estudioService: EstudioService
+
+  ) {}
 
   @Query(() => Estudio, { nullable: true })
   async getEstudio(@Args('id') id: string): Promise<Estudio | null> {
@@ -25,8 +28,10 @@ export class EstudioResolver {
   @Mutation(() => String)
   async createEstudio(
     @Args({ name: 'data', type: () => EstudioInput }) data: EstudioInput,
+    @Args({ name: 'idCita', type: () => String }) idCita: string,
+
   ): Promise<string> {
-    return this.estudioService.createEstudio(data);
+    return this.estudioService.createEstudio(data, idCita);
   }
 
   @Mutation(() => String)

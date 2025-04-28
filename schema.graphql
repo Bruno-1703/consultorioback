@@ -33,7 +33,7 @@ type EstudioResultadoBusqueda {
 }
 
 type Medicamento {
-  id_medicamento: String
+  id_medicamento: ID
   nombre_med: String
   marca: String
   fecha_vencimiento: DateTime
@@ -48,12 +48,12 @@ type Medicamento {
 }
 
 type MedicamentoEdge {
-  node: Medicamento
+  node: Medicamento!
   cursor: String!
 }
 
 type MedicamentoResultadoBusqueda {
-  edges: MedicamentoEdge!
+  edges: [MedicamentoEdge!]!
   aggregate: AggregateCount!
 }
 
@@ -100,7 +100,7 @@ type PacientesResultadoBusqueda {
 }
 
 type Cita {
-  id_cita: ID!
+  id_cita: ID
   motivoConsulta: String!
   fechaSolicitud: DateTime!
   observaciones: String
@@ -109,6 +109,7 @@ type Cita {
   estudios: [Estudio!]
   enfermedades: [Enfermedad!]
   paciente: Paciente
+  id_userDoctor: ID
 }
 
 type CitaEdge {
@@ -156,6 +157,7 @@ input CitaWhereInput {
   observaciones: String
   cancelada: Boolean
   buscar: String
+  id_userDoctor: ID
   estudios: [EstudioInput!]
   medicamentos: [MedicamentoInput!]
   enfermedades: [EnfermedadInput!]
@@ -174,7 +176,7 @@ input EstudioInput {
 }
 
 input MedicamentoInput {
-  id_medicamento: String
+  id_medicamento: ID
   nombre_med: String
   marca: String
   fecha_vencimiento: DateTime
@@ -210,7 +212,7 @@ input EstudioWhereInput {
 }
 
 input MedicamentoWhereInput {
-  id_medicamento: String
+  id_medicamento: ID
   nombre_med: String
   marca: String
   fecha_vencimiento: DateTime
@@ -252,7 +254,8 @@ type Mutation {
   createCitaEnfermedad(citaId: String!, enfermedades: [EnfermedadInput!]!): String!
   createCitaMedicamento(citaId: String!, medicamentos: [MedicamentoInput!]!): String!
   createCitaEstudio(citaId: String!, estudios: [EstudioInput!]!): String!
-  createEstudio(data: EstudioInput!): String!
+  cancelarCita(id: String!): String!
+  createEstudio(data: EstudioInput!, idCita: String!): String!
   updateEstudio(data: EstudioInput!, estudioId: String!): String!
   createMedicamento(data: MedicamentoInput!): String!
   updateMedicamento(data: MedicamentoInput!, medicamentoId: String!): String!
@@ -270,10 +273,12 @@ type Mutation {
 }
 
 input CitaInput {
+  id_cita: ID
   motivoConsulta: String
   observaciones: String
   paciente: PacienteCitaInput
   fechaSolicitud: DateTime
+  id_userDoctor: ID
 }
 
 input PacienteInput {

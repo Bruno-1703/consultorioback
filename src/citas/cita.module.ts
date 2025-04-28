@@ -6,5 +6,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 @Module({
   providers: [CitaService, CitaResolver],
   imports: [PrismaModule],
+  exports: [CitaService], 
+
 })
 export class CitaModule {}

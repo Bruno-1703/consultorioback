@@ -14,17 +14,17 @@ export async function getMedicamentos(
     logger.log({ action: 'getMedicamentos' });
     const query: any = [{}];
 
-    // const buscar = where ? where.nombre_med : null;
+    const buscar = where ? where.nombre_med : null;
 
-    // if (buscar) {
-    //   const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
-    //   query.push({
-    //     $or: [
-    //       { nombre_med: regexBuscar },
-    //       { marca: regexBuscar },
-    //     ],
-    //   });
-    // }
+    if (buscar) {
+      const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
+      query.push({
+        $or: [
+          { nombre_med: regexBuscar },
+          { marca: regexBuscar },
+        ],
+      });
+    }
     const consulta = mongoConnection.collection('Medicamento').aggregate(
       [
         { $match: query.length > 0 ? { $and: query } : {} },  // Ajuste aquí
@@ -42,9 +42,7 @@ export async function getMedicamentos(
       const medicamentos = await consulta.toArray();
 
       const edges: MedicamentoEdge[] = medicamentos.map((medicamento: any) => ({
-        node: Object.assign({}, medicamento, {
-          id: medicamento._id.toString(),
-        }),
+        node: Object.assign({}, medicamento, { id_medicamento: medicamento._id.toString() }), // Asigna _id a id_medicamento
         cursor: medicamento._id.toString(),
       }));
       

@@ -1,8 +1,8 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
+import { InputType, Field, Int, ID } from '@nestjs/graphql';
 
 @InputType()
 export class MedicamentoInput {
-  @Field(() => String, { nullable: true })
+  @Field(() => ID,{ nullable: true })
   id_medicamento: string;
   @Field(() => String, { nullable: true })
   nombre_med?: string;
@@ -27,8 +27,8 @@ export class MedicamentoInput {
 }
 @InputType()
 export class MedicamentoWhereInput {
-  @Field(() => String, { nullable: true })
-  id_medicamento?: string;
+   @Field(() => ID, { nullable: true })
+   id_medicamento: string;
   @Field(() => String, { nullable: true })
   nombre_med?: string;
   @Field(() => String, { nullable: true })

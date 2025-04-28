@@ -6,6 +6,8 @@ import { PacienteCitaInput, PacienteInput } from 'src/paciente/paciente.input';
 
 @InputType()
 export class CitaInput {
+  @Field(() => ID,{ nullable: true })
+  id_cita?: string;
   @Field(() => String, { nullable: true })
   motivoConsulta?: string;
   @Field(() => String, { nullable: true })
@@ -14,6 +16,9 @@ export class CitaInput {
   paciente?: PacienteCitaInput;
   @Field(() => Date,{ nullable: true })
   fechaSolicitud?: Date;
+  @Field(() => ID,{ nullable: true })
+  id_userDoctor?: string;
+  
 }
 @InputType()
 export class CitaWhereInput {
@@ -29,7 +34,8 @@ export class CitaWhereInput {
   cancelada?: boolean;
   @Field(() => String, { nullable: true })
   buscar?: string ;
-
+  @Field(() => ID,{ nullable: true })
+  id_userDoctor?: string;
   @Field(() => [EstudioInput], { nullable: true })
   estudios?: EstudioInput;
 
