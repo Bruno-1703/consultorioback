@@ -26,6 +26,11 @@ export class AuthService {
         password: hashedPassword,
         email: registerDto.email,
         rol_usuario: 'admin',
+        dni: registerDto.dni,
+        especialidad: registerDto.especialidad,
+        matricula:registerDto.matricula,
+        nombre_completo:registerDto.nombre_completo,
+        telefono:registerDto.telefono
       });
       return 'Usuario registrado exitosamente';
     } catch (error) {

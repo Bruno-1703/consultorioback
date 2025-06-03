@@ -54,4 +54,27 @@ export class MedicamentoResolver {
   ): Promise<string> {
     return this.medicamentoService.deleteMedicamento(id);
   }
+  @Query(() => Number)
+  async getStock(
+    @Args('medicamentoId', { type: () => String }) medicamentoId: string,
+  ): Promise<number> {
+    return this.medicamentoService.getStock(medicamentoId);
+  }
+
+  @Mutation(() => String)
+  async aumentarStock(
+    @Args('medicamentoId', { type: () => String }) medicamentoId: string,
+    @Args('cantidad', { type: () => Int }) cantidad: number,
+  ): Promise<string> {
+    return this.medicamentoService.aumentarStock(medicamentoId, cantidad);
+  }
+
+  @Mutation(() => String)
+  async reducirStock(
+    @Args('medicamentoId', { type: () => String }) medicamentoId: string,
+    @Args('cantidad', { type: () => Int }) cantidad: number,
+  ): Promise<string> {
+    return this.medicamentoService.reducirStock(medicamentoId, cantidad);
+  }
+  
 }

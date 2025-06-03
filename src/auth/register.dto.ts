@@ -1,15 +1,35 @@
-import { IsEmail, IsString, MinLength } from "class-validator";
-//import { Transformer } from "class-transformer";
+import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
-export class RegisterDto{
-//@Transform(({value})=> value.trim())
-@IsString()
-@MinLength(5)
-name: string;
-@IsEmail()
-email: string;
-//@Transform(({value})=> value.trim())
-@IsString()
-@MinLength(8)
-password: string;
+export class RegisterDto {
+  @IsString()
+  @MinLength(5)
+  nombre_usuario: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @MinLength(8)
+  password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  nombre_completo: string;
+
+  @IsString()
+  @IsNotEmpty()
+  especialidad: string;
+
+  @IsString()
+  @IsNotEmpty()
+  matricula: string;
+
+  @IsString()
+  @IsNotEmpty()
+  dni: string;
+
+  @IsOptional()
+  @IsString()
+  telefono?: string;
+
 }

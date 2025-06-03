@@ -44,11 +44,17 @@ export class UsuarioService {
           nombre_usuario: data.nombre_usuario,
           email: data.email,
           password: data.password,
-          rol_usuario:'user'
+          rol_usuario:'user',
+          nombre_completo: data.nombre_completo,
+          especialidad: data.especialidad,
+          matricula: data.matricula,
+          telefono: data.telefono,
+          dni: data.dni,
 
           
         },
       });
+      console.log('aaa')
       return 'Usuario creado exitosamente';
     } catch (error) {
       console.error('Error al crear usuario', error);

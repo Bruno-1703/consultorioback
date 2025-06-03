@@ -15,6 +15,21 @@ export class Usuario {
   deletLogico?: boolean;
   @Field(() => String, { nullable: true })
   rol_usuario?: string;
+  @Field(() => String)
+  nombre_completo: string;
+
+  @Field(() => String)
+  especialidad: string;
+
+  @Field(() => String)
+  matricula: string;
+
+  @Field(() => String, { nullable: true })
+  telefono?: string;
+
+  @Field(() => String)
+  dni: string;
+
 }
 @ObjectType()
 export class UsuarioEdge {

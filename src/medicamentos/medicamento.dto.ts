@@ -27,6 +27,9 @@ export class Medicamento {
   prescripcion_requerida?: boolean;
   @Field(() => Boolean, { nullable: true })
   eliminadoLog?: Boolean;
+  @Field(() => Int, { nullable: true })
+  stock?: number; 
+  
 }
 @ObjectType()
 export class MedicamentoEdge {

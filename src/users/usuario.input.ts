@@ -10,6 +10,21 @@ export class UsuarioInput {
   password: string;
   @Field(() => String, { nullable: true })
   rol_usuario?: string;
+  @Field(() => String)
+  nombre_completo: string;
+
+  @Field(() => String)
+  especialidad: string;
+
+  @Field(() => String)
+  matricula: string;
+
+  @Field(() => String, { nullable: true })
+  telefono?: string;
+
+  @Field(() => String)
+  dni: string;
+
 }
 
 @InputType()
@@ -24,4 +39,19 @@ export class UsuarioWhereInput {
   rol_usuario?: string;
   @Field(() => Boolean, { nullable: true })
   deletLogico?: boolean;
+  @Field(() => String)
+  nombre_completo: string;
+
+  @Field(() => String)
+  especialidad: string;
+
+  @Field(() => String)
+  matricula: string;
+
+  @Field(() => String, { nullable: true })
+  telefono?: string;
+
+  @Field(() => String)
+  dni: string;
+
 }

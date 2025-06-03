@@ -1,4 +1,4 @@
-﻿import { Injectable, Logger } from '@nestjs/common';
+﻿import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Medicamento, MedicamentoResultadoBusqueda } from './medicamento.dto';
 import { MedicamentoInput, MedicamentoWhereInput } from './medicamento.input';
 import { PrismaService } from '../prisma/prisma.service';
@@ -51,17 +51,29 @@ export class MedicamentosService {
     try {
       this.logger.debug('Creando medicamento');
       const medicamento = await this.prisma.client.medicamento.create({
-        data,
+        data: {
+          id_medicamento: data.id_medicamento,
+          nombre_med: data.nombre_med,
+          marca: data.marca,
+          fecha_vencimiento: data.fecha_vencimiento,
+          dosis_hs: data.dosis_hs,
+          agente_principal: data.agente_principal,
+          efectos_secundarios: data.efectos_secundarios,
+          lista_negra: data.lista_negra,
+          categoria: data.categoria,
+          contraindicaciones: data.contraindicaciones,
+          prescripcion_requerida: data.prescripcion_requerida,
+          stock: data.stock,
+          eliminadoLog: false
+        },
       });
-
-      this.logger.debug('Medicamento creado:', medicamento);
-      return 'Medicamento creado exitosamente';
+      return 'Medicamento creado correctamente';
     } catch (error) {
-      console.error('Error al crear medicamento', error);
-      this.logger.error(error);
+      this.logger.error('Error al crear medicamento', error);  // Asegúrate de loguear el error
       throw new Error('Error al crear medicamento');
     }
   }
+  
   async updateMedicamento(
     data: MedicamentoInput,
     medicamentoId: string,
@@ -102,4 +114,63 @@ export class MedicamentosService {
     });
     return `Medicamento con ID ${id} eliminado definitivamente.`;
   }
+  async getStock(medicamentoId: string): Promise<number> {
+     const medicamento = await this.prisma.client.medicamento.findUnique({
+     where: { id_medicamento: medicamentoId },
+       select: { stock: true },
+     });
+
+    if (!medicamento) {
+       throw new NotFoundException('Medicamento no encontrado');
+     }
+
+     return medicamento.stock;
+  }
+
+  async aumentarStock(medicamentoId: string, cantidad: number): Promise<string> {
+    if (cantidad <= 0) {
+      throw new BadRequestException('La cantidad debe ser positiva');
+    }
+
+    await this.prisma.client.medicamento.update({
+      where: { id_medicamento: medicamentoId },
+      data: {
+        stock: {
+          increment: cantidad,
+        },
+      },
+    });
+
+    return `Stock aumentado en ${cantidad} unidades`;
+  }
+
+  async reducirStock(medicamentoId: string, cantidad: number): Promise<string> {
+    const medicamento = await this.prisma.client.medicamento.findUnique({
+      where: { id_medicamento: medicamentoId },
+      select: { stock: true },
+    });
+
+    if (!medicamento) {
+      throw new NotFoundException('Medicamento no encontrado');
+    }
+
+    if (cantidad <= 0) {
+      throw new BadRequestException('La cantidad debe ser positiva');
+    }
+
+    if (medicamento.stock < cantidad) {
+      throw new BadRequestException('Stock insuficiente');
+    }
+
+    await this.prisma.client.medicamento.update({
+      where: { id_medicamento: medicamentoId },
+      data: {
+        stock: {
+          decrement: cantidad,
+        },
+      },
+    });
+
+   return `Stock reducido en ${cantidad} unidades`;
+   }
 }

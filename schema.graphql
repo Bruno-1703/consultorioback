@@ -45,6 +45,7 @@ type Medicamento {
   contraindicaciones: String
   prescripcion_requerida: Boolean
   eliminadoLog: Boolean
+  stock: Int
 }
 
 type MedicamentoEdge {
@@ -129,6 +130,11 @@ type Usuario {
   password: String!
   deletLogico: Boolean
   rol_usuario: String
+  nombre_completo: String!
+  especialidad: String!
+  matricula: String!
+  telefono: String
+  dni: String!
 }
 
 type UsuarioEdge {
@@ -143,6 +149,7 @@ type Query {
   getEstudios(where: EstudioWhereInput, skip: Int, limit: Int): EstudioResultadoBusqueda!
   getMedicamento(id: String!): Medicamento
   getMedicamentos(skip: Int, limit: Int, where: MedicamentoWhereInput): MedicamentoResultadoBusqueda!
+  getStock(medicamentoId: String!): Float!
   getPaciente(id: String!): Paciente
   getPacientes(skip: Int, limit: Int, where: PacienteWhereInput): PacientesResultadoBusqueda!
   getEnfermedad(id: String!): Enfermedad
@@ -187,6 +194,7 @@ input MedicamentoInput {
   categoria: String
   contraindicaciones: String
   prescripcion_requerida: Boolean
+  stock: Int
 }
 
 input EnfermedadInput {
@@ -224,6 +232,7 @@ input MedicamentoWhereInput {
   contraindicaciones: String
   prescripcion_requerida: Boolean
   eliminadoLog: Boolean
+  stock: Int
 }
 
 input PacienteWhereInput {
@@ -261,6 +270,8 @@ type Mutation {
   updateMedicamento(data: MedicamentoInput!, medicamentoId: String!): String!
   deleteMedicamentoLog(id: String!): String!
   deleteMedicamento(id: String!): String!
+  aumentarStock(medicamentoId: String!, cantidad: Int!): String!
+  reducirStock(medicamentoId: String!, cantidad: Int!): String!
   createPaciente(data: PacienteInput!): String!
   updatePaciente(data: PacienteInput!, pacienteId: String!): String!
   ElimiarPacienteLog(pacienteId: String!): String!
@@ -299,4 +310,9 @@ input UsuarioInput {
   email: String
   password: String!
   rol_usuario: String
+  nombre_completo: String!
+  especialidad: String!
+  matricula: String!
+  telefono: String
+  dni: String!
 }

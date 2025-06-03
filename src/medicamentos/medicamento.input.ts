@@ -24,6 +24,8 @@ export class MedicamentoInput {
   contraindicaciones?: string;
   @Field(() => Boolean, { nullable: true })
   prescripcion_requerida?: boolean;
+  @Field(() => Int, { nullable: true })
+  stock?: number; 
 }
 @InputType()
 export class MedicamentoWhereInput {
@@ -51,4 +53,6 @@ export class MedicamentoWhereInput {
   prescripcion_requerida?: boolean;
   @Field(() => Boolean, { nullable: true })
   eliminadoLog?: Boolean;
+  @Field(() => Int, { nullable: true })
+  stock?: number;
 }

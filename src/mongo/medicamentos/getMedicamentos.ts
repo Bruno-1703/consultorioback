@@ -16,6 +16,9 @@ export async function getMedicamentos(
 
     const buscar = where ? where.nombre_med : null;
 
+
+    const filters: any[] = [{ eliminadoLog: false }];
+
     if (buscar) {
       const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
       query.push({
@@ -30,6 +33,7 @@ export async function getMedicamentos(
         { $match: query.length > 0 ? { $and: query } : {} },  // Ajuste aquí
         { $skip: skip ? skip : 0 },
         { $limit: limit ? limit : 10 },
+        { $match: { $and: filters } },
       ],
       { allowDiskUse: true },
     );
