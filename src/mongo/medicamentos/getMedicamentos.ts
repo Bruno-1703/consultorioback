@@ -6,7 +6,7 @@ import { MedicamentoWhereInput } from 'src/medicamentos/medicamento.input';
 export async function getMedicamentos(
   mongoConnection: Db,
   limit: number,
-  skip: number, 
+  skip: number,
   where: MedicamentoWhereInput,
 ): Promise<MedicamentoResultadoBusqueda | null> {
   const logger = new Logger();
@@ -19,15 +19,15 @@ export async function getMedicamentos(
 
     const filters: any[] = [{ eliminadoLog: false }];
 
-    if (buscar) {
-      const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
-      query.push({
-        $or: [
-          { nombre_med: regexBuscar },
-          { marca: regexBuscar },
-        ],
-      });
-    }
+    // if (buscar) {
+    //   const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
+    //   query.push({
+    //     $or: [
+    //       { nombre_med: regexBuscar },
+    //       { marca: regexBuscar },
+    //     ],
+    //   });
+    // }
     const consulta = mongoConnection.collection('Medicamento').aggregate(
       [
         { $match: query.length > 0 ? { $and: query } : {} },  // Ajuste aquí
@@ -42,14 +42,14 @@ export async function getMedicamentos(
       .aggregate([{ $match: { $and: query } }, { $count: 'cantidad' }])
       .toArray();
 
-      const cantidad = consultaCantidad[0]?.['cantidad'] || 0;
-      const medicamentos = await consulta.toArray();
+    const cantidad = consultaCantidad[0]?.['cantidad'] || 0;
+    const medicamentos = await consulta.toArray();
 
-      const edges: MedicamentoEdge[] = medicamentos.map((medicamento: any) => ({
-        node: Object.assign({}, medicamento, { id_medicamento: medicamento._id.toString() }), // Asigna _id a id_medicamento
-        cursor: medicamento._id.toString(),
-      }));
-      
+    const edges: MedicamentoEdge[] = medicamentos.map((medicamento: any) => ({
+      node: Object.assign({}, medicamento, { id_medicamento: medicamento._id.toString() }), // Asigna _id a id_medicamento
+      cursor: medicamento._id.toString(),
+    }));
+
 
     return {
       aggregate: {

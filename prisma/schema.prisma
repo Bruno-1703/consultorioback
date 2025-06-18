@@ -27,6 +27,8 @@ type PacienteCita {
   id_paciente String?
   dni             String?
   nombre_paciente String?
+    apellido_paciente String?
+
 }
 
 type CitaMedicamento {
@@ -99,7 +101,12 @@ model Paciente {
   sexo              String?
   grupo_sanguineo   String?
   alergias          String?
+    obra_social       String?    // Nuevo
+  email             String?    // Nuevo
+  direccion         String?    // Nuevo
+  nacionalidad      String?    // Nuevo
   eliminadoLog      Boolean  @default(false)
+
 }
 
 model Usuario {

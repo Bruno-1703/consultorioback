@@ -87,6 +87,10 @@ type Paciente {
   sexo: String
   grupo_sanguineo: String
   alergias: String
+  obra_social: String
+  email: String
+  direccion: String
+  nacionalidad: String
   eliminadoLog: Boolean
 }
 
@@ -106,6 +110,7 @@ type Cita {
   fechaSolicitud: DateTime!
   observaciones: String
   cancelada: Boolean
+  finalizada: Boolean
   medicamentos: [Medicamento!]
   estudios: [Estudio!]
   enfermedades: [Enfermedad!]
@@ -145,6 +150,7 @@ type UsuarioEdge {
 type Query {
   getCita(id: String!): Cita
   getCitas(skip: Int, limit: Int, where: CitaWhereInput): CitaResultadoBusqueda!
+  getCitasByFecha(skip: Int, limit: Int, where: CitaWhereInput): CitaResultadoBusqueda!
   getEstudio(id: String!): Estudio
   getEstudios(where: EstudioWhereInput, skip: Int, limit: Int): EstudioResultadoBusqueda!
   getMedicamento(id: String!): Medicamento
@@ -152,7 +158,7 @@ type Query {
   getStock(medicamentoId: String!): Float!
   getPaciente(id: String!): Paciente
   getPacientes(skip: Int, limit: Int, where: PacienteWhereInput): PacientesResultadoBusqueda!
-  getEnfermedad(id: String!): Enfermedad
+  getEnfermedadById(id: String!): Enfermedad
   getEnfermedades(where: EnfermedadWhereInput, skip: Int, limit: Int): EnfermedadResultadoBusqueda!
   getUsuario(email: String!): Usuario
 }
@@ -160,6 +166,7 @@ type Query {
 input CitaWhereInput {
   id_cita: ID
   motivoConsulta: String
+  finalizada: Boolean
   fechaSolicitud: DateTime
   observaciones: String
   cancelada: Boolean
@@ -247,6 +254,10 @@ input PacienteWhereInput {
   sexo: String
   grupo_sanguineo: String
   alergias: String
+  obra_social: String
+  email: String
+  direccion: String
+  nacionalidad: String
   eliminadoLog: Boolean
 }
 
@@ -264,6 +275,7 @@ type Mutation {
   createCitaMedicamento(citaId: String!, medicamentos: [MedicamentoInput!]!): String!
   createCitaEstudio(citaId: String!, estudios: [EstudioInput!]!): String!
   cancelarCita(id: String!): String!
+  finalizarCita(id: String!): String!
   createEstudio(data: EstudioInput!, idCita: String!): String!
   updateEstudio(data: EstudioInput!, estudioId: String!): String!
   createMedicamento(data: MedicamentoInput!): String!
@@ -277,7 +289,8 @@ type Mutation {
   ElimiarPacienteLog(pacienteId: String!): String!
   EliminarPaciente(pacienteId: String!): String!
   createEnfermedad(data: EnfermedadInput!): String!
-  updateEnfermedad(data: EnfermedadInput!, citaId: String!): String!
+  updateEnfermedad(data: EnfermedadInput!, enfermedadId: String!): String!
+  deleteEnfermedad(id: String!): String!
   createUsuario(data: UsuarioInput!): String!
   updateUsuario(data: UsuarioInput!, usuarioId: String!): String!
   deleteUsuario(id: String!): String!
@@ -290,6 +303,7 @@ input CitaInput {
   paciente: PacienteCitaInput
   fechaSolicitud: DateTime
   id_userDoctor: ID
+  finalizada: Boolean
 }
 
 input PacienteInput {
@@ -303,6 +317,10 @@ input PacienteInput {
   sexo: String
   grupo_sanguineo: String
   alergias: String
+  obra_social: String
+  email: String
+  direccion: String
+  nacionalidad: String
 }
 
 input UsuarioInput {

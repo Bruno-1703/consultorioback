@@ -5,9 +5,9 @@ import { EnfermedadService } from './enfermedad.service';
 
 @Resolver(() => Enfermedad)
 export class EnfermedadResolver {
-  constructor(private enfermedadService: EnfermedadService) {}
+  constructor(private enfermedadService: EnfermedadService) { }
   @Query(() => Enfermedad, { nullable: true })
-  async getEnfermedad(@Args('id') id: string): Promise<Enfermedad | null> {
+  async getEnfermedadById(@Args('id') id: string): Promise<Enfermedad | null> {
     return this.enfermedadService.getEnfermedadById(id);
   }
 
@@ -31,8 +31,16 @@ export class EnfermedadResolver {
   @Mutation(() => String)
   async updateEnfermedad(
     @Args({ name: 'data', type: () => EnfermedadInput }) data: EnfermedadInput,
-    @Args({ name: 'citaId', type: () => String }) enfermedadId: string,
+    @Args({ name: 'enfermedadId', type: () => String }) enfermedadId: string,
   ): Promise<string> {
     return this.enfermedadService.updateEnfermedad(data, enfermedadId);
   }
+
+  @Mutation(() => String)
+  async deleteEnfermedad(
+    @Args('id', { type: () => String }) id: string,
+  ): Promise<string> {
+    return this.enfermedadService.deleteEnfermedad(id);
+  }
+
 }

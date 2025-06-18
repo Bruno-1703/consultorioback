@@ -7,7 +7,7 @@ import { EnfermedadInput } from './enfermedad.input';
 
 @Injectable()
 export class EnfermedadService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   private readonly logger = new Logger(EnfermedadService.name);
 
   async getEnfermedadById(id: string): Promise<Enfermedad | null> {
@@ -98,4 +98,20 @@ export class EnfermedadService {
       throw new Error('Error al actualizar la enfermedad');
     }
   }
+  async deleteEnfermedad(id: string): Promise<string> {
+    // Buscar la enfermedad primero
+    const enfermedad = await this.prisma.client.enfermedad.findUnique({
+      where: { id_enfermedad: id }  // debe ser objeto con campo llave primaria
+    });
+    if (!enfermedad) {
+      throw new Error('Enfermedad no encontrada');
+    }
+    // Eliminar la enfermedad
+    await this.prisma.client.enfermedad.delete({
+      where: { id_enfermedad: id }
+    });
+    return 'Enfermedad eliminada correctamente';
+  }
+
+
 }

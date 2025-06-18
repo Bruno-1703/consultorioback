@@ -64,6 +64,10 @@ export class PacienteService {
         sexo: data.sexo,
         grupo_sanguineo: data.grupo_sanguineo,
         alergias: data.alergias,
+        nacionalidad: data.nacionalidad,
+        obra_social: data.obra_social,
+        direccion:data.direccion,
+        email:data.email
       };
       const paciente = await this.prisma.client.paciente.create({
         data: pacienteData,
@@ -91,24 +95,24 @@ export class PacienteService {
         throw new Error(`No se encontró el paciente con ID ${pacienteId}`);
       }
       await this.prisma.client.paciente.update({
-        where: { id_paciente: pacienteId },
-        data: {
-          dni: data.dni || existingPaciente.dni,
-          nombre_paciente:
-            data.nombre_paciente || existingPaciente.nombre_paciente,
-          apellido_paciente:
-            data.apellido_paciente || existingPaciente.apellido_paciente,
-          edad: data.edad || existingPaciente.edad,
-          altura: data.altura || existingPaciente.altura,
-          telefono: data.telefono || existingPaciente.telefono,
-          fecha_nacimiento:
-            data.fecha_nacimiento || existingPaciente.fecha_nacimiento,
-          sexo: data.sexo || existingPaciente.sexo,
-          grupo_sanguineo:
-            data.grupo_sanguineo || existingPaciente.grupo_sanguineo,
-          alergias: data.alergias || existingPaciente.alergias,
-        },
-      });
+      where: { id_paciente: pacienteId },
+      data: {
+        dni: data.dni ?? existingPaciente.dni,
+        nombre_paciente: data.nombre_paciente ?? existingPaciente.nombre_paciente,
+        apellido_paciente: data.apellido_paciente ?? existingPaciente.apellido_paciente,
+        edad: data.edad ?? existingPaciente.edad,
+        altura: data.altura ?? existingPaciente.altura,
+        telefono: data.telefono ?? existingPaciente.telefono,
+        fecha_nacimiento: data.fecha_nacimiento ?? existingPaciente.fecha_nacimiento,
+        sexo: data.sexo ?? existingPaciente.sexo,
+        grupo_sanguineo: data.grupo_sanguineo ?? existingPaciente.grupo_sanguineo,
+        alergias: data.alergias ?? existingPaciente.alergias,
+        obra_social: data.obra_social ?? existingPaciente.obra_social,
+        email: data.email ?? existingPaciente.email,
+        direccion: data.direccion ?? existingPaciente.direccion,
+        nacionalidad: data.nacionalidad ?? existingPaciente.nacionalidad,
+      },
+    });
 
       this.logger.debug('Paciente actualizado exitosamente');
       return 'Paciente actualizado exitosamente';

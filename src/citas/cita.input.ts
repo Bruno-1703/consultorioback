@@ -18,6 +18,8 @@ export class CitaInput {
   fechaSolicitud?: Date;
   @Field(() => ID,{ nullable: true })
   id_userDoctor?: string;
+  @Field(() => Boolean, { nullable: true })
+  finalizada?: boolean;
   
 }
 @InputType()
@@ -26,6 +28,8 @@ export class CitaWhereInput {
   id_cita?: string;
   @Field(() => String, { nullable: true })
   motivoConsulta?: string;
+  @Field(() => Boolean, { nullable: true })
+  finalizada?: boolean;
   @Field(() => Date, { nullable: true })
   fechaSolicitud?: Date;
   @Field(() => String, { nullable: true })

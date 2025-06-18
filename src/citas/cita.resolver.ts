@@ -16,8 +16,7 @@ export class CitaResolver {
   }
 
   @Query(() => CitaResultadoBusqueda)
-  async getCitas(
-    
+  async getCitas(    
     //@Usuario() usuario: any,
     @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
     @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
@@ -26,7 +25,15 @@ export class CitaResolver {
   ): Promise<CitaResultadoBusqueda> {
     return this.citaService.getCitas( skip,limit,where);
   }
-
+ @Query(() => CitaResultadoBusqueda)
+  async getCitasByFecha(    
+    @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
+    @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
+    @Args({ name: 'where', type: () => CitaWhereInput, nullable: true })
+    where?: CitaWhereInput
+  ): Promise<CitaResultadoBusqueda> {
+    return this.citaService.getCitas( skip,limit,where);
+  }
   @Mutation(() => String)
   async createCita(
    //@Usuario() usuario: any,
@@ -76,6 +83,11 @@ async cancelarCita(
 ): Promise<string> {
   return this.citaService.cancelarCita(id);
 }
-
+  @Mutation(() => String)
+async finalizarCita(
+  @Args('id', { type: () => String }) id: string,
+): Promise<string> {
+  return this.citaService.finalizarCita(id);
+}
 
 }

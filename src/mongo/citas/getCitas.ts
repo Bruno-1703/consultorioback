@@ -1,7 +1,7 @@
-import { Logger } from '@nestjs/common';
-import { Db } from 'mongodb';
-import { CitaEdge, CitaResultadoBusqueda } from 'src/citas/cita.dto';
-import { CitaWhereInput } from 'src/citas/cita.input';
+import { Logger } from "@nestjs/common";
+import { Db } from "mongodb";
+import { CitaEdge, CitaResultadoBusqueda } from "src/citas/cita.dto";
+import { CitaWhereInput } from "src/citas/cita.input";
 
 export async function getCitas(
   mongoConnection: Db,
@@ -13,42 +13,56 @@ export async function getCitas(
   try {
     logger.log({ action: 'getCitas' });
 
-    const buscar = where ? where.buscar : null;
-    const fechaSolicitud = where ? where.fechaSolicitud : null;
-    console.log(fechaSolicitud)
-    
-    const query: any = [{}];
-    // if (fechaSolicitud) {
-    //   query.push({ fechaSolicitud: fechaSolicitud });
-    // }
+    const buscar = where?.buscar;
+    const fechaSolicitud = where?.fechaSolicitud;
+
+    const query: any[] = [];
+
+    if (where?.paciente?.dni && where.paciente.dni.trim() !== "") {
+      query.push({ "paciente.dni": where.paciente.dni });
+    }
+
+    // Si deseas filtrar por fecha
+    if (fechaSolicitud) {
+      query.push({ fechaSolicitud });
+    }
+
+    // Puedes agregar búsqueda por texto también si lo deseas
     // if (buscar) {
     //   const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
-    //   query.push(
-    //     { motivoConsulta: regexBuscar },
-    //     {
-    //       observaciones: regexBuscar,
-    //     },
-    //   );
+    //   query.push({
+    //     $or: [
+    //       { motivoConsulta: regexBuscar },
+    //       { observaciones: regexBuscar },
+    //     ],
+    //   });
     // }
+
+    const matchStage = query.length > 0 ? { $match: { $and: query } } : { $match: {} };
 
     const consulta = mongoConnection
       .collection('Cita')
       .aggregate(
         [
-          { $match: query.length > 0 ? { $and: query } : {} },
+          matchStage,
           { $sort: { fechaSolicitud: -1 } },
-          { $skip: skip ? skip : 0 },
-          { $limit: limit ? limit : 10 },
+          { $skip: skip || 0 },
+          { $limit: limit || 10 },
         ],
         { allowDiskUse: true },
       );
+
     const consultaCantidad = await mongoConnection
       .collection('Cita')
-      .aggregate([{ $match: { $and: query } }, { $count: 'cantidad' }])
+      .aggregate([
+        matchStage,
+        { $count: 'cantidad' }
+      ])
       .toArray();
 
-    const cantidad = consultaCantidad[0]?.['cantidad'] || 0;
+    const cantidad = consultaCantidad[0]?.cantidad || 0;
     const citas = await consulta.toArray();
+
     const edges: CitaEdge[] = citas.map((cita: any) => ({
       node: Object.assign({}, cita, {
         id_cita: cita._id.toString(),
@@ -67,12 +81,3 @@ export async function getCitas(
     throw new Error('Error al buscar el dato estático de la citas');
   }
 }
-
-export const diacriticSensitiveRegex = (text = '') => {
-  return text
-    .replace(/[aá]/g, '[a,á,à,ä]')
-    .replace(/[eé]/g, '[e,é,ë]')
-    .replace(/[ií]/g, '[i,í,ï]')
-    .replace(/[oó]/g, '[o,ó,ö,ò]')
-    .replace(/[uú]/g, '[u,ü,ú,ù]');
-};

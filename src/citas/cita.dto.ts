@@ -16,6 +16,8 @@ export class Cita {
   observaciones?: string;
   @Field(() => Boolean, { nullable: true })
   cancelada?: boolean;
+  @Field(() => Boolean, { nullable: true })
+  finalizada?: boolean;
   @Field(() => [Medicamento], { nullable: true })
   medicamentos?: Medicamento[];
   @Field(() => [Estudio], { nullable: true })
