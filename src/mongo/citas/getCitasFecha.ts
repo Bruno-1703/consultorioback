@@ -11,33 +11,33 @@ export async function getCitasByfecha(
 ): Promise<CitaResultadoBusqueda | null> {
   const logger = new Logger('getCitasByfecha');
   try {
-    logger.log('Buscando citas...');
+    const query: any = {};
+    console.log(where.fechaProgramada)
+ if (where?.fechaProgramada) {
+  const base = new Date(where.fechaProgramada); // ISO string: "2025-07-23"
+  
+  const desde = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate(), 0, 0, 0, 0));
+  const hasta = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate(), 23, 59, 59, 999));
 
-    const query: any[] = [];
+  query.fechaProgramada = { $gte: desde, $lte: hasta };
+}
 
-    const matchStage = query.length > 0 ? { $match: { $and: query } } : { $match: {} };
-
+  
     const pipeline = [
-      matchStage,
-      { $sort: { fechaSolicitud: -1 } },
+      { $match: query },
+      { $sort: { fechaProgramada: -1 } },
       { $skip: skip || 0 },
       { $limit: limit || 10 },
     ];
 
-    const consulta = mongoConnection
+    const citas = await mongoConnection
       .collection('Cita')
-      .aggregate(pipeline, { allowDiskUse: true });
-
-    const consultaCantidad = await mongoConnection
-      .collection('Cita')
-      .aggregate([
-        matchStage,
-        { $count: 'cantidad' }
-      ])
+      .aggregate(pipeline, { allowDiskUse: true })
       .toArray();
 
-    const cantidad = consultaCantidad[0]?.cantidad || 0;
-    const citas = await consulta.toArray();
+    const cantidad = await mongoConnection
+      .collection('Cita')
+      .countDocuments(query);
 
     const edges: CitaEdge[] = citas.map((cita: any) => ({
       node: {
@@ -54,7 +54,7 @@ export async function getCitasByfecha(
       edges,
     };
   } catch (error) {
-    logger.error('Error en getCitasByfecha', error);
+    logger.error(error);
     throw new Error('Error al buscar el dato estático de las citas');
   }
 }

@@ -14,7 +14,6 @@ export async function getCitas(
     logger.log({ action: 'getCitas' });
 
     const buscar = where?.buscar;
-    const fechaSolicitud = where?.fechaSolicitud;
 
     const query: any[] = [];
 
@@ -22,21 +21,6 @@ export async function getCitas(
       query.push({ "paciente.dni": where.paciente.dni });
     }
 
-    // Si deseas filtrar por fecha
-    if (fechaSolicitud) {
-      query.push({ fechaSolicitud });
-    }
-
-    // Puedes agregar búsqueda por texto también si lo deseas
-    // if (buscar) {
-    //   const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
-    //   query.push({
-    //     $or: [
-    //       { motivoConsulta: regexBuscar },
-    //       { observaciones: regexBuscar },
-    //     ],
-    //   });
-    // }
 
     const matchStage = query.length > 0 ? { $match: { $and: query } } : { $match: {} };
 

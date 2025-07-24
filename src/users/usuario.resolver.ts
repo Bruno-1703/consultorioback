@@ -11,15 +11,16 @@ export class UsuarioResolver {
   async getUsuario(@Args('email') email: string): Promise<Usuario | null> {
     return this.usuarioService.getUsuario(email);
   }
-  // @Query(() => UsuarioResultadoBusqueda)
-  // async getUsuarios(
-  //   @Args({ name: 'where', type: () => UsuarioWhereInput, nullable: true })
-  //   where?: UsuarioWhereInput,
-  //   @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
-  //   @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
-  // ): Promise<UsuarioResultadoBusqueda> {
-  //   return this.usuarioService.getUsuarios(where, skip, limit);
-  // }
+@Query(() => UsuarioResultadoBusqueda)
+async getUsuarios(
+  @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
+  @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
+    @Args({ name: 'where', type: () => UsuarioWhereInput, nullable: true }) where?: UsuarioWhereInput,
+
+): Promise<UsuarioResultadoBusqueda> {
+  return this.usuarioService.getUsuarios(skip, limit,where);
+}
+
   @Mutation(() => String)
   async createUsuario(
     @Args({ name: 'data', type: () => UsuarioInput }) data: UsuarioInput,

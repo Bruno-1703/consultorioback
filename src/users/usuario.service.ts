@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { UsuarioInput } from './usuario.input';
 import { PrismaService } from '../prisma/prisma.service';
-import { Usuario } from './usuario.dto';
+import { Usuario, UsuarioResultadoBusqueda } from './usuario.dto';
+import { getUsuarios } from 'src/mongo/usuarios/getUsuarios';
 
 @Injectable()
 export class UsuarioService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   private readonly logger = new Logger(UsuarioService.name);
 
   async getUsuario(email: string): Promise<Usuario | null> {
@@ -20,22 +21,20 @@ export class UsuarioService {
     }
   }
 
-  // async getUsuarios(where?, skip?, limit?): Promise<{ usuarios: Usuario[]; count: number }> {
-  //   try {
-  //     const filteredUsuarios = await this.prisma.client.usuario.findMany({
-  //       where,
-  //       skip,
-  //       take: limit,
-  //     });
+  async getUsuarios(skip?, limit?, where?): Promise<UsuarioResultadoBusqueda> {
+    try {
+      const usuarios = await getUsuarios(this.prisma.mongodb,
+        skip,
+        limit,
+        where,
+      );
 
-  //     const totalUsuarios = await this.prisma.client.usuario.count({ where });
-
-  //     return { usuarios: filteredUsuarios, count: totalUsuarios };
-  //   } catch (error) {
-  //     console.error('Error al buscar usuarios', error);
-  //     throw new Error('Error al buscar usuarios');
-  //   }
-  // }
+      return usuarios;
+    } catch (error) {
+      console.error('Error al buscar usuarios', error);
+      throw new Error('Error al buscar usuarios');
+    }
+  }
 
   async createUsuario(data: UsuarioInput): Promise<string> {
     try {
@@ -44,17 +43,15 @@ export class UsuarioService {
           nombre_usuario: data.nombre_usuario,
           email: data.email,
           password: data.password,
-          rol_usuario:'user',
+          rol_usuario: 'user',
           nombre_completo: data.nombre_completo,
           especialidad: data.especialidad,
           matricula: data.matricula,
-          telefono: data.telefono,
           dni: data.dni,
 
-          
+
         },
       });
-      console.log('aaa')
       return 'Usuario creado exitosamente';
     } catch (error) {
       console.error('Error al crear usuario', error);

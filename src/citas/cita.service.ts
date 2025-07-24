@@ -13,7 +13,7 @@ import { getCitasByfecha } from 'src/mongo/citas/getCitasFecha';
 
 @Injectable()
 export class CitaService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   private readonly logger = new Logger(CitaService.name);
 
   async getCita(id: string): Promise<Cita | null> {
@@ -34,42 +34,50 @@ export class CitaService {
     where: CitaInput,
   ): Promise<CitaResultadoBusqueda> {
     try {
-      const citas = await getCitas(this.prisma.mongodb,skip,limit , where);
+      const citas = await getCitas(this.prisma.mongodb, skip, limit, where);
       return citas;
     } catch (error) {
       console.error('Error al buscar citas', error);
       throw new Error('Error al buscar citas');
     }
   }
-    async getCitasByFecha(
+  async getCitasByFecha(
     limit: number,
     skip: number,
     where: CitaInput,
   ): Promise<CitaResultadoBusqueda> {
     try {
-      const citas = await getCitasByfecha(this.prisma.mongodb,skip,limit , where);
+      const citas = await getCitasByfecha(this.prisma.mongodb, skip, limit, where);
       return citas;
     } catch (error) {
       console.error('Error al buscar citas', error);
       throw new Error('Error al buscar citas');
     }
   }
-  async createCita(data: CitaInput,  paciente: PacienteCitaInput,): Promise<string> {
+  async createCita(data: CitaInput, paciente: PacienteCitaInput,): Promise<string> {
     try {
       await this.prisma.client.cita.create({
         data: {
           motivoConsulta: data.motivoConsulta,
           observaciones: data.observaciones,
           cancelada: false,
-          fechaSolicitud: data.fechaSolicitud,     
-          id_userDoctor:  ""    ,
+          fechaProgramada: data.fechaProgramada,
+
+          doctor: {
+            id_Usuario:data.doctor.id,
+             nombre_usuario: data.doctor.nombre_usuario,
+            email: data.doctor.email,
+             especialidad: data.doctor.especialidad,
+             matricula: data.doctor.matricula,
+             dni: data.doctor.dni,
+          },
+
           paciente: {
             set: {
               id_paciente: paciente.id_paciente,
               dni: paciente.dni,
-              nombre_paciente: paciente.nombre_paciente,  
+              nombre_paciente: paciente.nombre_paciente,
               apellido_paciente: paciente.apellido_paciente,
-
             },
           },
         },
@@ -84,7 +92,7 @@ export class CitaService {
           registro_id: data.id_cita, // ID de la cita afectada
         },
       });
-      
+
       return 'Cita creada Exitosamente';
     } catch (error) {
       console.error('Error crear cita', error);
@@ -100,8 +108,8 @@ export class CitaService {
       });
       await this.prisma.client.auditoria.create({
         data: {
-          accion: 'UPDATE', 
-          usuarioId:"",
+          accion: 'UPDATE',
+          usuarioId: "",
           usuarioNom: "usuarioNombre",
           detalles: `Se actualizó la cita con ID ${data.id_cita}.`,
           model: 'Cita',
@@ -134,7 +142,7 @@ export class CitaService {
           },
         },
       });
-  
+
 
       return 'Cita actualizada exitosamente con las enfermedades agregadas';
     } catch (error) {
@@ -174,7 +182,7 @@ export class CitaService {
   ): Promise<string> {
     this.logger.log({ action: 'crearCitaEstudios' });
     try {
-  
+
       await this.prisma.client.cita.update({
         where: {
           id_cita: citaId,
@@ -201,32 +209,30 @@ export class CitaService {
   }
   async cancelarCita(id: string): Promise<string> {
     const cita = await this.prisma.client.cita.findUnique({ where: { id_cita: id } });
-  
+
     if (!cita) {
       throw new Error('La cita no existe');
     }
-  
+
     await this.prisma.client.cita.update({
       where: { id_cita: id },
       data: { cancelada: true },
     });
-  
+
     return 'Cita finalizada correctamente';
   }
-    async finalizarCita(id: string): Promise<string> {
+  async finalizarCita(id: string): Promise<string> {
     const cita = await this.prisma.client.cita.findUnique({ where: { id_cita: id } });
-  
+
     if (!cita) {
       throw new Error('La cita no existe');
     }
-  
+
     await this.prisma.client.cita.update({
       where: { id_cita: id },
       data: { finalizada: true },
     });
-  
+
     return 'Cita finalizada correctamente';
   }
-  
-
 }

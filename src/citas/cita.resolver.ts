@@ -32,7 +32,8 @@ export class CitaResolver {
     @Args({ name: 'where', type: () => CitaWhereInput, nullable: true })
     where?: CitaWhereInput
   ): Promise<CitaResultadoBusqueda> {
-    return this.citaService.getCitas( skip,limit,where);
+    console.log(where)
+    return this.citaService.getCitasByFecha( skip,limit,where);
   }
   @Mutation(() => String)
   async createCita(

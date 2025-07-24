@@ -27,8 +27,16 @@ type PacienteCita {
   id_paciente String?
   dni             String?
   nombre_paciente String?
-    apellido_paciente String?
-
+  apellido_paciente String?
+}
+type CitaDoctor {
+  id_Usuario     String ?
+  nombre_usuario String?
+  email          String?
+  especialidad     String?
+  matricula        String ?  
+   telefono         String?
+   dni              String?
 }
 
 type CitaMedicamento {
@@ -39,9 +47,11 @@ type CitaMedicamento {
 model Cita {
   id_cita           String            @id @default(auto()) @map("_id") @db.ObjectId
   motivoConsulta    String?
-  fechaSolicitud    DateTime          
-  hora              String?
-  fechaModificacion DateTime? 
+
+ fechaProgramada     DateTime           /// Fecha y hora solicitada por el paciente
+  fechaCreacion       DateTime           @default(now())     /// Se genera automáticamente
+  fechaModificacion   DateTime?          @updatedAt          /// Se actualiza automáticamente
+
   observaciones     String?
   cancelada         Boolean           @default(false)
   enfermedades        CitaEnfermedad[]
@@ -49,8 +59,7 @@ model Cita {
   estudios           CitaEstudio[]
   paciente          PacienteCita
   finalizada        Boolean           @default(false)
-  id_userDoctor     String
-  
+  doctor    CitaDoctor
 }
 
 model Estudio {
