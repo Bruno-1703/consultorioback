@@ -62,14 +62,16 @@ export class CitaService {
           observaciones: data.observaciones,
           cancelada: false,
           fechaProgramada: data.fechaProgramada,
-
           doctor: {
             id_Usuario:data.doctor.id,
              nombre_usuario: data.doctor.nombre_usuario,
-            email: data.doctor.email,
+             email: data.doctor.email,
              especialidad: data.doctor.especialidad,
              matricula: data.doctor.matricula,
              dni: data.doctor.dni,
+             telefono: data.doctor.telefono,
+             
+
           },
 
           paciente: {

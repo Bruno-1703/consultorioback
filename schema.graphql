@@ -167,6 +167,7 @@ type Query {
   getEnfermedades(where: EnfermedadWhereInput, skip: Int, limit: Int): EnfermedadResultadoBusqueda!
   getUsuario(email: String!): Usuario
   getUsuarios(skip: Int, limit: Int, where: UsuarioWhereInput): UsuarioResultadoBusqueda!
+  getUsuarioById(id: String!): Usuario
 }
 
 input CitaWhereInput {
@@ -326,6 +327,8 @@ type Mutation {
   createUsuario(data: UsuarioInput!): String!
   updateUsuario(data: UsuarioInput!, usuarioId: String!): String!
   deleteUsuario(id: String!): String!
+  solicitarRecuperacionPassword(email: String!): String!
+  resetearPassword(token: String!, nuevaPassword: String!): String!
 }
 
 input CitaInput {

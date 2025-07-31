@@ -17,7 +17,7 @@ export async function getUsuarios(
     const query: any[] = [];
 
     if (where?.rol_usuario) {
-      query.push({ rol_usuario: "doctor" });
+      query.push({ rol_usuario: where.rol_usuario  });
     }
 
     // if (where?.dni) {

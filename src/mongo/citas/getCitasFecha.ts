@@ -11,33 +11,59 @@ export async function getCitasByfecha(
 ): Promise<CitaResultadoBusqueda | null> {
   const logger = new Logger('getCitasByfecha');
   try {
-    const query: any = {};
-    console.log(where.fechaProgramada)
- if (where?.fechaProgramada) {
-  const base = new Date(where.fechaProgramada); // ISO string: "2025-07-23"
-  
-  const desde = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate(), 0, 0, 0, 0));
-  const hasta = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate(), 23, 59, 59, 999));
+    const query: any[] = [];
 
-  query.fechaProgramada = { $gte: desde, $lte: hasta };
-}
+    // Siempre buscar las no finalizadas, si no se indica lo contrario
+    if (where?.finalizada !== undefined) {
+      query.push({ finalizada: where.finalizada });
+    } else {
+      query.push({ finalizada: false });
+    }
 
-  
-    const pipeline = [
-      { $match: query },
-      { $sort: { fechaProgramada: -1 } },
-      { $skip: skip || 0 },
-      { $limit: limit || 10 },
-    ];
+    // Filtro por texto libre (buscar)
+    if (where?.buscar) {
+      query.push({
+        $or: [
+          { motivoConsulta: { $regex: where.buscar, $options: 'i' } },
+          { observaciones: { $regex: where.buscar, $options: 'i' } },
+        ],
+      });
+    }
 
+    // Filtro por motivo exacto
+    if (where?.motivoConsulta) {
+      query.push({ motivoConsulta: { $regex: new RegExp(where.motivoConsulta, 'i') } });
+    }
+
+    // Filtro por observaciones exactas
+    if (where?.observaciones) {
+      query.push({ observaciones: { $regex: new RegExp(where.observaciones, 'i') } });
+    }
+
+    // Filtro por fecha exacta (rango del día)
+    if (where?.fechaProgramada) {
+      const base = new Date(where.fechaProgramada);
+      const desde = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate(), 0, 0, 0, 0));
+      const hasta = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate(), 23, 59, 59, 999));
+      
+      query.push({ fechaProgramada: { $gte: desde, $lte: hasta } });
+    }
+
+    const matchStage = query.length > 0 ? { $match: { $and: query } } : { $match: {} };
+
+    // Aquí está la corrección: usar matchStage y agregar skip y limit
     const citas = await mongoConnection
       .collection('Cita')
-      .aggregate(pipeline, { allowDiskUse: true })
+      .aggregate([
+        matchStage,
+        { $skip: skip },
+        { $limit: limit }
+      ])
       .toArray();
 
     const cantidad = await mongoConnection
       .collection('Cita')
-      .countDocuments(query);
+      .countDocuments(query.length > 0 ? { $and: query } : {});
 
     const edges: CitaEdge[] = citas.map((cita: any) => ({
       node: {

@@ -9,6 +9,7 @@ import { PacienteModule } from './paciente/paciente.module';
 import { EnfermedadModule } from './enfermedad/enfermedad.module';
 import { UsersModule } from './users/usuario.module';
 import { AuthModule } from './auth/auth.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { AuthModule } from './auth/auth.module';
     PacienteModule,
     EnfermedadModule,
     UsersModule,
-    AuthModule
+    AuthModule,
+    EmailModule
   ],
   controllers: [],
 })

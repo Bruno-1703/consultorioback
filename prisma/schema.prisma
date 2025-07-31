@@ -35,8 +35,9 @@ type CitaDoctor {
   email          String?
   especialidad     String?
   matricula        String ?  
-   telefono         String?
-   dni              String?
+  telefono         String?
+  nombre_completo String?
+  dni              String?
 }
 
 type CitaMedicamento {
@@ -130,7 +131,9 @@ model Usuario {
   matricula        String   @unique
   dni              String   @unique
   telefono         String?
-  
+  resetToken        String?
+resetTokenExpiry  DateTime?
+
 }
 
 enum Accion {
