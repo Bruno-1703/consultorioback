@@ -94,7 +94,7 @@ constructor(
   }
 async solicitarRecuperacionPassword(email: string): Promise<string> {
   const user = await this.prisma.client.usuario.findFirst({ where: { email } }); // ✅ cambiado findUnique → findFirst
-
+  console.log(user)
   if (!user) return 'Si el email está registrado, se enviará un correo';
 
   const token = randomBytes(32).toString('hex');

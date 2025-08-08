@@ -10,6 +10,7 @@ import { EnfermedadModule } from './enfermedad/enfermedad.module';
 import { UsersModule } from './users/usuario.module';
 import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
+import { BackupModule } from './backup/backup.module';
 
 @Module({
   imports: [
@@ -26,8 +27,10 @@ import { EmailModule } from './email/email.module';
     EnfermedadModule,
     UsersModule,
     AuthModule,
+    BackupModule,
+
     EmailModule
   ],
   controllers: [],
 })
-export class AppModule {}
+export class AppModule { }

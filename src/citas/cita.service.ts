@@ -10,6 +10,8 @@ import { getCitas } from 'src/mongo/citas/getCitas';
 import { PacienteCitaInput, PacienteInput } from 'src/paciente/paciente.input';
 import { EstudioInput } from 'src/estudios/estudio.input';
 import { getCitasByfecha } from 'src/mongo/citas/getCitasFecha';
+import * as ExcelJS from 'exceljs';
+import { Response } from 'express';
 
 @Injectable()
 export class CitaService {
@@ -237,4 +239,37 @@ export class CitaService {
 
     return 'Cita finalizada correctamente';
   }
+
+  async generarReporteCitas(res: Response): Promise<void> {
+    const citas = await this.prisma.client.cita.findMany();
+
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet('Citas');
+
+  sheet.columns = [
+    { header: 'Paciente', key: 'paciente', width: 30 },
+    { header: 'Doctor', key: 'doctor', width: 30 },
+    { header: 'Motivo', key: 'motivo', width: 40 },
+    { header: 'Fecha', key: 'fecha', width: 20 },
+    { header: 'Finalizada', key: 'finalizada', width: 15 },
+    { header: 'Cancelada', key: 'cancelada', width: 15 },
+  ];
+
+  for (const cita of citas) {
+    sheet.addRow({
+      paciente: `${cita.paciente?.nombre_paciente ?? ''} ${cita.paciente?.apellido_paciente ?? ''}`,
+      doctor: cita.doctor?.nombre_completo ?? '',
+      motivo: cita.motivoConsulta,
+      fecha: cita.fechaProgramada?.toLocaleString(),
+      finalizada: cita.finalizada ? 'Sí' : 'No',
+      cancelada: cita.cancelada ? 'Sí' : 'No',
+    });
+  }
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.setHeader('Content-Disposition', 'attachment; filename=reporte-citas.xlsx');
+  res.end(buffer);
+}
 }

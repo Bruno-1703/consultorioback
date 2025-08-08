@@ -41,13 +41,17 @@ export async function getCitasByfecha(
     }
 
     // Filtro por fecha exacta (rango del día)
-    if (where?.fechaProgramada) {
-      const base = new Date(where.fechaProgramada);
-      const desde = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate(), 0, 0, 0, 0));
-      const hasta = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate(), 23, 59, 59, 999));
-      
-      query.push({ fechaProgramada: { $gte: desde, $lte: hasta } });
-    }
+// Filtro por fecha exacta (rango del día en UTC)
+if (where?.fechaProgramada) {
+  const base = new Date(where.fechaProgramada);
+  const desde = new Date(base);
+  desde.setUTCHours(0, 0, 0, 0);
+
+  const hasta = new Date(base);
+  hasta.setUTCHours(23, 59, 59, 999);
+
+  query.push({ fechaProgramada: { $gte: desde, $lte: hasta } });
+}
 
     const matchStage = query.length > 0 ? { $match: { $and: query } } : { $match: {} };
 
