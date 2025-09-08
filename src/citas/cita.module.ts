@@ -8,8 +8,6 @@ import { ReporteController } from './ReporteController';
   providers: [CitaService, CitaResolver],
   imports: [PrismaModule],
   exports: [CitaService], 
-    controllers: [ReporteController],
-
-
+  controllers: [ReporteController],
 })
 export class CitaModule {}

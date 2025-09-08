@@ -56,26 +56,25 @@ export class CitaService {
       throw new Error('Error al buscar citas');
     }
   }
-  async createCita(data: CitaInput, paciente: PacienteCitaInput,): Promise<string> {
+  async createCita(data: CitaInput, paciente: PacienteCitaInput): Promise<string> {
     try {
-      await this.prisma.client.cita.create({
+      const nuevaCita = await this.prisma.client.cita.create({
         data: {
           motivoConsulta: data.motivoConsulta,
           observaciones: data.observaciones,
           cancelada: false,
           fechaProgramada: data.fechaProgramada,
           doctor: {
-            id_Usuario:data.doctor.id,
-             nombre_usuario: data.doctor.nombre_usuario,
-             email: data.doctor.email,
-             especialidad: data.doctor.especialidad,
-             matricula: data.doctor.matricula,
-             dni: data.doctor.dni,
-             telefono: data.doctor.telefono,
-             
-
+            set: {
+              id_Usuario: data.doctor.id,
+              nombre_usuario: data.doctor.nombre_usuario,
+              email: data.doctor.email,
+              especialidad: data.doctor.especialidad,
+              matricula: data.doctor.matricula,
+              dni: data.doctor.dni,
+              telefono: data.doctor.telefono,
+            },
           },
-
           paciente: {
             set: {
               id_paciente: paciente.id_paciente,
@@ -86,14 +85,15 @@ export class CitaService {
           },
         },
       });
+
       await this.prisma.client.auditoria.create({
         data: {
-          accion: 'CREATE', // Asegúrate de usar el valor correcto del enum, en este caso 'CREAR'
-          usuarioId: "", // Si es obligatorio, asegúrate de asignar un ID válido o manejarlo como null
-          usuarioNom: "usuarioNombre", // Asumí que 'usuarioNom' es el campo correcto para el nombre del usuario
-          detalles: `Se creó una nueva cita con ID ${data.id_cita}.`, // Detalles de la acción realizada
-          model: 'Cita', // El modelo afectado
-          registro_id: data.id_cita, // ID de la cita afectada
+          accion: 'CREATE',
+          usuarioId: "", // ID del usuario logueado
+          usuarioNom: "usuarioNombre",
+          detalles: `Se creó una nueva cita con ID ${nuevaCita.id_cita}.`,
+          model: 'Cita',
+          registro_id: nuevaCita.id_cita,
         },
       });
 
@@ -103,6 +103,7 @@ export class CitaService {
       throw new Error('Error crear cita');
     }
   }
+
 
   async updateCita(data: CitaInput, citaId: string): Promise<string> {
     try {
@@ -244,32 +245,32 @@ export class CitaService {
     const citas = await this.prisma.client.cita.findMany();
 
 
-  const workbook = new ExcelJS.Workbook();
-  const sheet = workbook.addWorksheet('Citas');
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Citas');
 
-  sheet.columns = [
-    { header: 'Paciente', key: 'paciente', width: 30 },
-    { header: 'Doctor', key: 'doctor', width: 30 },
-    { header: 'Motivo', key: 'motivo', width: 40 },
-    { header: 'Fecha', key: 'fecha', width: 20 },
-    { header: 'Finalizada', key: 'finalizada', width: 15 },
-    { header: 'Cancelada', key: 'cancelada', width: 15 },
-  ];
+    sheet.columns = [
+      { header: 'Paciente', key: 'paciente', width: 30 },
+      { header: 'Doctor', key: 'doctor', width: 30 },
+      { header: 'Motivo', key: 'motivo', width: 40 },
+      { header: 'Fecha', key: 'fecha', width: 20 },
+      { header: 'Finalizada', key: 'finalizada', width: 15 },
+      { header: 'Cancelada', key: 'cancelada', width: 15 },
+    ];
 
-  for (const cita of citas) {
-    sheet.addRow({
-      paciente: `${cita.paciente?.nombre_paciente ?? ''} ${cita.paciente?.apellido_paciente ?? ''}`,
-      doctor: cita.doctor?.nombre_completo ?? '',
-      motivo: cita.motivoConsulta,
-      fecha: cita.fechaProgramada?.toLocaleString(),
-      finalizada: cita.finalizada ? 'Sí' : 'No',
-      cancelada: cita.cancelada ? 'Sí' : 'No',
-    });
+    for (const cita of citas) {
+      sheet.addRow({
+        paciente: `${cita.paciente?.nombre_paciente ?? ''} ${cita.paciente?.apellido_paciente ?? ''}`,
+        doctor: cita.doctor?.nombre_completo ?? '',
+        motivo: cita.motivoConsulta,
+        fecha: cita.fechaProgramada?.toLocaleString(),
+        finalizada: cita.finalizada ? 'Sí' : 'No',
+        cancelada: cita.cancelada ? 'Sí' : 'No',
+      });
+    }
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=reporte-citas.xlsx');
+    res.end(buffer);
   }
-
-  const buffer = await workbook.xlsx.writeBuffer();
-  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader('Content-Disposition', 'attachment; filename=reporte-citas.xlsx');
-  res.end(buffer);
-}
 }

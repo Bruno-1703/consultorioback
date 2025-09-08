@@ -10,7 +10,7 @@ export class MailService {
     to: string | string[],
     subject: string,
     html: string,
-  from = 'onboarding@resend.dev' // ✔️ reemplazo temporal para pruebas
+    from = 'sistmedical@resend.dev'
   ): Promise<void> {
     if (!to || !subject || !html) {
       this.logger.warn('sendEmail llamado con datos incompletos', { to, subject });

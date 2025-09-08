@@ -8,7 +8,6 @@ import { PrismaClient } from '@prisma/client';
 import { PacienteModule } from './paciente/paciente.module';
 import { EnfermedadModule } from './enfermedad/enfermedad.module';
 import { UsersModule } from './users/usuario.module';
-import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
 import { BackupModule } from './backup/backup.module';
 
@@ -26,7 +25,6 @@ import { BackupModule } from './backup/backup.module';
     PacienteModule,
     EnfermedadModule,
     UsersModule,
-    AuthModule,
     BackupModule,
 
     EmailModule

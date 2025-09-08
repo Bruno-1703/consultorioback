@@ -17,7 +17,6 @@ export async function getMedicamentos(
     const buscar = where ? where.nombre_med : null;
 
 
-    const filters: any[] = [{ eliminadoLog: false }];
 
     // if (buscar) {
     //   const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
@@ -30,10 +29,9 @@ export async function getMedicamentos(
     // }
     const consulta = mongoConnection.collection('Medicamento').aggregate(
       [
-        { $match: query.length > 0 ? { $and: query } : {} },  // Ajuste aquí
+{ $match: query.length > 0 ? { $and: query } : {} },
         { $skip: skip ? skip : 0 },
         { $limit: limit ? limit : 10 },
-        { $match: { $and: filters } },
       ],
       { allowDiskUse: true },
     );

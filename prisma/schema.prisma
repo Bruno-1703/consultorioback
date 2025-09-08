@@ -122,7 +122,7 @@ model Paciente {
 model Usuario {
   id_Usuario     String  @id @default(auto()) @map("_id") @db.ObjectId
   nombre_usuario String
-  email          String
+  email          String  @unique
   password       String
   deletLogico    Boolean @default(false)
   rol_usuario    String
@@ -146,14 +146,17 @@ enum Accion {
 
 model Auditoria {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  fecha        DateTime @default(now())
-  accion       Accion   // Usamos el enum Accion aquí
-  usuarioId    String?  // ID del usuario que realizó la acción
-  usuarioNom      String  // Nombre del usuario o correo electrónico del usuario que realizó la acción
-  detalles     String? // Detalles de la acción o cambios realizados
-  model        String  // El nombre del modelo o entidad afectada (Ej: "Paciente", "Cita", etc.)
-  registro_id  String? // El ID del registro afectado en la base de datos (ej: id_cita, id_paciente, etc.)
-  createdAt    DateTime @default(now()) // Fecha y hora de creación del registro de auditoría
-  updatedAt    DateTime @updatedAt // Fecha y hora de la última actualización del registro
+  accion       Accion
+  usuarioId    String?
+  usuarioNom   String?
+  detalles     String?
+  model        String
+  registro_id  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([usuarioId])
+  @@index([model])
+  @@index([registro_id])
 }
 

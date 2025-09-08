@@ -14,7 +14,7 @@ export class EstudioService {
   constructor(
     private prisma: PrismaService,
     private citaService: CitaService, // Inyección de CitaService
-  ) {}
+  ) { }
   private readonly logger = new Logger(EstudioService.name);
 
   async getEstudio(id: string): Promise<Estudio | null> {
@@ -52,25 +52,25 @@ export class EstudioService {
     }
   }
 
-  async createEstudio(data: EstudioInput,idCita:string): Promise<string> {
+  async createEstudio(data: EstudioInput, idCita: string): Promise<string> {
     try {
       const nuevoEstudio = await this.prisma.client.estudio.create({
         data,
       });
 
-         // 2. Llamar a `createCitaEstudios` desde CitaService
-    await this.citaService.createCitaEstudios(idCita, [
-      {
-        id_estudio: nuevoEstudio.id_estudio,
-        codigo_referencia: nuevoEstudio.codigo_referencia,
-        fecha_realizacion: nuevoEstudio.fecha_realizacion,
-        tipo_estudio: nuevoEstudio.tipo_estudio,
-        medico_solicitante: nuevoEstudio.medico_solicitante,
-        observaciones: nuevoEstudio.observaciones,
-        resultado: nuevoEstudio.resultado
+      // 2. Llamar a `createCitaEstudios` desde CitaService
+      await this.citaService.createCitaEstudios(idCita, [
+        {
+          id_estudio: nuevoEstudio.id_estudio,
+          codigo_referencia: nuevoEstudio.codigo_referencia,
+          fecha_realizacion: nuevoEstudio.fecha_realizacion,
+          tipo_estudio: nuevoEstudio.tipo_estudio,
+          medico_solicitante: nuevoEstudio.medico_solicitante,
+          observaciones: nuevoEstudio.observaciones,
+          resultado: nuevoEstudio.resultado
 
-      },
-    ]);
+        },
+      ]);
       this.logger.debug('Estudio creado:', nuevoEstudio);
       return 'Estudio creado exitosamente';
     } catch (error) {
@@ -79,7 +79,6 @@ export class EstudioService {
       throw new Error('Error al crear el estudio');
     }
   }
-
   async updateEstudio(data: EstudioInput, estudioId: string): Promise<string> {
     try {
       const estudioActualizado = await this.prisma.client.estudio.update({

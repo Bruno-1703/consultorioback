@@ -29,41 +29,42 @@ export class EnfermedadService {
     }
   }
 
-  async getEnfermedad(
-    where?,
-    skip?,
-    limit?,
-  ): Promise<EnfermedadResultadoBusqueda> {
-    try {
-      const filteredEnfermedad = await this.prisma.client.enfermedad.findMany({
-        where,
-        skip,
-        take: limit,
-      });
+async getEnfermedad(
+  where?: any,
+  skip?: number,
+  limit?: number,
+): Promise<EnfermedadResultadoBusqueda> {
+  try {
+    console.log('Parámetros recibidos:', { where, skip, limit });
 
-      const totalEnfermedades = await this.prisma.client.enfermedad.count({
-        where,
-      });
+    const filteredEnfermedad = await this.prisma.client.enfermedad.findMany({
+      where: where || {},
+      skip: skip ?? undefined,
+      take: limit ?? undefined,
+    });
 
-      const resultadoBusqueda: EnfermedadResultadoBusqueda = {
-        edges: filteredEnfermedad.map((enfermedad) => ({
-          node: {
-            id_enfermedad: enfermedad.id_enfermedad,
-            nombre_enf: enfermedad.nombre_enf,
-            sintomas: enfermedad.sintomas,
-            gravedad: enfermedad.gravedad,
-          },
-          cursor: enfermedad.id_enfermedad,
-        })),
-        aggregate: { count: totalEnfermedades },
-      };
+    const totalEnfermedades = await this.prisma.client.enfermedad.count({
+      where: where || {},
+    });
 
-      return resultadoBusqueda;
-    } catch (error) {
-      console.error('Error al buscar citas', error);
-      throw new Error('Error al buscar enfermedad');
-    }
+    return {
+      edges: filteredEnfermedad.map((enfermedad) => ({
+        node: {
+          id_enfermedad: enfermedad.id_enfermedad,
+          nombre_enf: enfermedad.nombre_enf,
+          sintomas: enfermedad.sintomas,
+          gravedad: enfermedad.gravedad,
+        },
+        cursor: enfermedad.id_enfermedad,
+      })),
+      aggregate: { count: totalEnfermedades },
+    };
+  } catch (error) {
+    console.error('Error Prisma:', error);
+    throw new Error('Error al buscar enfermedad');
   }
+}
+
   async createEnfermedad(data: EnfermedadInput): Promise<string> {
     try {
       await this.prisma.client.enfermedad.create({
