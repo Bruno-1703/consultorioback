@@ -40,3 +40,23 @@ Clona el repositorio:
 ```bash
 git clone https://github.com/Bruno-1703/consultorioback.git
 cd consultorioback
+
+Instala las dependencias:
+npm install
+
+⚡ Configuración del entorno
+Crea un archivo .env en la raíz del proyecto con la siguiente estructura:
+DATABASE_URL="mongodb+srv://<usuario>:<password>@<cluster>.mongodb.net/sistmedical"
+PORT=3000
+
+▶️ Comandos principales
+Ejecutar el proyecto en desarrollo:
+npm run start:dev
+Ejecutar en producción:
+npm run build
+npm run start:prod
+Ejecutar en modo normal:
+npm run start
+
+🔗 Acceso a GraphQL Playground
+http://localhost:3000/graphql
