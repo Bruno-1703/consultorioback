@@ -152,6 +152,10 @@ type CitaResultadoBusqueda {
   aggregate: AggregateCount!
 }
 
+type AskResponse {
+  answer: String!
+}
+
 type Query {
   getCita(id: String!): Cita
   getCitas(skip: Int, limit: Int, where: CitaWhereInput): CitaResultadoBusqueda!
@@ -329,6 +333,7 @@ type Mutation {
   deleteUsuario(id: String!): String!
   solicitarRecuperacionPassword(email: String!): String!
   resetearPassword(token: String!, nuevaPassword: String!): String!
+  askIA(data: AskInput!): AskResponse!
 }
 
 input CitaInput {
@@ -369,4 +374,8 @@ input UsuarioInput {
   matricula: String!
   telefono: String
   dni: String!
+}
+
+input AskInput {
+  question: String!
 }
