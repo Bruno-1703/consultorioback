@@ -19,7 +19,11 @@ export class AuditoriaService {
       if (!auditoria) {
         throw new Error(`No se encontró la auditoría con ID ${id}`);
       }
-      return auditoria as Auditoria;
+      // Mapear 'createdAt' como 'fecha' para cumplir con el DTO
+      return {
+        ...auditoria,
+        fecha: auditoria?.createdAt,
+      } as Auditoria;
     } catch (error) {
       this.logger.error('Error al obtener la auditoría', error);
       throw new Error('Error al obtener la auditoría');
@@ -52,7 +56,8 @@ export class AuditoriaService {
         edges: auditorias.map(auditoria => ({
           node: {
             ...auditoria,
-            accion: auditoria.accion as any, // Forzar el tipo al enum local
+            fecha: auditoria.createdAt,
+            accion: auditoria.accion as any,
           },
           cursor: auditoria.id,
         })),
