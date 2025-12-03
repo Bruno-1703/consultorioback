@@ -10,7 +10,6 @@ import { EnfermedadModule } from './enfermedad/enfermedad.module';
 import { UsersModule } from './users/usuario.module';
 import { EmailModule } from './email/email.module';
 import { BackupModule } from './backup/backup.module';
-import { AskModule } from './ask/ask.module';
 
 
 @Module({
@@ -28,7 +27,6 @@ import { AskModule } from './ask/ask.module';
     EnfermedadModule,
     UsersModule,
     BackupModule,
-AskModule,
     EmailModule
   ],
   controllers: [],
