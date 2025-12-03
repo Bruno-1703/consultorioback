@@ -13,15 +13,15 @@ export class AuditoriaService {
 
   async getAuditoria(id: string): Promise<Auditoria | null> {
     try {
-      const auditoria = await getAuditoriaById(this.prisma.mongodb, id);
-
+      const auditoria = await this.prisma.client.auditoria.findUnique({
+        where: { id },
+      });
       if (!auditoria) {
         throw new Error(`No se encontró la auditoría con ID ${id}`);
       }
-      return auditoria;
+      return auditoria as Auditoria;
     } catch (error) {
-      console.error('Error al obtener la auditoría', error);
-      this.logger.error(error);
+      this.logger.error('Error al obtener la auditoría', error);
       throw new Error('Error al obtener la auditoría');
     }
   }
@@ -32,50 +32,79 @@ export class AuditoriaService {
     where?: AuditoriaWhereInput,
   ): Promise<AuditoriaResultadoBusqueda | null> {
     try {
-      const auditorias = await getAuditorias(this.prisma.mongodb, skip, limit, where);
+      // Solo usar los campos válidos para Prisma
+      const prismaWhere: any = {};
+      if (where?.id) prismaWhere.id = where.id;
+      if (where?.accion) prismaWhere.accion = where.accion;
+      if (where?.usuarioId) prismaWhere.usuarioId = where.usuarioId;
+      if (where?.detalles) prismaWhere.detalles = where.detalles;
+      if (where?.modelo) prismaWhere.model = where.modelo;
+      // No existe 'fecha' en el modelo Prisma
 
-      return auditorias;
+      const auditorias = await this.prisma.client.auditoria.findMany({
+        where: prismaWhere,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      });
+      const total = await this.prisma.client.auditoria.count({ where: prismaWhere });
+      return {
+        edges: auditorias.map(auditoria => ({
+          node: {
+            ...auditoria,
+            accion: auditoria.accion as any, // Forzar el tipo al enum local
+          },
+          cursor: auditoria.id,
+        })),
+        aggregate: { count: total },
+      };
     } catch (error) {
-      console.error('Error al buscar auditorías', error);
-      this.logger.error(error);
+      this.logger.error('Error al buscar auditorías', error);
       throw new Error('Error al buscar auditorías');
     }
   }
 
   async createAuditoria(data: AuditoriaInput): Promise<string> {
     try {
+      // Solo usar los campos válidos para Prisma
+      const auditoriaData: any = {
+        accion: data.accion,
+        usuarioId: data.usuarioId,
+        usuarioNom: data.usuarioNom,
+        model: data.modelo,
+        detalles: data.detalles ?? null,
+        registro_id: data.id ?? null,
+      };
       const nuevaAuditoria = await this.prisma.client.auditoria.create({
-        data: {
-          accion: data.accion,
-          usuarioId: data.usuarioId,
-          usuarioNom: data.usuarioNom,
-          model: data.modelo,  // Corrige 'modelo' a 'model' para coincidir con el modelo Prisma
-          detalles: data.detalles ?? null, // Si no hay detalles, se pasa null
-          registro_id: data.id ?? null, // Si no hay registro_id, se pasa null
-        },
+        data: auditoriaData,
       });
-  
       this.logger.debug('Auditoría creada:', nuevaAuditoria);
-      return nuevaAuditoria.id; // Mejor devolver el ID de la auditoría creada
+      return nuevaAuditoria.id;
     } catch (error) {
-      console.error('Error al crear la auditoría', error);
-      this.logger.error(error);
-      throw new Error(`Error al crear la auditoría: ${error.message || error}`); // Mensaje de error más detallado
+      this.logger.error('Error al crear la auditoría', error);
+      throw new Error(`Error al crear la auditoría: ${error.message || error}`);
     }
   }
   
   async updateAuditoria(data: AuditoriaInput, auditoriaId: string): Promise<string> {
     try {
+      // Solo usar los campos válidos para Prisma
+      const auditoriaData: any = {
+        accion: data.accion,
+        usuarioId: data.usuarioId,
+        usuarioNom: data.usuarioNom,
+        model: data.modelo,
+        detalles: data.detalles ?? null,
+        registro_id: data.id ?? null,
+      };
       const auditoriaActualizada = await this.prisma.client.auditoria.update({
         where: { id: auditoriaId },
-        data,
+        data: auditoriaData,
       });
-
       this.logger.debug('Auditoría actualizada:', auditoriaActualizada);
       return 'Auditoría actualizada exitosamente';
     } catch (error) {
-      console.error('Error al actualizar la auditoría', error);
-      this.logger.error(error);
+      this.logger.error('Error al actualizar la auditoría', error);
       throw new Error('Error al actualizar la auditoría');
     }
   }
