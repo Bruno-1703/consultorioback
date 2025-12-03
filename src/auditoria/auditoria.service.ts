@@ -46,7 +46,6 @@ export class AuditoriaService {
     try {
       const nuevaAuditoria = await this.prisma.client.auditoria.create({
         data: {
-          fecha: data.fecha ?? new Date(),
           accion: data.accion,
           usuarioId: data.usuarioId,
           usuarioNom: data.usuarioNom,
