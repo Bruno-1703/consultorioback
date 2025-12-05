@@ -1,6 +1,11 @@
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
-import { UsuarioInput } from './usuario.input';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { UsuarioInput } from './usuario.input';
 import { Usuario, UsuarioResultadoBusqueda } from './usuario.dto';
 import { getUsuarios } from 'src/mongo/usuarios/getUsuarios';
 import { MailService } from 'src/email/email.service';
@@ -10,36 +15,30 @@ import { addHours } from 'date-fns';
 
 @Injectable()
 export class UsuarioService {
-constructor(
-  private prisma: PrismaService,
-  private mailService: MailService, // corregido aquí
-) {}
   private readonly logger = new Logger(UsuarioService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mailService: MailService,
+  ) { }
 
   async getUsuario(email: string): Promise<Usuario | null> {
     try {
-      const usuario = await this.prisma.client.usuario.findFirst({
-        where: { email: email },
+      return await this.prisma.client.usuario.findFirst({
+        where: { email },
       });
-      return usuario || null;
     } catch (error) {
-      console.error('Error al obtener el usuario', error);
-      throw new Error('Error al obtener el usuario');
+      this.logger.error('Error al obtener el usuario', error);
+      throw new InternalServerErrorException('Error al obtener el usuario');
     }
   }
 
   async getUsuarios(skip?, limit?, where?): Promise<UsuarioResultadoBusqueda> {
     try {
-      const usuarios = await getUsuarios(this.prisma.mongodb,
-        skip,
-        limit,
-        where,
-      );
-
-      return usuarios;
+      return await getUsuarios(this.prisma.mongodb, skip, limit, where);
     } catch (error) {
-      console.error('Error al buscar usuarios', error);
-      throw new Error('Error al buscar usuarios');
+      this.logger.error('Error al buscar usuarios', error);
+      throw new InternalServerErrorException('Error al buscar usuarios');
     }
   }
 
@@ -55,14 +54,14 @@ constructor(
           especialidad: data.especialidad,
           matricula: data.matricula,
           dni: data.dni,
-
-
         },
       });
+
+
       return 'Usuario creado exitosamente';
     } catch (error) {
-      console.error('Error al crear usuario', error);
-      throw new Error('Error al crear usuario');
+      this.logger.error('Error al crear usuario', error);
+      throw new InternalServerErrorException('Error al crear usuario');
     }
   }
 
@@ -75,8 +74,8 @@ constructor(
 
       return 'Usuario actualizado exitosamente';
     } catch (error) {
-      console.error('Error al actualizar el usuario', error);
-      throw new Error('Error al actualizar el usuario');
+      this.logger.error('Error al actualizar el usuario', error);
+      throw new InternalServerErrorException('Error al actualizar el usuario');
     }
   }
 
@@ -88,58 +87,57 @@ constructor(
 
       return 'Usuario eliminado exitosamente';
     } catch (error) {
-      console.error('Error al eliminar el usuario', error);
-      throw new Error('Error al eliminar el usuario');
+      this.logger.error('Error al eliminar el usuario', error);
+      throw new InternalServerErrorException('Error al eliminar el usuario');
     }
   }
-async solicitarRecuperacionPassword(email: string): Promise<string> {
-  const user = await this.prisma.client.usuario.findFirst({ where: { email } }); // ✅ cambiado findUnique → findFirst
-  console.log(user)
-  if (!user) return 'Si el email está registrado, se enviará un correo';
 
-  const token = randomBytes(32).toString('hex');
-const expiry = addHours(new Date(), 1); // ✅ esto será un Date
+  async solicitarRecuperacionPassword(email: string): Promise<string> {
+    const user = await this.prisma.client.usuario.findFirst({ where: { email } });
 
-  try {
-    await this.prisma.client.usuario.update({
-      where: { id_Usuario: user.id_Usuario }, // ✅ ahora usamos la PK real
-      data: {
-        resetToken: token,
-        resetTokenExpiry: expiry,
-      },
-    });
+    // No revelamos si el email existe
+    if (!user) return 'Si el email está registrado, se enviará un correo';
 
-    const resetUrl = `http://localhost:3000/auth/reset-password?token=${token}`;
+    const token = randomBytes(32).toString('hex');
+    const expiry = addHours(new Date(), 1);
 
-    await this.mailService.sendEmail(
-      email,
-      'Recuperación de contraseña',
-      `<p>Haz clic <a href="${resetUrl}">aquí</a> para restablecer tu contraseña. Este enlace expira en 1 hora.</p>`
-    );
+    try {
+      await this.prisma.client.usuario.update({
+        where: { id_Usuario: user.id_Usuario },
+        data: {
+          resetToken: token,
+          resetTokenExpiry: expiry,
+        },
+      });
 
-    return 'Si el email está registrado, se enviará un correo';
-  } catch (error) {
-    this.logger.error('Error al solicitar recuperación de contraseña', error);
-    throw new InternalServerErrorException('No se pudo procesar la solicitud');
+      const resetUrl = `http://localhost:3000/auth/reset-password?token=${token}`;
+
+      await this.mailService.sendEmail(
+        email,
+        'Recuperación de contraseña',
+        `<p>Haz clic <a href="${resetUrl}">aquí</a> para restablecer tu contraseña. El enlace expira en 1 hora.</p>`,
+      );
+
+      return 'Si el email está registrado, se enviará un correo';
+    } catch (error) {
+      this.logger.error('Error al solicitar recuperación de contraseña', error);
+      throw new InternalServerErrorException('No se pudo procesar la solicitud');
+    }
   }
-}
-async resetearPassword(token: string, nuevaPassword: string): Promise<string> {
+
+  async resetearPassword(token: string, nuevaPassword: string): Promise<string> {
     const user = await this.prisma.client.usuario.findFirst({
       where: {
         resetToken: token,
-        resetTokenExpiry: {
-          gte: new Date(),
-        },
+        resetTokenExpiry: { gte: new Date() },
       },
     });
 
-    if (!user) {
-      throw new NotFoundException('Token inválido o expirado');
-    }
-
-    const hashedPassword = await bcrypt.hash(nuevaPassword, 10);
+    if (!user) throw new NotFoundException('Token inválido o expirado');
 
     try {
+      const hashedPassword = await bcrypt.hash(nuevaPassword, 10);
+
       await this.prisma.client.usuario.update({
         where: { id_Usuario: user.id_Usuario },
         data: {
@@ -151,20 +149,19 @@ async resetearPassword(token: string, nuevaPassword: string): Promise<string> {
 
       return 'Contraseña actualizada correctamente';
     } catch (error) {
-      this.logger.error('Error al resetear la contraseña', error);
+      this.logger.error('Error al resetear contraseña', error);
       throw new InternalServerErrorException('No se pudo actualizar la contraseña');
     }
   }
-async getUsuarioById(id: string): Promise<Usuario | null> {
-  try {
-    const usuario = await this.prisma.client.usuario.findUnique({
-      where: { id_Usuario: id },
-    });
-    return usuario || null;
-  } catch (error) {
-    throw new Error('Error al obtener usuario por ID');
+
+  async getUsuarioById(id: string): Promise<Usuario | null> {
+    try {
+      return await this.prisma.client.usuario.findUnique({
+        where: { id_Usuario: id },
+      });
+    } catch (error) {
+      this.logger.error('Error al obtener usuario por ID', error);
+      throw new InternalServerErrorException('Error al obtener usuario por ID');
+    }
   }
 }
-}
-
-

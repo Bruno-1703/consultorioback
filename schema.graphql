@@ -152,18 +152,6 @@ type CitaResultadoBusqueda {
   aggregate: AggregateCount!
 }
 
-"""Respuesta generada por la IA"""
-type AskResponse {
-  """Texto de la respuesta generada"""
-  answer: String!
-
-  """Fuente o contexto de la respuesta"""
-  source: String
-
-  """Fecha y hora en que se generó la respuesta"""
-  timestamp: DateTime!
-}
-
 type Query {
   getCita(id: String!): Cita
   getCitas(skip: Int, limit: Int, where: CitaWhereInput): CitaResultadoBusqueda!
@@ -341,9 +329,6 @@ type Mutation {
   deleteUsuario(id: String!): String!
   solicitarRecuperacionPassword(email: String!): String!
   resetearPassword(token: String!, nuevaPassword: String!): String!
-
-  """Envía una pregunta a la IA y obtiene su respuesta"""
-  askIA(data: AskInput!): AskResponse!
 }
 
 input CitaInput {
@@ -384,12 +369,4 @@ input UsuarioInput {
   matricula: String!
   telefono: String
   dni: String!
-}
-
-input AskInput {
-  """Pregunta que el usuario desea realizar a la IA"""
-  question: String!
-
-  """Fuente o contexto adicional opcional"""
-  source: String
 }
