@@ -14,14 +14,25 @@ export async function getCitas(
     logger.log({ action: 'getCitas' });
 
     const buscar = where?.buscar;
+    const id = where?.doctor.id;
 
     const query: any[] = [];
 
-    if (where?.paciente?.dni && where.paciente.dni.trim() !== "") {
-      query.push({ "paciente.dni": where.paciente.dni });
+  if (where?.paciente?.dni && where.paciente.dni.trim() !== "") {
+  const dniValue = Number(where.paciente.dni);
+
+  // Intentar matchear como número (por si está guardado así)
+  if (!isNaN(dniValue)) {
+    query.push({ "paciente.dni": dniValue });
+  }
+
+  // Intentar matchear también como string
+  query.push({ "paciente.dni": where.paciente.dni });
+}
+
+ if (where?.doctor?.id) {
+      query.push({ "doctor.id": where.doctor.id });
     }
-
-
     const matchStage = query.length > 0 ? { $match: { $and: query } } : { $match: {} };
 
     const consulta = mongoConnection
