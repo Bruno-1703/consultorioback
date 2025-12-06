@@ -31,7 +31,7 @@ export async function getCitas(
 }
 
  if (where?.doctor?.id) {
-      query.push({ "doctor.id": where.doctor.id });
+      query.push({ "doctor.id_Usuario": where.doctor.id });
     }
     const matchStage = query.length > 0 ? { $match: { $and: query } } : { $match: {} };
 
@@ -40,7 +40,7 @@ export async function getCitas(
       .aggregate(
         [
           matchStage,
-          { $sort: { fechaSolicitud: -1 } },
+          { $sort: { fechaSolicitud: 1 } },
           { $skip: skip || 0 },
           { $limit: limit || 10 },
         ],
