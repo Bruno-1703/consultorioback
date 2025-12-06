@@ -41,15 +41,26 @@ export class UsuarioService {
       throw new InternalServerErrorException('Error al buscar usuarios');
     }
   }
-
   async createUsuario(data: UsuarioInput): Promise<string> {
     try {
+      // Validar si ya existe un usuario con ese email
+      const existingUser = await this.prisma.client.usuario.findFirst({
+        where: { email: data.email },
+      });
+
+      if (existingUser) {
+        throw new InternalServerErrorException('El email ya está registrado');
+      }
+
+      // Hashear password correctamente
+      const hashedPassword = await bcrypt.hash(data.password, 10);
+
       await this.prisma.client.usuario.create({
         data: {
           nombre_usuario: data.nombre_usuario,
           email: data.email,
-          password: data.password,
-          rol_usuario: 'user',
+          password: hashedPassword,      // ← SE GUARDA HASHEADA
+          rol_usuario: data.rol_usuario || 'user',
           nombre_completo: data.nombre_completo,
           especialidad: data.especialidad,
           matricula: data.matricula,
@@ -57,11 +68,12 @@ export class UsuarioService {
         },
       });
 
-
       return 'Usuario creado exitosamente';
     } catch (error) {
       this.logger.error('Error al crear usuario', error);
-      throw new InternalServerErrorException('Error al crear usuario');
+      throw new InternalServerErrorException(
+        error.message || 'Error al crear usuario',
+      );
     }
   }
 

@@ -11,6 +11,7 @@ import { UsersModule } from './users/usuario.module';
 import { EmailModule } from './email/email.module';
 import { BackupModule } from './backup/backup.module';
 import { StatusController } from './status.controller';
+import { UploadController } from './upload.controller';
 
 
 @Module({
@@ -30,6 +31,6 @@ import { StatusController } from './status.controller';
     BackupModule,
     EmailModule
   ],
-  controllers: [StatusController],
+  controllers: [StatusController, UploadController],
 })
 export class AppModule { }

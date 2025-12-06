@@ -66,8 +66,8 @@ export class PacienteService {
         alergias: data.alergias,
         nacionalidad: data.nacionalidad,
         obra_social: data.obra_social,
-        direccion:data.direccion,
-        email:data.email
+        direccion: data.direccion,
+        email: data.email,
       };
       const paciente = await this.prisma.client.paciente.create({
         data: pacienteData,
@@ -169,37 +169,5 @@ export class PacienteService {
       throw new Error('Error al eliminar definitivamente el paciente');
     }
   }
-  // async buscarPacientesPorNombreO_DNI(
-  //   nombre: string,
-  //   dni: string,
-  // ): Promise<Paciente[] | null> {
-  //   try {
-  //     this.logger.debug(
-  //       `Buscando pacientes con nombre: ${nombre} o DNI: ${dni}`,
-  //     );
-  //     const pacientes = await this.prisma.client.paciente.findMany({
-  //       where: {
-  //         OR: [
-  //           {
-  //             nombre_paciente: {
-  //               contains: nombre,
-  //             },
-  //           },
-  //           {
-  //             dni: {
-  //               contains: dni,
-  //             },
-  //           },
-  //         ],
-  //       },
-  //     });
 
-  //     this.logger.debug('Pacientes encontrados:', pacientes);
-  //     return null;
-  //   } catch (error) {
-  //     console.error('Error al buscar pacientes por nombre o DNI', error);
-  //     this.logger.error(error);
-  //     throw new Error('Error al buscar pacientes por nombre o DNI');
-  //   }
-  // }
 }

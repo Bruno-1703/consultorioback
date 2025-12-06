@@ -111,7 +111,7 @@ model Paciente {
   sexo              String?
   grupo_sanguineo   String?
   alergias          String?
-    obra_social       String?    // Nuevo
+  obra_social       String?    // Nuevo
   email             String?    // Nuevo
   direccion         String?    // Nuevo
   nacionalidad      String?    // Nuevo
