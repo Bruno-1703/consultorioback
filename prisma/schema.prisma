@@ -61,6 +61,7 @@ model Cita {
   paciente          PacienteCita
   finalizada        Boolean           @default(false)
   doctor    CitaDoctor
+  registradoPorId   String?
 }
 
 model Estudio {

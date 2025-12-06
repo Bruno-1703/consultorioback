@@ -23,6 +23,9 @@ export class CitaInput {
   finalizada?: boolean;
   @Field(() => UsuarioCitaInput, { nullable: true })
   doctor?: UsuarioCitaInput;
+  
+  @Field(() => ID, { nullable: true })
+  registradoPorId?: string;
 
 }
 @InputType()
@@ -55,7 +58,10 @@ export class CitaWhereInput {
 
   @Field(() => PacienteCitaInput, { nullable: true })
   paciente?: PacienteCitaInput;
- @Field(() => UsuarioCitaInput, { nullable: true })
+  @Field(() => UsuarioCitaInput, { nullable: true })
   doctor?: UsuarioCitaInput;
+  @Field(() => ID, { nullable: true })
+  registradoPorId?: string;
+
 }
 

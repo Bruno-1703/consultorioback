@@ -17,7 +17,7 @@ export class Cita {
   @Field(() => String, { nullable: true })
   observaciones?: string;
 
-    @Field({ nullable: true })
+  @Field({ nullable: true })
   fechaProgramada?: string;
 
 
@@ -39,8 +39,14 @@ export class Cita {
   @Field(() => Paciente, { nullable: true })
   paciente?: Paciente;
 
-@Field(() => Usuario, { nullable: true })
-doctor?: Usuario;
+  @Field(() => Usuario, { nullable: true })
+  doctor?: Usuario;
+
+  @Field(() => ID, { nullable: true })
+  modificadoPorId?: string;
+
+  @Field(() => ID, { nullable: true })
+  registradoPorId?: string;
 }
 
 @ObjectType()

@@ -140,6 +140,8 @@ type Cita {
   enfermedades: [Enfermedad!]
   paciente: Paciente
   doctor: Usuario
+  modificadoPorId: ID
+  registradoPorId: ID
 }
 
 type CitaEdge {
@@ -183,6 +185,7 @@ input CitaWhereInput {
   enfermedades: [EnfermedadInput!]
   paciente: PacienteCitaInput
   doctor: UsuarioCitaInput
+  registradoPorId: ID
 }
 
 input EstudioInput {
@@ -339,6 +342,7 @@ input CitaInput {
   fechaProgramada: DateTime
   finalizada: Boolean
   doctor: UsuarioCitaInput
+  registradoPorId: ID
 }
 
 input PacienteInput {
