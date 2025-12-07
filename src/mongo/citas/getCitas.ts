@@ -9,35 +9,56 @@ export async function getCitas(
   skip: number,
   where: CitaWhereInput,
 ): Promise<CitaResultadoBusqueda | null> {
-  const logger = new Logger();
-  try {
-    logger.log({ action: 'getCitas' });
+  const logger = new Logger("getCitas");
 
-    const buscar = where?.buscar;
-    const id = where?.doctor.id;
+  try {
+    logger.log("------------ INICIO getCitas ------------");
+
+    logger.log("WHERE recibido:");
+    console.log(JSON.stringify(where, null, 2));
 
     const query: any[] = [];
 
-  if (where?.paciente?.dni && where.paciente.dni.trim() !== "") {
-  const dniValue = Number(where.paciente.dni);
+    // FILTRO DNI PACIENTE
+// Buscar solo como string
+query.push({ "paciente.dni": where.paciente.dni });
 
-  // Intentar matchear como número (por si está guardado así)
-  if (!isNaN(dniValue)) {
-    query.push({ "paciente.dni": dniValue });
-  }
 
-  // Intentar matchear también como string
-  query.push({ "paciente.dni": where.paciente.dni });
-}
+    // FILTRO DOCTOR
+    if (where?.doctor) {
+      const d = where.doctor;
 
-if (where?.doctor?.id) {
-  query.push({ "doctor.id_Usuario": where.doctor.id });
-}
+      if (d.id) query.push({ "doctor.id_Usuario": d.id });
+      if (d.dni) query.push({ "doctor.dni": d.dni });
+      if (d.nombre_usuario) query.push({ "doctor.nombre_usuario": d.nombre_usuario });
+      if (d.email) query.push({ "doctor.email": d.email });
+      if (d.matricula) query.push({ "doctor.matricula": d.matricula });
+      if (d.telefono) query.push({ "doctor.telefono": d.telefono });
+      if (d.nombre_completo) query.push({ "doctor.nombre_completo": d.nombre_completo });
+    }
 
-    const matchStage = query.length > 0 ? { $match: { $and: query } } : { $match: {} };
+    logger.log("QUERY ARMADO:");
+    console.log(JSON.stringify(query, null, 2));
 
+    const matchStage = query.length > 0
+      ? { $match: { $and: query } }
+      : { $match: {} };
+
+    logger.log("MATCH FINAL:");
+    console.log(JSON.stringify(matchStage, null, 2));
+
+    // EJECUTAR CONSULTA SIN SORT/LIMIT PARA VER SI MATCHEA ALGO
+    const preview = await mongoConnection
+      .collection("Cita")
+      .aggregate([matchStage], { allowDiskUse: true })
+      .toArray();
+
+    logger.log("PREVIEW RESULTADOS (antes de skip/limit):");
+    console.log(preview);
+
+    // CONSULTA REAL
     const consulta = mongoConnection
-      .collection('Cita')
+      .collection("Cita")
       .aggregate(
         [
           matchStage,
@@ -48,32 +69,32 @@ if (where?.doctor?.id) {
         { allowDiskUse: true },
       );
 
+    const citas = await consulta.toArray();
+
+    logger.log("RESULTADOS FINALES:");
+    console.log(citas);
+
     const consultaCantidad = await mongoConnection
-      .collection('Cita')
-      .aggregate([
-        matchStage,
-        { $count: 'cantidad' }
-      ])
+      .collection("Cita")
+      .aggregate([matchStage, { $count: "cantidad" }])
       .toArray();
 
     const cantidad = consultaCantidad[0]?.cantidad || 0;
-    const citas = await consulta.toArray();
 
     const edges: CitaEdge[] = citas.map((cita: any) => ({
-      node: Object.assign({}, cita, {
-        id_cita: cita._id.toString(),
-      }),
+      node: { ...cita, id_cita: cita._id.toString() },
       cursor: cita._id.toString(),
     }));
 
+    logger.log("------------ FIN getCitas ------------");
+
     return {
-      aggregate: {
-        count: cantidad,
-      },
+      aggregate: { count: cantidad },
       edges,
     };
+
   } catch (error) {
     logger.error(error);
-    throw new Error('Error al buscar el dato estático de la citas');
+    throw new Error("Error al buscar citas");
   }
 }

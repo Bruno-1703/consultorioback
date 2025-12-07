@@ -230,15 +230,15 @@ input PacienteCitaInput {
 
 input UsuarioCitaInput {
   id: ID
-  nombre_usuario: String!
+  nombre_usuario: String
   email: String
   password: String
   rol_usuario: String
-  nombre_completo: String!
+  nombre_completo: String
   especialidad: String
-  matricula: String!
+  matricula: String
   telefono: String
-  dni: String!
+  dni: String
 }
 
 input EstudioWhereInput {

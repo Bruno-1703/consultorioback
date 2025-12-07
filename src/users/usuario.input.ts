@@ -38,8 +38,8 @@ export class UsuarioCitaInput {
   @Field(() => ID, { nullable: true })
   id?: string;
 
-  @Field(() => String)
-  nombre_usuario: string;
+  @Field(() => String, { nullable: true })
+  nombre_usuario?: string;
 
   @Field(() => String, { nullable: true })
   email?: string;
@@ -50,20 +50,20 @@ export class UsuarioCitaInput {
   @Field(() => String, { nullable: true })
   rol_usuario?: string;
 
-  @Field(() => String)
-  nombre_completo: string;
+  @Field(() => String, { nullable: true })
+  nombre_completo?: string;
 
   @Field(() => String, { nullable: true })
   especialidad?: string;
 
-  @Field(() => String)
-  matricula: string;
+  @Field(() => String, { nullable: true })
+  matricula?: string;
 
   @Field(() => String, { nullable: true })
   telefono?: string;
 
-  @Field(() => String)
-  dni: string;
+  @Field(() => String, { nullable: true })
+  dni?: string;
 }
 
 @InputType()
