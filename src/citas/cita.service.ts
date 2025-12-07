@@ -65,7 +65,7 @@ export class CitaService {
           observaciones: data.observaciones,
           cancelada: false,
           fechaProgramada: data.fechaProgramada,
-           registradoPorId: data.registradoPorId, // ID del usuario que registra
+          registradoPorId: data.registradoPorId, 
 
           doctor: {
             set: {

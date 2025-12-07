@@ -9,10 +9,13 @@ import { UsuarioCitaInput, UsuarioInput } from 'src/users/usuario.input';
 export class CitaInput {
   @Field(() => ID, { nullable: true })
   id_cita?: string;
+  
   @Field(() => String, { nullable: true })
   motivoConsulta?: string;
+
   @Field(() => String, { nullable: true })
   observaciones?: string;
+
   @Field(() => PacienteCitaInput, { nullable: true })
   paciente?: PacienteCitaInput;
 
@@ -21,6 +24,7 @@ export class CitaInput {
 
   @Field(() => Boolean, { nullable: true })
   finalizada?: boolean;
+
   @Field(() => UsuarioCitaInput, { nullable: true })
   doctor?: UsuarioCitaInput;
   
@@ -32,8 +36,10 @@ export class CitaInput {
 export class CitaWhereInput {
   @Field(() => ID, { nullable: true })
   id_cita?: string;
+
   @Field(() => String, { nullable: true })
   motivoConsulta?: string;
+
   @Field(() => Boolean, { nullable: true })
   finalizada?: boolean;
 
@@ -42,8 +48,10 @@ export class CitaWhereInput {
 
   @Field(() => String, { nullable: true })
   observaciones?: string;
+
   @Field(() => Boolean, { nullable: true })
   cancelada?: boolean;
+
   @Field(() => String, { nullable: true })
   buscar?: string;
 
@@ -58,8 +66,10 @@ export class CitaWhereInput {
 
   @Field(() => PacienteCitaInput, { nullable: true })
   paciente?: PacienteCitaInput;
+
   @Field(() => UsuarioCitaInput, { nullable: true })
   doctor?: UsuarioCitaInput;
+
   @Field(() => ID, { nullable: true })
   registradoPorId?: string;
 
