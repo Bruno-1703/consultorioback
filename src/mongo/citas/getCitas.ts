@@ -30,9 +30,10 @@ export async function getCitas(
   query.push({ "paciente.dni": where.paciente.dni });
 }
 
- if (where?.doctor?.id) {
-      query.push({ "doctor.id_Usuario": where.doctor.id });
-    }
+if (where?.doctor?.id) {
+  query.push({ "doctor.id_Usuario": where.doctor.id });
+}
+
     const matchStage = query.length > 0 ? { $match: { $and: query } } : { $match: {} };
 
     const consulta = mongoConnection

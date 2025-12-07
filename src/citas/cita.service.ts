@@ -57,6 +57,7 @@ export class CitaService {
     }
   }
   async createCita(data: CitaInput, paciente: PacienteCitaInput): Promise<string> {
+    console.log('Datos de la cita a crear:', data);
     try {
       const nuevaCita = await this.prisma.client.cita.create({
         data: {
