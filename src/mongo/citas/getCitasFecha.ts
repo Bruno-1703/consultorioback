@@ -1,5 +1,5 @@
 import { Logger } from "@nestjs/common";
-import { Db } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { CitaEdge, CitaResultadoBusqueda } from "src/citas/cita.dto";
 import { CitaWhereInput } from "src/citas/cita.input";
 
@@ -12,16 +12,15 @@ export async function getCitasByfecha(
   const logger = new Logger('getCitasByfecha');
   try {
     const query: any[] = [];
-    console
+    console.log('Filtro recibido:', where?.registradoPorId);
+
     // Siempre buscar las no finalizadas, si no se indica lo contrario
     if (where?.finalizada !== undefined) {
       query.push({ finalizada: where.finalizada });
     } else {
       query.push({ finalizada: false });
     }
-    if (where?.registradoPorId !== undefined) {
-      query.push({ "registradoPorId": where.registradoPorId });
-    }
+    query.push({ "registradoPorId": where.registradoPorId });
 
     // Filtro por texto libre (buscar)
     if (where?.buscar) {
