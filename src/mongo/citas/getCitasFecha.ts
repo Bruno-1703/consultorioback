@@ -12,12 +12,15 @@ export async function getCitasByfecha(
   const logger = new Logger('getCitasByfecha');
   try {
     const query: any[] = [];
-
+    console
     // Siempre buscar las no finalizadas, si no se indica lo contrario
     if (where?.finalizada !== undefined) {
       query.push({ finalizada: where.finalizada });
     } else {
       query.push({ finalizada: false });
+    }
+    if (where?.registradoPorId !== undefined) {
+      query.push({ "registradoPorId": where.registradoPorId });
     }
 
     // Filtro por texto libre (buscar)
@@ -41,17 +44,17 @@ export async function getCitasByfecha(
     }
 
     // Filtro por fecha exacta (rango del día)
-// Filtro por fecha exacta (rango del día en UTC)
-if (where?.fechaProgramada) {
-  const base = new Date(where.fechaProgramada);
-  const desde = new Date(base);
-  desde.setUTCHours(0, 0, 0, 0);
+    // Filtro por fecha exacta (rango del día en UTC)
+    if (where?.fechaProgramada) {
+      const base = new Date(where.fechaProgramada);
+      const desde = new Date(base);
+      desde.setUTCHours(0, 0, 0, 0);
 
-  const hasta = new Date(base);
-  hasta.setUTCHours(23, 59, 59, 999);
+      const hasta = new Date(base);
+      hasta.setUTCHours(23, 59, 59, 999);
 
-  query.push({ fechaProgramada: { $gte: desde, $lte: hasta } });
-}
+      query.push({ fechaProgramada: { $gte: desde, $lte: hasta } });
+    }
 
     const matchStage = query.length > 0 ? { $match: { $and: query } } : { $match: {} };
 
