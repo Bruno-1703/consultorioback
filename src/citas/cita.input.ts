@@ -49,6 +49,9 @@ export class CitaWhereInput {
   @Field(() => String, { nullable: true })
   observaciones?: string;
 
+  @Field(() => String, { nullable: true })
+  diagnostico?: string;
+
   @Field(() => Boolean, { nullable: true })
   cancelada?: boolean;
 
@@ -75,3 +78,8 @@ export class CitaWhereInput {
 
 }
 
+@InputType()
+export class CitaDiagnosticoInput {
+  @Field(() => String)
+  diagnostico: string;
+}

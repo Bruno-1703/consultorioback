@@ -132,6 +132,7 @@ type Cita {
   id_cita: ID
   motivoConsulta: String!
   observaciones: String
+  diagnostico: String
   fechaProgramada: String
   cancelada: Boolean
   finalizada: Boolean
@@ -215,6 +216,7 @@ input CitaWhereInput {
   finalizada: Boolean
   fechaProgramada: DateTime
   observaciones: String
+  diagnostico: String
   cancelada: Boolean
   buscar: String
   estudios: [EstudioInput!]
@@ -349,6 +351,7 @@ type Mutation {
   createCitaEstudio(citaId: String!, estudios: [EstudioInput!]!): String!
   cancelarCita(id: String!): String!
   finalizarCita(id: String!): String!
+  cargarDiagnosticoCita(citaId: String!, data: CitaDiagnosticoInput!): String!
   createEstudio(data: EstudioInput!, idCita: String!): String!
   updateEstudio(data: EstudioInput!, estudioId: String!): String!
   createMedicamento(data: MedicamentoInput!): String!
@@ -383,6 +386,10 @@ input CitaInput {
   finalizada: Boolean
   doctor: UsuarioCitaInput
   registradoPorId: ID
+}
+
+input CitaDiagnosticoInput {
+  diagnostico: String!
 }
 
 input PacienteInput {

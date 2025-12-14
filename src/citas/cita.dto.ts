@@ -16,6 +16,9 @@ export class Cita {
 
   @Field(() => String, { nullable: true })
   observaciones?: string;
+  
+  @Field(() => String, { nullable: true })
+  diagnostico?: string;
 
   @Field({ nullable: true })
   fechaProgramada?: string;

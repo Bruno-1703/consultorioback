@@ -1,6 +1,6 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Cita, CitaResultadoBusqueda } from './cita.dto';
-import { CitaInput, CitaWhereInput } from './cita.input';
+import { CitaDiagnosticoInput, CitaInput, CitaWhereInput } from './cita.input';
 import { CitaService } from './cita.service';
 import { EnfermedadInput } from 'src/enfermedad/enfermedad.input';
 import { MedicamentoInput } from 'src/medicamentos/medicamento.input';
@@ -17,7 +17,6 @@ export class CitaResolver {
 
   @Query(() => CitaResultadoBusqueda)
   async getCitas(    
-    //@Usuario() usuario: any,
     @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
     @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
     @Args({ name: 'where', type: () => CitaWhereInput, nullable: true })
@@ -37,7 +36,7 @@ export class CitaResolver {
   }
   @Mutation(() => String)
   async createCita(
-   //@Usuario() usuario: any,
+ 
     @Args({ name: 'data', type: () => CitaInput }) data: CitaInput,
     @Args('paciente', { type: () => PacienteCitaInput })
     paciente: PacienteCitaInput,
@@ -90,5 +89,13 @@ async finalizarCita(
 ): Promise<string> {
   return this.citaService.finalizarCita(id);
 }
+@Mutation(() => String)
+async cargarDiagnosticoCita(
+  @Args('citaId') citaId: string,
+  @Args('data') data: CitaDiagnosticoInput,
+): Promise<string> {
+  return this.citaService.cargarDiagnosticoCita(citaId, data);
+}
+
 
 }

@@ -49,11 +49,12 @@ model Cita {
   id_cita           String            @id @default(auto()) @map("_id") @db.ObjectId
   motivoConsulta    String?
 
- fechaProgramada     DateTime           /// Fecha y hora solicitada por el paciente
+  fechaProgramada     DateTime           /// Fecha y hora solicitada por el paciente
   fechaCreacion       DateTime           @default(now())     /// Se genera automáticamente
   fechaModificacion   DateTime?          @updatedAt          /// Se actualiza automáticamente
 
   observaciones     String?
+  diagnostico     String?
   cancelada         Boolean           @default(false)
   enfermedades        CitaEnfermedad[]
   medicamentos       CitaMedicamento[]
@@ -148,18 +149,6 @@ model Internacion {
   observaciones  String?
   activa         Boolean  @default(true)
 }
-
-
-
-
-
-
-
-
-
-
-
-
 model Usuario {
   id_Usuario     String  @id @default(auto()) @map("_id") @db.ObjectId
   nombre_usuario String
@@ -174,9 +163,7 @@ model Usuario {
   telefono         String?
   resetToken        String?
 resetTokenExpiry  DateTime?
-
 }
-
 enum Accion {
   CREATE
   UPDATE
