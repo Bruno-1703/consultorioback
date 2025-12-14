@@ -117,8 +117,48 @@ model Paciente {
   direccion         String?    // Nuevo
   nacionalidad      String?    // Nuevo
   eliminadoLog      Boolean  @default(false)
+  internaciones Internacion[]
 
 }
+model Cama {
+  id_cama    String   @id @default(auto()) @map("_id") @db.ObjectId
+  numero     String
+  disponible Boolean @default(true)
+  pabellonId String?
+  pabellon   Pabellon? @relation(fields: [pabellonId], references: [id_pabellon])
+  internaciones Internacion[]
+}
+
+model Pabellon {
+  id_pabellon String @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String
+  descripcion String?
+  camas       Cama[]
+}
+
+model Internacion {
+  id_internacion String @id @default(auto()) @map("_id") @db.ObjectId
+  pacienteId     String
+  camaId         String
+  paciente       Paciente @relation(fields: [pacienteId], references: [id_paciente])
+  cama           Cama     @relation(fields: [camaId], references: [id_cama])
+  fecha_ingreso  DateTime @default(now())
+  fecha_alta     DateTime?
+  diagnostico    String?
+  observaciones  String?
+  activa         Boolean  @default(true)
+}
+
+
+
+
+
+
+
+
+
+
+
 
 model Usuario {
   id_Usuario     String  @id @default(auto()) @map("_id") @db.ObjectId

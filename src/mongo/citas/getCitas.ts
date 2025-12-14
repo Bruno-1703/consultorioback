@@ -21,7 +21,7 @@ export async function getCitas(
 
     // FILTRO DNI PACIENTE
 // Buscar solo como string
-query.push({ "paciente.dni": where.paciente.dni });
+  query.push({ "paciente.dni": where.paciente.dni });
 
 
     // FILTRO DOCTOR

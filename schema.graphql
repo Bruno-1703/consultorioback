@@ -154,6 +154,39 @@ type CitaResultadoBusqueda {
   aggregate: AggregateCount!
 }
 
+type Pabellon {
+  id_pabellon: ID!
+  nombre: String!
+  descripcion: String
+}
+
+type Cama {
+  id_cama: ID!
+  numero: String!
+  disponible: Boolean!
+  pabellon: Pabellon
+}
+
+type Internacion {
+  id_internacion: ID!
+  fecha_ingreso: DateTime!
+  fecha_alta: DateTime
+  diagnostico: String!
+  observaciones: String
+  activa: Boolean!
+  paciente: Paciente!
+  cama: Cama!
+}
+
+type HistorialInternacion {
+  id_internacion: ID!
+  fecha_ingreso: DateTime!
+  fecha_alta: DateTime
+  diagnostico: String!
+  observaciones: String
+  cama: Cama!
+}
+
 type Query {
   getCita(id: String!): Cita
   getCitas(skip: Int, limit: Int, where: CitaWhereInput): CitaResultadoBusqueda!
@@ -170,6 +203,10 @@ type Query {
   getUsuario(email: String!): Usuario
   getUsuarios(skip: Int, limit: Int, where: UsuarioWhereInput): UsuarioResultadoBusqueda!
   getUsuarioById(id: String!): Usuario
+  testInternacion: String!
+  internacionesActivas: [Internacion!]!
+  historialInternacionPaciente(pacienteId: String!): [HistorialInternacion!]!
+  camasDisponibles: [Cama!]!
 }
 
 input CitaWhereInput {
@@ -332,6 +369,9 @@ type Mutation {
   deleteUsuario(id: String!): String!
   solicitarRecuperacionPassword(email: String!): String!
   resetearPassword(token: String!, nuevaPassword: String!): String!
+  internarPaciente(data: CreateInternacionInput!): String!
+  darAltaInternacion(data: AltaInternacionInput!): String!
+  updateInternacion(data: UpdateInternacionInput!): String!
 }
 
 input CitaInput {
@@ -373,4 +413,22 @@ input UsuarioInput {
   matricula: String!
   telefono: String
   dni: String!
+}
+
+input CreateInternacionInput {
+  pacienteId: String!
+  camaId: String!
+  diagnostico: String
+  observaciones: String
+}
+
+input AltaInternacionInput {
+  id_internacion: String!
+  observaciones_alta: String
+}
+
+input UpdateInternacionInput {
+  id_internacion: String!
+  diagnostico: String
+  observaciones: String
 }

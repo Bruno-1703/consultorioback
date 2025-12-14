@@ -12,6 +12,7 @@ import { EmailModule } from './email/email.module';
 import { BackupModule } from './backup/backup.module';
 import { StatusController } from './status.controller';
 import { UploadController } from './upload.controller';
+import { InternacionModule } from './internacion/internacion.module';
 
 
 @Module({
@@ -29,7 +30,8 @@ import { UploadController } from './upload.controller';
     EnfermedadModule,
     UsersModule,
     BackupModule,
-    EmailModule
+    EmailModule,
+    InternacionModule
   ],
   controllers: [StatusController, UploadController],
 })
