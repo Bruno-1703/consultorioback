@@ -165,7 +165,7 @@ export class CitaService {
       where: { id_cita: citaId },
       data: {
         diagnostico: data.diagnostico,
-        finalizada: true,
+        // finalizada: true,
       },
     });
 
