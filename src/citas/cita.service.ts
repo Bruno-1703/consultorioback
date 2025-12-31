@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Cita, CitaResultadoBusqueda } from './cita.dto';
-import { CitaInput, CitaDiagnosticoInput } from './cita.input';
+import { CitaInput, CitaDiagnosticoInput, CitaReprogramarInput } from './cita.input';
 import { EnfermedadInput } from 'src/enfermedad/enfermedad.input';
 import { MedicamentoInput } from 'src/medicamentos/medicamento.input';
 import { EstudioInput } from 'src/estudios/estudio.input';
@@ -16,7 +16,7 @@ import { Response } from 'express';
 export class CitaService {
   private readonly logger = new Logger(CitaService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   // ======================
   // 🔍 CONSULTAS
@@ -60,39 +60,43 @@ export class CitaService {
   // ======================
   // 🧾 SECRETARÍA
   // ======================
+async createCita(
+  data: CitaInput,
+  paciente: PacienteCitaInput,
+  // centroSaludId?: string,
+): Promise<string> {
 
-  async createCita(
-    data: CitaInput,
-    paciente: PacienteCitaInput,
-  ): Promise<string> {
-    try {
-      const cita = await this.prisma.client.cita.create({
-        data: {
-          motivoConsulta: data.motivoConsulta,
-          observaciones: data.observaciones,
-          fechaProgramada: data.fechaProgramada,
-          cancelada: false,
-          finalizada: false,
-          registradoPorId: data.registradoPorId,
-          doctor: { set: data.doctor },
-          paciente: { set: paciente },
-        },
-      });
 
-      await this.crearAuditoria(
-        'CREATE',
-        data.registradoPorId,
-        'Secretaría',
-        `Creación de cita`,
-        cita.id_cita,
-      );
+  try {
+    const cita = await this.prisma.client.cita.create({
+      data: {
+        centroSalud: { connect: { id: ""} },
+        motivoConsulta: data.motivoConsulta,
+        observaciones: data.observaciones,
+        fechaProgramada: data.fechaProgramada,
+        cancelada: false,
+        finalizada: false,
+        registradoPorId: data.registradoPorId,
+        doctor: { set: data.doctor },
+        paciente: { set: paciente },
+      },
+    });
 
-      return 'Cita creada exitosamente';
-    } catch (error) {
-      this.logger.error('Error al crear cita', error);
-      throw new Error('Error al crear la cita');
-    }
+    await this.crearAuditoria(
+      "CREATE",
+      data.registradoPorId,
+      "Secretaría",
+      `Creación de cita en centro ID: ${"centroSaludId"}`,
+      cita.id_cita,
+    );
+
+    return "Cita creada exitosamente";
+  } catch (error) {
+    this.logger.error("Error al crear cita", error);
+    throw new Error("Error al crear la cita");
   }
+}
+
 
   async updateCita(
     data: CitaInput,
@@ -298,38 +302,38 @@ export class CitaService {
   // ======================
 
   async finalizarCita(id: string): Promise<string> {
-  const cita = await this.prisma.client.cita.findUnique({
-    where: { id_cita: id },
-  });
+    const cita = await this.prisma.client.cita.findUnique({
+      where: { id_cita: id },
+    });
 
-  if (!cita) {
-    throw new Error('La cita no existe');
+    if (!cita) {
+      throw new Error('La cita no existe');
+    }
+
+    if (cita.cancelada) {
+      throw new Error('No se puede finalizar una cita cancelada');
+    }
+
+    await this.prisma.client.cita.update({
+      where: { id_cita: id },
+      data: {
+        finalizada: true,
+      },
+    });
+
+    await this.prisma.client.auditoria.create({
+      data: {
+        accion: 'UPDATE',
+        usuarioId: '', // médico
+        usuarioNom: 'medico',
+        detalles: `Se finalizó la cita ${id}`,
+        model: 'Cita',
+        registro_id: id,
+      },
+    });
+
+    return 'Cita finalizada correctamente';
   }
-
-  if (cita.cancelada) {
-    throw new Error('No se puede finalizar una cita cancelada');
-  }
-
-  await this.prisma.client.cita.update({
-    where: { id_cita: id },
-    data: {
-      finalizada: true,
-    },
-  });
-
-  await this.prisma.client.auditoria.create({
-    data: {
-      accion: 'UPDATE',
-      usuarioId: '', // médico
-      usuarioNom: 'medico',
-      detalles: `Se finalizó la cita ${id}`,
-      model: 'Cita',
-      registro_id: id,
-    },
-  });
-
-  return 'Cita finalizada correctamente';
-}
 
   async generarReporteCitas(res: Response): Promise<void> {
     const citas = await this.prisma.client.cita.findMany();
@@ -361,5 +365,45 @@ export class CitaService {
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename=reporte-citas.xlsx');
     res.end(buffer);
+  }
+  async reprogramarCita(
+    data: CitaReprogramarInput, // Usamos el input específico
+    citaId: string,
+  ): Promise<string> {
+    try {
+      const existingCita = await this.prisma.client.cita.findUnique({
+        where: { id_cita: citaId },
+      });
+
+      if (!existingCita) {
+        throw new Error('La cita no existe.');
+      }
+      if (existingCita.cancelada) {
+        throw new Error('No se puede reprogramar una cita cancelada.');
+      }
+      if (existingCita.finalizada) {
+        throw new Error('No se puede reprogramar una cita finalizada.');
+      }
+
+      await this.prisma.client.cita.update({
+        where: { id_cita: citaId },
+        data: {
+          fechaProgramada: data.fechaProgramada, // <-- Solo actualizamos la fecha
+        },
+      });
+
+      await this.crearAuditoria(
+        'UPDATE',
+        data.registradoPorId || 'Sistema',
+        'Secretaría/Sistema',
+        `Cita reprogramada a nueva fecha: ${data.fechaProgramada.toISOString()}`,
+        citaId,
+      );
+
+      return 'Cita reprogramada exitosamente';
+    } catch (error) {
+      this.logger.error('Error al reprogramar cita', error);
+      throw new Error(`Error al reprogramar la cita: ${error.message}`);
+    }
   }
 }

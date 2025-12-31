@@ -1,7 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Paciente, PacientesResultadoBusqueda } from './paciente.dto';
-
 import { Prisma } from '@prisma/client';
 import { PacienteInput, PacienteWhereInput } from './paciente.input';
 import { getPacientes } from 'src/mongo/pacientes/getPacientes';
@@ -14,7 +13,6 @@ export class PacienteService {
   async getPaciente(id: string): Promise<Paciente | null> {
     try {
       this.logger.debug(`Recuperando paciente con ID ${id}`);
-
       const paciente = await getPacienteById(this.prisma.mongodb, id);
 
       if (!paciente) {
@@ -29,18 +27,21 @@ export class PacienteService {
       throw new Error('Error al recuperar paciente');
     }
   }
-  async getPacientes(  
-    limit?: number,
-    skip?: number,
-    where?: PacienteWhereInput,
-  ): Promise<PacientesResultadoBusqueda | null> {
+ async getPacientes(
+  // centroSaludId: string,
+  skip?: number,
+  limit?: number,
+  where?: PacienteWhereInput,
+): Promise<PacientesResultadoBusqueda | null>  {
     try {
        this.logger.debug('Buscando pacientes con criterios:', where);
       const pacientes = await getPacientes(
+        
         this.prisma.mongodb,
         skip,
         limit,
         where,
+          // centroSaludId,
       );
       return pacientes;
     } catch (error) {
@@ -50,10 +51,11 @@ export class PacienteService {
     }
   }
 
-  async createPaciente(data: PacienteInput): Promise<string> {
+  async createPaciente(data: PacienteInput,  centroSaludId: string, ): Promise<string> {
     try {
       this.logger.debug('Creando paciente');
       const pacienteData: Prisma.PacienteCreateInput = {
+        centroSalud: { connect: { id: centroSaludId } },
         dni: data.dni,
         nombre_paciente: data.nombre_paciente,
         apellido_paciente: data.apellido_paciente,
@@ -67,7 +69,8 @@ export class PacienteService {
         nacionalidad: data.nacionalidad,
         obra_social: data.obra_social,
         direccion: data.direccion,
-        email: data.email,
+        email: data.email,                    
+
       };
       const paciente = await this.prisma.client.paciente.create({
         data: pacienteData,
@@ -167,6 +170,27 @@ export class PacienteService {
       console.error('Error al eliminar definitivamente el paciente', error);
       this.logger.error(error);
       throw new Error('Error al eliminar definitivamente el paciente');
+    }
+  }
+
+
+async getPacientePorDNI(dni: string, centroSaludId: string,): Promise<Paciente | null> {
+    try {
+        this.logger.debug(`Recuperando paciente con DNI ${dni}`);
+        
+        // Asume que tienes una función para buscar en MongoDB por DNI
+        // Si usas Prisma, sería:
+        return this.prisma.client.paciente.findFirst({
+      where: {
+        dni,
+        centroSaludId,
+        eliminadoLog: false,
+      },
+    });
+    } catch (error) {
+        console.error('Error al recuperar paciente por DNI', error);
+        this.logger.error(error);
+        throw new Error('Error al recuperar paciente por DNI');
     }
   }
 

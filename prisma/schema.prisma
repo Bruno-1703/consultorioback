@@ -44,25 +44,57 @@ type CitaMedicamento {
   id_medicamento String
   nombre_med     String?
 }
+//****************************************************************************************************
+model CentroSalud {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  nombre      String
+  tipo        String   // "CIC" o "CONSULTORIO"
+  direccion   String?
+
+  // Relaciones
+  usuarios    UsuarioCentro[]
+  citas       Cita[]
+  pacientes   Paciente[]  
+  medicamentos Medicamento[]
+}
+// Esta es la tabla clave: vincula a Gisela con distintos centros y distintos roles
+model UsuarioCentro {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  usuarioId      String      @db.ObjectId
+  centroSaludId  String      @db.ObjectId
+  rol            String      // "ADMIN", "DOCTOR", "SECRETARIA"
+  
+  usuario        Usuario     @relation(fields: [usuarioId], references: [id_Usuario])
+  centroSalud    CentroSalud @relation(fields: [centroSaludId], references: [id])
+
+  @@unique([usuarioId, centroSaludId]) // Evita que un usuario se duplique en el mismo centro
+}
+
+// ---------------------------- MODELOS EXISTENTES MODIFICADOS ------------------------------------
 
 model Cita {
-  id_cita           String            @id @default(auto()) @map("_id") @db.ObjectId
+  id_cita           String   @id @default(auto()) @map("_id") @db.ObjectId  
   motivoConsulta    String?
-
-  fechaProgramada     DateTime           /// Fecha y hora solicitada por el paciente
-  fechaCreacion       DateTime           @default(now())     /// Se genera automáticamente
-  fechaModificacion   DateTime?          @updatedAt          /// Se actualiza automáticamente
-
   observaciones     String?
-  diagnostico     String?
-  cancelada         Boolean           @default(false)
-  enfermedades        CitaEnfermedad[]
-  medicamentos       CitaMedicamento[]
-  estudios           CitaEstudio[]
+  diagnostico       String?
+  cancelada         Boolean  @default(false)
+
+  fechaProgramada   DateTime
+  fechaCreacion     DateTime @default(now())
+  fechaModificacion DateTime? @updatedAt
+
   paciente          PacienteCita
-  finalizada        Boolean           @default(false)
-  doctor    CitaDoctor
+  doctor            CitaDoctor
+
+  enfermedades      CitaEnfermedad[]
+  medicamentos      CitaMedicamento[]
+  estudios          CitaEstudio[]
+
+  finalizada        Boolean @default(false)
   registradoPorId   String?
+
+  centroSaludId     String @db.ObjectId
+  centroSalud       CentroSalud @relation(fields: [centroSaludId], references: [id])
 }
 
 model Estudio {
@@ -90,6 +122,8 @@ model Medicamento {
   prescripcion_requerida Boolean?
   eliminadoLog           Boolean  @default(false)
   stock                  Int       @default(0) 
+  centroSaludId String      @db.ObjectId
+  centroSalud   CentroSalud @relation(fields: [centroSaludId], references: [id])
 }
 
 model Enfermedad {
@@ -97,7 +131,7 @@ model Enfermedad {
   nombre_enf    String
   sintomas      String
   gravedad      String?
-   eliminadoLog       Boolean @default(false)
+  eliminadoLog       Boolean @default(false)
 
 }
 
@@ -118,36 +152,9 @@ model Paciente {
   direccion         String?    // Nuevo
   nacionalidad      String?    // Nuevo
   eliminadoLog      Boolean  @default(false)
-  internaciones Internacion[]
 
-}
-model Cama {
-  id_cama    String   @id @default(auto()) @map("_id") @db.ObjectId
-  numero     String
-  disponible Boolean @default(true)
-  pabellonId String?
-  pabellon   Pabellon? @relation(fields: [pabellonId], references: [id_pabellon])
-  internaciones Internacion[]
-}
-
-model Pabellon {
-  id_pabellon String @id @default(auto()) @map("_id") @db.ObjectId
-  nombre      String
-  descripcion String?
-  camas       Cama[]
-}
-
-model Internacion {
-  id_internacion String @id @default(auto()) @map("_id") @db.ObjectId
-  pacienteId     String
-  camaId         String
-  paciente       Paciente @relation(fields: [pacienteId], references: [id_paciente])
-  cama           Cama     @relation(fields: [camaId], references: [id_cama])
-  fecha_ingreso  DateTime @default(now())
-  fecha_alta     DateTime?
-  diagnostico    String?
-  observaciones  String?
-  activa         Boolean  @default(true)
+  centroSaludId     String   @db.ObjectId
+  centroSalud       CentroSalud @relation(fields: [centroSaludId], references: [id])
 }
 model Usuario {
   id_Usuario     String  @id @default(auto()) @map("_id") @db.ObjectId
@@ -162,8 +169,11 @@ model Usuario {
   dni              String   @unique
   telefono         String?
   resetToken        String?
-resetTokenExpiry  DateTime?
+  resetTokenExpiry  DateTime?
+  centros           UsuarioCentro[]
 }
+
+
 enum Accion {
   CREATE
   UPDATE
@@ -187,4 +197,5 @@ model Auditoria {
   @@index([model])
   @@index([registro_id])
 }
+
 

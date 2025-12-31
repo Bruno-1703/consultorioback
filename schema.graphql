@@ -92,6 +92,7 @@ type Paciente {
   direccion: String
   nacionalidad: String
   eliminadoLog: Boolean
+  centroSaludId: ID
 }
 
 type PacienteEdge {
@@ -116,6 +117,7 @@ type Usuario {
   matricula: String
   telefono: String
   dni: String
+  centroSaludId: String
 }
 
 type UsuarioEdge {
@@ -133,7 +135,7 @@ type Cita {
   motivoConsulta: String!
   observaciones: String
   diagnostico: String
-  fechaProgramada: String
+  fechaProgramada: DateTime
   cancelada: Boolean
   finalizada: Boolean
   medicamentos: [Medicamento!]
@@ -142,7 +144,6 @@ type Cita {
   paciente: Paciente
   doctor: Usuario
   modificadoPorId: ID
-  registradoPorId: ID
 }
 
 type CitaEdge {
@@ -155,37 +156,25 @@ type CitaResultadoBusqueda {
   aggregate: AggregateCount!
 }
 
-type Pabellon {
-  id_pabellon: ID!
+type CentroSalud {
+  id: ID!
   nombre: String!
-  descripcion: String
+  tipo: String!
+  direccion: String
 }
 
-type Cama {
-  id_cama: ID!
-  numero: String!
-  disponible: Boolean!
-  pabellon: Pabellon
+type CentroSaludEdge {
+  node: CentroSalud!
+  cursor: String!
 }
 
-type Internacion {
-  id_internacion: ID!
-  fecha_ingreso: DateTime!
-  fecha_alta: DateTime
-  diagnostico: String!
-  observaciones: String
-  activa: Boolean!
-  paciente: Paciente!
-  cama: Cama!
+type AggregateCentroCount {
+  count: Int!
 }
 
-type HistorialInternacion {
-  id_internacion: ID!
-  fecha_ingreso: DateTime!
-  fecha_alta: DateTime
-  diagnostico: String!
-  observaciones: String
-  cama: Cama!
+type CentroSaludResultadoBusqueda {
+  edges: [CentroSaludEdge!]!
+  aggregate: AggregateCentroCount!
 }
 
 type Query {
@@ -199,15 +188,14 @@ type Query {
   getStock(medicamentoId: String!): Float!
   getPaciente(id: String!): Paciente
   getPacientes(skip: Int, limit: Int, where: PacienteWhereInput): PacientesResultadoBusqueda!
+  getPacientePorDNI(dni: String!): Paciente
   getEnfermedadById(id: String!): Enfermedad
   getEnfermedades(where: EnfermedadWhereInput, skip: Int, limit: Int): EnfermedadResultadoBusqueda!
   getUsuario(email: String!): Usuario
   getUsuarios(skip: Int, limit: Int, where: UsuarioWhereInput): UsuarioResultadoBusqueda!
   getUsuarioById(id: String!): Usuario
-  testInternacion: String!
-  internacionesActivas: [Internacion!]!
-  historialInternacionPaciente(pacienteId: String!): [HistorialInternacion!]!
-  camasDisponibles: [Cama!]!
+  getCentros(skip: Int, limit: Int, where: CentroSaludWhereInput): CentroSaludResultadoBusqueda!
+  misCentros(usuarioId: String!, skip: Int, limit: Int): CentroSaludResultadoBusqueda!
 }
 
 input CitaWhereInput {
@@ -224,7 +212,6 @@ input CitaWhereInput {
   enfermedades: [EnfermedadInput!]
   paciente: PacienteCitaInput
   doctor: UsuarioCitaInput
-  registradoPorId: ID
 }
 
 input EstudioInput {
@@ -278,6 +265,7 @@ input UsuarioCitaInput {
   matricula: String
   telefono: String
   dni: String
+  centroSaludId: String
 }
 
 input EstudioWhereInput {
@@ -341,6 +329,13 @@ input UsuarioWhereInput {
   matricula: String
   telefono: String
   dni: String
+  centroSaludId: String
+}
+
+input CentroSaludWhereInput {
+  id: ID
+  nombre: String
+  tipo: String
 }
 
 type Mutation {
@@ -352,6 +347,7 @@ type Mutation {
   cancelarCita(id: String!): String!
   finalizarCita(id: String!): String!
   cargarDiagnosticoCita(citaId: String!, data: CitaDiagnosticoInput!): String!
+  reprogramarCita(data: CitaReprogramarInput!, citaId: String!): String!
   createEstudio(data: EstudioInput!, idCita: String!): String!
   updateEstudio(data: EstudioInput!, estudioId: String!): String!
   createMedicamento(data: MedicamentoInput!): String!
@@ -372,9 +368,8 @@ type Mutation {
   deleteUsuario(id: String!): String!
   solicitarRecuperacionPassword(email: String!): String!
   resetearPassword(token: String!, nuevaPassword: String!): String!
-  internarPaciente(data: CreateInternacionInput!): String!
-  darAltaInternacion(data: AltaInternacionInput!): String!
-  updateInternacion(data: UpdateInternacionInput!): String!
+  createCentro(data: CentroSaludInput!): CentroSalud!
+  vincularUsuarioACentro(usuarioId: String!, centroId: String!, rol: String!): String!
 }
 
 input CitaInput {
@@ -390,6 +385,11 @@ input CitaInput {
 
 input CitaDiagnosticoInput {
   diagnostico: String!
+}
+
+input CitaReprogramarInput {
+  fechaProgramada: DateTime!
+  registradoPorId: String
 }
 
 input PacienteInput {
@@ -420,22 +420,11 @@ input UsuarioInput {
   matricula: String!
   telefono: String
   dni: String!
+  centroSaludId: String
 }
 
-input CreateInternacionInput {
-  pacienteId: String!
-  camaId: String!
-  diagnostico: String
-  observaciones: String
-}
-
-input AltaInternacionInput {
-  id_internacion: String!
-  observaciones_alta: String
-}
-
-input UpdateInternacionInput {
-  id_internacion: String!
-  diagnostico: String
-  observaciones: String
+input CentroSaludInput {
+  nombre: String!
+  tipo: String!
+  direccion: String
 }

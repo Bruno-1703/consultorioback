@@ -12,7 +12,6 @@ export async function getCitasByfecha(
   const logger = new Logger('getCitasByfecha');
   try {
     const query: any[] = [];
-    console.log('Filtro recibido:', where?.registradoPorId);
 
     // Siempre buscar las no finalizadas, si no se indica lo contrario
     if (where?.finalizada !== undefined) {
@@ -20,7 +19,6 @@ export async function getCitasByfecha(
     } else {
       query.push({ finalizada: false });
     }
-    query.push({ "registradoPorId": where.registradoPorId });
 
     // Filtro por texto libre (buscar)
     if (where?.buscar) {

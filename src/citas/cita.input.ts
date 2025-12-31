@@ -6,10 +6,11 @@ import { PacienteCitaInput, PacienteInput } from 'src/paciente/paciente.input';
 import { UsuarioCitaInput, UsuarioInput } from 'src/users/usuario.input';
 
 @InputType()
+@InputType()
 export class CitaInput {
   @Field(() => ID, { nullable: true })
   id_cita?: string;
-  
+
   @Field(() => String, { nullable: true })
   motivoConsulta?: string;
 
@@ -27,11 +28,22 @@ export class CitaInput {
 
   @Field(() => UsuarioCitaInput, { nullable: true })
   doctor?: UsuarioCitaInput;
-  
+
   @Field(() => ID, { nullable: true })
   registradoPorId?: string;
 
+
 }
+
+@InputType()
+export class CitaReprogramarInput {
+  @Field()
+  fechaProgramada: Date; // Solo necesitamos la nueva fecha
+
+  @Field({ nullable: true })
+  registradoPorId?: string;
+}
+
 @InputType()
 export class CitaWhereInput {
   @Field(() => ID, { nullable: true })
@@ -73,8 +85,6 @@ export class CitaWhereInput {
   @Field(() => UsuarioCitaInput, { nullable: true })
   doctor?: UsuarioCitaInput;
 
-  @Field(() => ID, { nullable: true })
-  registradoPorId?: string;
 
 }
 

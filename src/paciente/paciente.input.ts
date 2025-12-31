@@ -48,15 +48,15 @@ export class PacienteInput {
 
 @InputType()
 export class PacienteCitaInput {
-  @Field(() => ID,{ nullable: true })
+  @Field(() => ID, { nullable: true })
   id_paciente?: string;
-  @Field(() => String,{ nullable: true })
+  @Field(() => String, { nullable: true })
   dni: string;
   @Field(() => String, { nullable: true })
   nombre_paciente?: string;
-  @Field(() => String,  { nullable: true })
+  @Field(() => String, { nullable: true })
   apellido_paciente?: string;
-  
+
 }
 
 @InputType()
@@ -108,4 +108,5 @@ export class PacienteWhereInput {
 
   @Field(() => Boolean, { nullable: true })
   eliminadoLog?: boolean;
+
 }

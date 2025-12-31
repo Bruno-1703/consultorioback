@@ -5,6 +5,7 @@ import { Enfermedad } from 'src/enfermedad/enfermedad.dto';
 import { Paciente } from 'src/paciente/paciente.dto';
 import { UsuarioInput } from 'src/users/usuario.input';
 import { Usuario } from 'src/users/usuario.dto';
+import { CentroSalud } from 'src/centroSalud/centro-salud.dto';
 
 @ObjectType()
 export class Cita {
@@ -16,13 +17,12 @@ export class Cita {
 
   @Field(() => String, { nullable: true })
   observaciones?: string;
-  
+
   @Field(() => String, { nullable: true })
   diagnostico?: string;
 
-  @Field({ nullable: true })
-  fechaProgramada?: string;
-
+  @Field(() => Date, { nullable: true })
+  fechaProgramada?: Date;
 
   @Field(() => Boolean, { nullable: true })
   cancelada?: boolean;
@@ -48,8 +48,9 @@ export class Cita {
   @Field(() => ID, { nullable: true })
   modificadoPorId?: string;
 
-  @Field(() => ID, { nullable: true })
-  registradoPorId?: string;
+
+
+
 }
 
 @ObjectType()

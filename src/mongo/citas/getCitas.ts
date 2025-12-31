@@ -20,8 +20,12 @@ export async function getCitas(
     const query: any[] = [];
 
     // FILTRO DNI PACIENTE
-// Buscar solo como string
-  query.push({ "paciente.dni": where.paciente.dni });
+    // Buscar solo como string
+    // FILTRO DNI PACIENTE
+    if (where?.paciente?.dni) {
+      query.push({ "paciente.dni": where.paciente.dni });
+    }
+
 
 
     // FILTRO DOCTOR

@@ -31,6 +31,9 @@ export class UsuarioInput {
 
   @Field(() => String)
   dni: string;
+  
+  @Field(() => String, { nullable: true }) 
+  centroSaludId?: string;
 }
 
 @InputType()
@@ -64,6 +67,9 @@ export class UsuarioCitaInput {
 
   @Field(() => String, { nullable: true })
   dni?: string;
+
+  @Field(() => String, { nullable: true }) 
+  centroSaludId?: string;
 }
 
 @InputType()
@@ -97,4 +103,7 @@ export class UsuarioWhereInput {
 
   @Field(() => String, { nullable: true })
   dni?: string;
+
+  @Field(() => String, { nullable: true })
+  centroSaludId?: string;
 }

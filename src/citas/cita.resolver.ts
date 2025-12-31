@@ -1,6 +1,6 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Cita, CitaResultadoBusqueda } from './cita.dto';
-import { CitaDiagnosticoInput, CitaInput, CitaWhereInput } from './cita.input';
+import { CitaDiagnosticoInput, CitaInput, CitaReprogramarInput, CitaWhereInput } from './cita.input';
 import { CitaService } from './cita.service';
 import { EnfermedadInput } from 'src/enfermedad/enfermedad.input';
 import { MedicamentoInput } from 'src/medicamentos/medicamento.input';
@@ -20,6 +20,7 @@ export class CitaResolver {
     @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
     @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
     @Args({ name: 'where', type: () => CitaWhereInput, nullable: true })
+    
     where?: CitaWhereInput
   ): Promise<CitaResultadoBusqueda> {
     return this.citaService.getCitas( skip,limit,where);
@@ -31,18 +32,16 @@ export class CitaResolver {
     @Args({ name: 'where', type: () => CitaWhereInput, nullable: true })
     where?: CitaWhereInput
   ): Promise<CitaResultadoBusqueda> {
-    console.log(where)
     return this.citaService.getCitasByFecha( skip,limit,where);
   }
-  @Mutation(() => String)
-  async createCita(
- 
-    @Args({ name: 'data', type: () => CitaInput }) data: CitaInput,
-    @Args('paciente', { type: () => PacienteCitaInput })
-    paciente: PacienteCitaInput,
-  ): Promise<string> {
-    return this.citaService.createCita(data,paciente);
-  }
+@Mutation(() => String)
+async createCita(
+  @Args({ name: 'data', type: () => CitaInput }) data: CitaInput,
+  @Args('paciente', { type: () => PacienteCitaInput }) paciente: PacienteCitaInput,
+): Promise<string> {
+  // Pasamos data.centroSaludId como tercer argumento
+  return this.citaService.createCita(data, paciente);
+}
 
   @Mutation(() => String)
   async updateCita(
@@ -97,5 +96,12 @@ async cargarDiagnosticoCita(
   return this.citaService.cargarDiagnosticoCita(citaId, data);
 }
 
-
+@Mutation(() => String) // Retorna un String (el mensaje de éxito)
+    async reprogramarCita(
+      // Verifica que el Input esté importado correctamente
+      @Args({ name: 'data', type: () => CitaReprogramarInput }) data: CitaReprogramarInput,
+      @Args({ name: 'citaId', type: () => String }) citaId: string,
+    ): Promise<string> {
+      return this.citaService.reprogramarCita(data, citaId);
+    }
 }
