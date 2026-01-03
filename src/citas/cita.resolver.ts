@@ -1,4 +1,4 @@
-import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver, Context } from '@nestjs/graphql';
 import { Cita, CitaResultadoBusqueda } from './cita.dto';
 import { CitaDiagnosticoInput, CitaInput, CitaReprogramarInput, CitaWhereInput } from './cita.input';
 import { CitaService } from './cita.service';
@@ -38,9 +38,13 @@ export class CitaResolver {
 async createCita(
   @Args({ name: 'data', type: () => CitaInput }) data: CitaInput,
   @Args('paciente', { type: () => PacienteCitaInput }) paciente: PacienteCitaInput,
+    @Context() ctx: any,
+
 ): Promise<string> {
+  const user = ctx.req.user;
+  const centroSaludId = user.centroSaludId;
   // Pasamos data.centroSaludId como tercer argumento
-  return this.citaService.createCita(data, paciente);
+  return this.citaService.createCita(data, paciente,centroSaludId);
 }
 
   @Mutation(() => String)

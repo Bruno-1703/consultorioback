@@ -2,8 +2,8 @@ import { Field, InputType, ID } from "@nestjs/graphql";
 
 @InputType()
 export class UsuarioInput {
-  @Field(() => ID, { nullable: true })
-  id?: string;
+  @Field(() => String, { nullable: true })
+  id_Usuario?: string;
 
   @Field(() => String)
   nombre_usuario: string;
@@ -38,8 +38,8 @@ export class UsuarioInput {
 
 @InputType()
 export class UsuarioCitaInput {
-  @Field(() => ID, { nullable: true })
-  id?: string;
+   @Field(() => String, { nullable: true })
+  id_Usuario?: string;
 
   @Field(() => String, { nullable: true })
   nombre_usuario?: string;
@@ -74,8 +74,7 @@ export class UsuarioCitaInput {
 
 @InputType()
 export class UsuarioWhereInput {
-  @Field(() => ID, { nullable: true })
-  id?: string;
+
 
   @Field(() => String, { nullable: true })
   nombre_usuario?: string;

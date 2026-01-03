@@ -32,7 +32,7 @@ export async function getCitas(
     if (where?.doctor) {
       const d = where.doctor;
 
-      if (d.id) query.push({ "doctor.id_Usuario": d.id });
+      if (d.id_Usuario) query.push({ "doctor.id_Usuario": d.id_Usuario });
       if (d.dni) query.push({ "doctor.dni": d.dni });
       if (d.nombre_usuario) query.push({ "doctor.nombre_usuario": d.nombre_usuario });
       if (d.email) query.push({ "doctor.email": d.email });

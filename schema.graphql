@@ -106,7 +106,7 @@ type PacientesResultadoBusqueda {
 }
 
 type Usuario {
-  id_Usuario: String!
+  id_Usuario: String
   nombre_usuario: String
   email: String
   password: String!
@@ -255,7 +255,7 @@ input PacienteCitaInput {
 }
 
 input UsuarioCitaInput {
-  id: ID
+  id_Usuario: String
   nombre_usuario: String
   email: String
   password: String
@@ -319,7 +319,6 @@ input EnfermedadWhereInput {
 }
 
 input UsuarioWhereInput {
-  id: ID
   nombre_usuario: String
   email: String
   rol_usuario: String
@@ -410,7 +409,7 @@ input PacienteInput {
 }
 
 input UsuarioInput {
-  id: ID
+  id_Usuario: String
   nombre_usuario: String!
   email: String
   password: String

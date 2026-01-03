@@ -47,10 +47,6 @@ export class Cita {
 
   @Field(() => ID, { nullable: true })
   modificadoPorId?: string;
-
-
-
-
 }
 
 @ObjectType()

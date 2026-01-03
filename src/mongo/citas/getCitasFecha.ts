@@ -73,9 +73,17 @@ export async function getCitasByfecha(
       node: {
         ...cita,
         id_cita: cita._id.toString(),
+
+        doctor: cita.doctor
+          ? {
+            ...cita.doctor,
+            id_doctor: cita.doctor._id.toString(),
+          }
+          : null,
       },
       cursor: cita._id.toString(),
     }));
+
 
     return {
       aggregate: {

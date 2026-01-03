@@ -63,22 +63,41 @@ export class CitaService {
 async createCita(
   data: CitaInput,
   paciente: PacienteCitaInput,
-  // centroSaludId?: string,
+  centroSaludId: string,
 ): Promise<string> {
-
-
   try {
     const cita = await this.prisma.client.cita.create({
       data: {
-        centroSalud: { connect: { id: ""} },
         motivoConsulta: data.motivoConsulta,
         observaciones: data.observaciones,
-        fechaProgramada: data.fechaProgramada,
+        fechaProgramada: new Date(data.fechaProgramada),
+
         cancelada: false,
         finalizada: false,
+
         registradoPorId: data.registradoPorId,
-        doctor: { set: data.doctor },
-        paciente: { set: paciente },
+
+        // 🔹 EMBEDDED TYPES
+        doctor: {
+          id_Usuario: data.doctor.id_Usuario,
+          nombre_usuario: data.doctor.nombre_usuario,
+          email: data.doctor.email,
+          especialidad: data.doctor.especialidad,
+          matricula: data.doctor.matricula,
+          telefono: data.doctor.telefono,
+          nombre_completo: data.doctor.nombre_completo,
+          dni: data.doctor.dni,
+        },
+
+        paciente: {
+          id_paciente: paciente.id_paciente,
+          dni: paciente.dni,
+          nombre_paciente: paciente.nombre_paciente,
+          apellido_paciente: paciente.apellido_paciente,
+        },
+
+        // 🔹 FK DIRECTO (SIN connect)
+        centroSaludId: centroSaludId,
       },
     });
 
@@ -86,16 +105,18 @@ async createCita(
       "CREATE",
       data.registradoPorId,
       "Secretaría",
-      `Creación de cita en centro ID: ${"centroSaludId"}`,
+      `Creación de cita en centro ID: ${centroSaludId}`,
       cita.id_cita,
     );
 
     return "Cita creada exitosamente";
   } catch (error) {
-    this.logger.error("Error al crear cita", error);
-    throw new Error("Error al crear la cita");
+    this.logger.error("Error REAL al crear cita 👉", error);
+    throw error; // dejalo así hasta que todo esté estable
   }
 }
+
+
 
 
   async updateCita(
