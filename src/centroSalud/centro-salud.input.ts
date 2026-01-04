@@ -24,5 +24,8 @@ export class CentroSaludWhereInput {
 
   @Field({ nullable: true })
   tipo?: string;
+  
+  @Field({ nullable: true })
+  direccion?: string;
 
 }

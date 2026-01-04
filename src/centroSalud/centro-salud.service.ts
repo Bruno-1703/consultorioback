@@ -8,7 +8,7 @@ import { getCentros } from 'src/mongo/centroSalud/getCentros';
 export class CentroSaludService {
   private readonly logger = new Logger(CentroSaludService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   /**
    * Crea un nuevo centro de salud limpiando los datos para evitar errores de Prisma
@@ -21,7 +21,7 @@ export class CentroSaludService {
         data: {
           nombre: data.nombre,
           direccion: data.direccion,
-          tipo: data.tipo,  
+          tipo: data.tipo,
         },
       });
 
@@ -40,18 +40,18 @@ export class CentroSaludService {
 
       throw new InternalServerErrorException('Error al procesar la creación del centro.');
     }
-  }  
-async getCentros(
-  skip: number = 0,
-  limit: number = 10,
-  where?: CentroSaludWhereInput
-): Promise<CentroSaludResultadoBusqueda> {
-     try {
-return await getCentros(this.prisma.mongodb, limit, skip, where);
-        } catch (error) {
-          this.logger.error('Error al buscar centros de salud', error);
-          throw new Error('Error al buscar centros de salud');
-        }
+  }
+  async getCentros(
+    skip: number,
+    limit: number,
+    where?: CentroSaludWhereInput
+  ): Promise<CentroSaludResultadoBusqueda> {
+    try {
+      return await getCentros(this.prisma.mongodb, skip, limit, where);
+    } catch (error) {
+      this.logger.error('Error al buscar centros de salud', error);
+      throw new Error('Error al buscar centros de salud');
+    }
   }
 
   /**
@@ -70,7 +70,7 @@ return await getCentros(this.prisma.mongodb, limit, skip, where);
         data: {
           usuarioId,
           centroSaludId: centroId,
-          rol, 
+          rol,
         },
       });
     } catch (error) {

@@ -335,6 +335,7 @@ input CentroSaludWhereInput {
   id: ID
   nombre: String
   tipo: String
+  direccion: String
 }
 
 type Mutation {
@@ -346,7 +347,7 @@ type Mutation {
   cancelarCita(id: String!): String!
   finalizarCita(id: String!): String!
   cargarDiagnosticoCita(citaId: String!, data: CitaDiagnosticoInput!): String!
-  reprogramarCita(data: CitaReprogramarInput!, citaId: String!): String!
+  reprogramarCita(citaId: String!, fechaProgramada: DateTime!): String!
   createEstudio(data: EstudioInput!, idCita: String!): String!
   updateEstudio(data: EstudioInput!, estudioId: String!): String!
   createMedicamento(data: MedicamentoInput!): String!
@@ -384,11 +385,6 @@ input CitaInput {
 
 input CitaDiagnosticoInput {
   diagnostico: String!
-}
-
-input CitaReprogramarInput {
-  fechaProgramada: DateTime!
-  registradoPorId: String
 }
 
 input PacienteInput {

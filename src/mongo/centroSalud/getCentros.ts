@@ -8,8 +8,8 @@ import {
 
 export async function getCentros(
   mongoConnection: Db,
-  limit: number,
-  skip: number,
+  skip = 0,
+  limit = 10,
   where?: CentroSaludWhereInput,
 ): Promise<CentroSaludResultadoBusqueda> {
 

@@ -388,43 +388,17 @@ async createCita(
     res.end(buffer);
   }
   async reprogramarCita(
-    data: CitaReprogramarInput, // Usamos el input específico
-    citaId: string,
-  ): Promise<string> {
-    try {
-      const existingCita = await this.prisma.client.cita.findUnique({
-        where: { id_cita: citaId },
-      });
+  citaId: string,
+  fechaProgramada: Date,
+): Promise<string> {
+  await this.prisma.client.cita.update({
+    where: { id_cita: citaId },
+    data: {
+      fechaProgramada,
+    },
+  });
 
-      if (!existingCita) {
-        throw new Error('La cita no existe.');
-      }
-      if (existingCita.cancelada) {
-        throw new Error('No se puede reprogramar una cita cancelada.');
-      }
-      if (existingCita.finalizada) {
-        throw new Error('No se puede reprogramar una cita finalizada.');
-      }
+  return 'Cita reprogramada correctamente';
+}
 
-      await this.prisma.client.cita.update({
-        where: { id_cita: citaId },
-        data: {
-          fechaProgramada: data.fechaProgramada, // <-- Solo actualizamos la fecha
-        },
-      });
-
-      await this.crearAuditoria(
-        'UPDATE',
-        data.registradoPorId || 'Sistema',
-        'Secretaría/Sistema',
-        `Cita reprogramada a nueva fecha: ${data.fechaProgramada.toISOString()}`,
-        citaId,
-      );
-
-      return 'Cita reprogramada exitosamente';
-    } catch (error) {
-      this.logger.error('Error al reprogramar cita', error);
-      throw new Error(`Error al reprogramar la cita: ${error.message}`);
-    }
-  }
 }

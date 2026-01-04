@@ -100,12 +100,12 @@ async cargarDiagnosticoCita(
   return this.citaService.cargarDiagnosticoCita(citaId, data);
 }
 
-@Mutation(() => String) // Retorna un String (el mensaje de éxito)
-    async reprogramarCita(
-      // Verifica que el Input esté importado correctamente
-      @Args({ name: 'data', type: () => CitaReprogramarInput }) data: CitaReprogramarInput,
-      @Args({ name: 'citaId', type: () => String }) citaId: string,
-    ): Promise<string> {
-      return this.citaService.reprogramarCita(data, citaId);
-    }
+@Mutation(() => String)
+async reprogramarCita(
+  @Args('citaId', { type: () => String }) citaId: string,
+  @Args('fechaProgramada', { type: () => Date }) fechaProgramada: Date,
+): Promise<string> {
+  return this.citaService.reprogramarCita(citaId, fechaProgramada);
+}
+
 }

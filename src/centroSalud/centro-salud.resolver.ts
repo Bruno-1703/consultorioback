@@ -15,14 +15,16 @@ export class CentroSaludResolver {
   }
 
   // Actualizado para devolver CentroSaludResultadoBusqueda
-  @Query(() => CentroSaludResultadoBusqueda)
-  async getCentros(
-    @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
-    @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
-    @Args('where', { nullable: true }) where?: CentroSaludWhereInput
-  ) {
-    return this.centroService.getCentros(skip, limit, where);
-  }
+@Query(() => CentroSaludResultadoBusqueda)
+async getCentros(
+  @Args({ name: 'skip', type: () => Int, nullable: true }) skip?: number,
+  @Args({ name: 'limit', type: () => Int, nullable: true }) limit?: number,
+  @Args('where', { nullable: true }) where?: CentroSaludWhereInput
+) {
+  console.log('🔥 ENTRO A getCentros', { skip, limit, where });
+  return this.centroService.getCentros(skip, limit, where);
+}
+
 
   // Actualizado para devolver CentroSaludResultadoBusqueda
   @Query(() => CentroSaludResultadoBusqueda)
