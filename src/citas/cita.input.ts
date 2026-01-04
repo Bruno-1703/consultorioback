@@ -84,7 +84,9 @@ export class CitaWhereInput {
 
   @Field(() => UsuarioCitaInput, { nullable: true })
   doctor?: UsuarioCitaInput;
-
+  
+  @Field(() => ID, { nullable: true })
+  registradoPorId?: string;
 
 }
 

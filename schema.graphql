@@ -212,6 +212,7 @@ input CitaWhereInput {
   enfermedades: [EnfermedadInput!]
   paciente: PacienteCitaInput
   doctor: UsuarioCitaInput
+  registradoPorId: ID
 }
 
 input EstudioInput {

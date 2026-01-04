@@ -7,7 +7,7 @@ import { getPacientes } from 'src/mongo/pacientes/getPacientes';
 import { getPacienteById } from 'src/mongo/pacientes/getPacienteById';
 @Injectable()
 export class PacienteService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   private readonly logger = new Logger(PacienteService.name);
 
   async getPaciente(id: string): Promise<Paciente | null> {
@@ -27,22 +27,21 @@ export class PacienteService {
       throw new Error('Error al recuperar paciente');
     }
   }
- async getPacientes(
-  // centroSaludId: string,
-  skip?: number,
-  limit?: number,
-  where?: PacienteWhereInput,
-): Promise<PacientesResultadoBusqueda | null>  {
+  async getPacientes(
+    skip?: number,
+    limit?: number,
+    where?: PacienteWhereInput,
+  ): Promise<PacientesResultadoBusqueda | null> {
     try {
-       this.logger.debug('Buscando pacientes con criterios:', where);
+      this.logger.debug('Buscando pacientes con criterios:', where);
       const pacientes = await getPacientes(
-        
         this.prisma.mongodb,
-        skip,
         limit,
+        skip,
         where,
-          // centroSaludId,
       );
+
+      this.logger.debug('Pacientes recuperados exitosamente');
       return pacientes;
     } catch (error) {
       console.error('Error al buscar pacientes', error);
@@ -51,7 +50,7 @@ export class PacienteService {
     }
   }
 
-  async createPaciente(data: PacienteInput,  centroSaludId: string, ): Promise<string> {
+  async createPaciente(data: PacienteInput, centroSaludId: string,): Promise<string> {
     try {
       this.logger.debug('Creando paciente');
       const pacienteData: Prisma.PacienteCreateInput = {
@@ -69,7 +68,7 @@ export class PacienteService {
         nacionalidad: data.nacionalidad,
         obra_social: data.obra_social,
         direccion: data.direccion,
-        email: data.email,                    
+        email: data.email,
 
       };
       const paciente = await this.prisma.client.paciente.create({
@@ -98,24 +97,24 @@ export class PacienteService {
         throw new Error(`No se encontró el paciente con ID ${pacienteId}`);
       }
       await this.prisma.client.paciente.update({
-      where: { id_paciente: pacienteId },
-      data: {
-        dni: data.dni ?? existingPaciente.dni,
-        nombre_paciente: data.nombre_paciente ?? existingPaciente.nombre_paciente,
-        apellido_paciente: data.apellido_paciente ?? existingPaciente.apellido_paciente,
-        edad: data.edad ?? existingPaciente.edad,
-        altura: data.altura ?? existingPaciente.altura,
-        telefono: data.telefono ?? existingPaciente.telefono,
-        fecha_nacimiento: data.fecha_nacimiento ?? existingPaciente.fecha_nacimiento,
-        sexo: data.sexo ?? existingPaciente.sexo,
-        grupo_sanguineo: data.grupo_sanguineo ?? existingPaciente.grupo_sanguineo,
-        alergias: data.alergias ?? existingPaciente.alergias,
-        obra_social: data.obra_social ?? existingPaciente.obra_social,
-        email: data.email ?? existingPaciente.email,
-        direccion: data.direccion ?? existingPaciente.direccion,
-        nacionalidad: data.nacionalidad ?? existingPaciente.nacionalidad,
-      },
-    });
+        where: { id_paciente: pacienteId },
+        data: {
+          dni: data.dni ?? existingPaciente.dni,
+          nombre_paciente: data.nombre_paciente ?? existingPaciente.nombre_paciente,
+          apellido_paciente: data.apellido_paciente ?? existingPaciente.apellido_paciente,
+          edad: data.edad ?? existingPaciente.edad,
+          altura: data.altura ?? existingPaciente.altura,
+          telefono: data.telefono ?? existingPaciente.telefono,
+          fecha_nacimiento: data.fecha_nacimiento ?? existingPaciente.fecha_nacimiento,
+          sexo: data.sexo ?? existingPaciente.sexo,
+          grupo_sanguineo: data.grupo_sanguineo ?? existingPaciente.grupo_sanguineo,
+          alergias: data.alergias ?? existingPaciente.alergias,
+          obra_social: data.obra_social ?? existingPaciente.obra_social,
+          email: data.email ?? existingPaciente.email,
+          direccion: data.direccion ?? existingPaciente.direccion,
+          nacionalidad: data.nacionalidad ?? existingPaciente.nacionalidad,
+        },
+      });
 
       this.logger.debug('Paciente actualizado exitosamente');
       return 'Paciente actualizado exitosamente';
@@ -133,14 +132,14 @@ export class PacienteService {
       if (!existingPaciente) {
         throw new Error(`No se encontró el paciente con ID ${pacienteId}`);
       }
-      
+
       await this.prisma.client.paciente.update({
         where: { id_paciente: pacienteId },
         data: {
           eliminadoLog: true,
         },
       });
-  
+
       this.logger.debug('Paciente eliminado lógicamente exitosamente');
       return 'Paciente eliminado lógicamente';
     } catch (error) {
@@ -149,7 +148,7 @@ export class PacienteService {
       throw new Error('Error al eliminar lógicamente el paciente');
     }
   }
-  
+
   async EliminarPaciente(pacienteId: string): Promise<string> {
     try {
       this.logger.debug(`Eliminando definitivamente el paciente con ID ${pacienteId}`);
@@ -159,11 +158,11 @@ export class PacienteService {
       if (!existingPaciente) {
         throw new Error(`No se encontró el paciente con ID ${pacienteId}`);
       }
-  
+
       await this.prisma.client.paciente.delete({
         where: { id_paciente: pacienteId },
       });
-  
+
       this.logger.debug('Paciente eliminado definitivamente exitosamente');
       return 'Paciente eliminado definitivamente';
     } catch (error) {
@@ -174,23 +173,23 @@ export class PacienteService {
   }
 
 
-async getPacientePorDNI(dni: string, centroSaludId: string,): Promise<Paciente | null> {
+  async getPacientePorDNI(dni: string, centroSaludId: string,): Promise<Paciente | null> {
     try {
-        this.logger.debug(`Recuperando paciente con DNI ${dni}`);
-        
-        // Asume que tienes una función para buscar en MongoDB por DNI
-        // Si usas Prisma, sería:
-        return this.prisma.client.paciente.findFirst({
-      where: {
-        dni,
-        centroSaludId,
-        eliminadoLog: false,
-      },
-    });
+      this.logger.debug(`Recuperando paciente con DNI ${dni}`);
+
+      // Asume que tienes una función para buscar en MongoDB por DNI
+      // Si usas Prisma, sería:
+      return this.prisma.client.paciente.findFirst({
+        where: {
+          dni,
+          centroSaludId,
+          eliminadoLog: false,
+        },
+      });
     } catch (error) {
-        console.error('Error al recuperar paciente por DNI', error);
-        this.logger.error(error);
-        throw new Error('Error al recuperar paciente por DNI');
+      console.error('Error al recuperar paciente por DNI', error);
+      this.logger.error(error);
+      throw new Error('Error al recuperar paciente por DNI');
     }
   }
 

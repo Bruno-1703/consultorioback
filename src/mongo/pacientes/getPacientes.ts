@@ -1,79 +1,66 @@
-import { Logger } from '@nestjs/common';
-import { Db } from 'mongodb';
-import {
-  PacienteEdge,
-  PacientesResultadoBusqueda,
-} from 'src/paciente/paciente.dto';
-import { PacienteWhereInput } from 'src/paciente/paciente.input';
+import { PacienteWhereInput } from "src/paciente/paciente.input";
+import { diacriticSensitiveRegex } from "../estudios/getEstudios";
+import { PacientesResultadoBusqueda } from "src/paciente/paciente.dto";
+import { Db } from "mongodb";
 
 export async function getPacientes(
-  mongoConnection: Db,
-  limit: number,
-  skip: number,
-  where: PacienteWhereInput,
-): Promise<PacientesResultadoBusqueda | null> {
-  const logger = new Logger();
-  try {
-    logger.log('Iniciando búsqueda de pacientes');
-    const query: any = [{}];
+  mongo: Db,
+  skip = 0,
+  limit = 10,
+  where?: PacienteWhereInput,
+): Promise<PacientesResultadoBusqueda> {
 
-    const buscar = where?.nombre_paciente || '';
-    const dni = where?.dni || '';
+  const filtros: any[] = [];
 
+  // 👇 pacientes activos
+  filtros.push({
+    $or: [
+      { eliminadoLog: false },
+      { eliminadoLog: { $exists: false } },
+    ],
+  });
 
-    if (dni) {
-      query.push({ dni: dni });
-    }
-    query.push({ eliminadoLog: false });
-
-
-    if (buscar) {
-      const regexBuscar = new RegExp(diacriticSensitiveRegex(buscar), 'i');
-      query.push({
-        $or: [
-          { nombre_paciente: regexBuscar },
-          { apellido_paciente: regexBuscar }
-        ]
-      });
-    }
-    const consulta = mongoConnection
-      .collection('Paciente')
-      .aggregate([
-        { $match: query.length > 0 ? { $and: query } : {} },
-        { $sort: { dni: -1 } },
-        { $skip: skip ? skip : 0 },
-        { $limit: limit ? limit : 10 },
-      ]);
-
-    // Contar los documentos que coinciden con el matchStage
-    const consultaCantidad = await mongoConnection
-      .collection('Paciente')
-      .aggregate([{ $match: { $and: query } }, { $count: 'cantidad' }])
-      .toArray();
-    const cantidad = consultaCantidad[0]?.['cantidad'] || 0;
-    const pacientes = await consulta.toArray();
-    const edges: PacienteEdge[] = pacientes.map((paciente: any) => ({
-      node: Object.assign({}, paciente, { id_paciente: paciente._id.toString() }), // Asigna _id a id_paciente
-      cursor: paciente._id.toString(), // Convierte ObjectId a string si es necesario
-    }));
-
-    return {
-      aggregate: {
-        count: cantidad,
-      },
-      edges,
-    };
-  } catch (error) {
-    logger.error('Error al buscar pacientes: ', error);
-    throw new Error('Error al realizar la búsqueda de pacientes.');
+  if (where?.dni?.trim()) {
+    filtros.push({ dni: where.dni });
   }
-}
 
-export const diacriticSensitiveRegex = (text = '') => {
-  return text
-    .replace(/[aá]/g, '[a,á,à,ä]')
-    .replace(/[eé]/g, '[e,é,ë]')
-    .replace(/[ií]/g, '[i,í,ï]')
-    .replace(/[oó]/g, '[o,ó,ö,ò]')
-    .replace(/[uú]/g, '[u,ü,ú,ù]');
-};
+  if (where?.nombre_paciente?.trim()) {
+    const regex = new RegExp(
+      diacriticSensitiveRegex(where.nombre_paciente),
+      'i',
+    );
+
+    filtros.push({
+      $or: [
+        { nombre_paciente: regex },
+        { apellido_paciente: regex },
+      ],
+    });
+  }
+
+  const match = filtros.length ? { $and: filtros } : {};
+
+  const [pacientes, total] = await Promise.all([
+    mongo
+      .collection('Paciente') 
+      .find(match)
+      .sort({ apellido_paciente: 1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray(),
+
+    mongo
+      .collection('Paciente')
+      .countDocuments(match),
+  ]);
+
+  return {
+    edges: pacientes.map((p: any) => ({
+      node: { ...p, id_paciente: p._id.toString() },
+      cursor: p._id.toString(),
+    })),
+    aggregate: {
+      count: total,
+    },
+  };
+}
