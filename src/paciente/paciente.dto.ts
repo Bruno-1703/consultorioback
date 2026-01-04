@@ -52,8 +52,7 @@ export class Paciente {
   @Field(() => Boolean, { nullable: true })
   eliminadoLog?: boolean;
 
-  @Field(() => ID, { nullable: true })
-  centroSaludId?: string;
+
 }
 @ObjectType()
 export class PacienteEdge {

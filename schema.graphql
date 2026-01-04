@@ -92,7 +92,6 @@ type Paciente {
   direccion: String
   nacionalidad: String
   eliminadoLog: Boolean
-  centroSaludId: ID
 }
 
 type PacienteEdge {

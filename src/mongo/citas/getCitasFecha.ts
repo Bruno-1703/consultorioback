@@ -14,10 +14,10 @@ export async function getCitasByfecha(
   try {
     const filtros: any[] = [];
 
-    // 🔹 finalizada (default: false)
-    filtros.push({
-      finalizada: where?.finalizada ?? false,
-    });
+    // 🔹 finalizada (solo si viene definida)
+    if (typeof where?.finalizada === 'boolean') {
+      filtros.push({ finalizada: where.finalizada });
+    }
 
     // 🔍 búsqueda libre
     if (where?.buscar?.trim()) {
@@ -43,22 +43,7 @@ export async function getCitasByfecha(
       });
     }
 
-    // 📅 rango de fecha
-    // 📅 Rango de fecha mejorado
-    if (where?.fechaProgramada) {
-      const dateFilter: any = {};
-
-      if (where.fechaProgramada) {
-        dateFilter.$gte = new Date(where.fechaProgramada);
-      }
-      if (where.fechaProgramada) {
-        dateFilter.$lte = new Date(where.fechaProgramada);
-      }
-
-      if (Object.keys(dateFilter).length > 0) {
-        filtros.push({ fechaProgramada: dateFilter });
-      }
-    }
+    // ✅ SIN filtro por fecha (frontend ya no lo envía)
 
     const match = filtros.length ? { $and: filtros } : {};
 
@@ -73,22 +58,25 @@ export async function getCitasByfecha(
       mongo.collection('Cita').countDocuments(match),
     ]);
 
-   const edges: CitaEdge[] = citas.map((cita: any) => ({
-  node: {
-    ...cita,
-    id_cita: cita._id.toString(),
-    doctor: cita.doctor ? {
-      ...cita.doctor,
-      id_doctor: cita.doctor._id?.toString(),
-    } : null,
-    // Importante añadir esto si el paciente tiene _id de Mongo
-    paciente: cita.paciente ? {
-      ...cita.paciente,
-      id_paciente: cita.paciente._id?.toString(),
-    } : null,
-  },
-  cursor: cita._id.toString(),
-}));
+    const edges: CitaEdge[] = citas.map((cita: any) => ({
+      node: {
+        ...cita,
+        id_cita: cita._id.toString(),
+        doctor: cita.doctor
+          ? {
+              ...cita.doctor,
+              id_doctor: cita.doctor._id?.toString(),
+            }
+          : null,
+        paciente: cita.paciente
+          ? {
+              ...cita.paciente,
+              id_paciente: cita.paciente._id?.toString(),
+            }
+          : null,
+      },
+      cursor: cita._id.toString(),
+    }));
 
     return {
       aggregate: { count: total },
@@ -96,6 +84,6 @@ export async function getCitasByfecha(
     };
   } catch (error) {
     logger.error(error);
-    throw error; // 👈 no tapes el error real
+    throw error;
   }
 }
