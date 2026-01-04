@@ -8,9 +8,9 @@ import { EstudioInput } from 'src/estudios/estudio.input';
 import { PacienteCitaInput } from 'src/paciente/paciente.input';
 import { getCitaById } from 'src/mongo/citas/getCitaById';
 import { getCitas } from 'src/mongo/citas/getCitas';
-import { getCitasByfecha } from 'src/mongo/citas/getCitasFecha';
 import * as ExcelJS from 'exceljs';
 import { Response } from 'express';
+import { getCitasByfecha } from 'src/mongo/citas/getCitasFecha';
 
 @Injectable()
 export class CitaService {

@@ -1,7 +1,7 @@
 import { PacienteWhereInput } from "src/paciente/paciente.input";
 import { diacriticSensitiveRegex } from "../estudios/getEstudios";
-import { PacientesResultadoBusqueda } from "src/paciente/paciente.dto";
 import { Db } from "mongodb";
+import { PacientesResultadoBusqueda } from "src/paciente/paciente.dto";
 
 export async function getPacientes(
   mongo: Db,
@@ -12,7 +12,7 @@ export async function getPacientes(
 
   const filtros: any[] = [];
 
-  // 👇 pacientes activos
+  // 1. Filtro de Eliminados (Se mantiene igual)
   filtros.push({
     $or: [
       { eliminadoLog: false },
@@ -20,10 +20,12 @@ export async function getPacientes(
     ],
   });
 
+  // 2. Filtro por DNI
   if (where?.dni?.trim()) {
-    filtros.push({ dni: where.dni });
+    filtros.push({ dni: where.dni.trim() });
   }
 
+  // 3. Filtro por Nombre/Apellido con Regex (Se mantiene tu lógica de diacríticos)
   if (where?.nombre_paciente?.trim()) {
     const regex = new RegExp(
       diacriticSensitiveRegex(where.nombre_paciente),
@@ -40,27 +42,40 @@ export async function getPacientes(
 
   const match = filtros.length ? { $and: filtros } : {};
 
-  const [pacientes, total] = await Promise.all([
-    mongo
-      .collection('Paciente') 
-      .find(match)
-      .sort({ apellido_paciente: 1 })
-      .skip(skip)
-      .limit(limit)
-      .toArray(),
+  try {
+    const [pacientes, total] = await Promise.all([
+      mongo
+        .collection('Paciente')
+        .find(match)
+        .sort({ apellido_paciente: 1 }) // Orden alfabético
+        .skip(skip)
+        .limit(limit)
+        .toArray(),
 
-    mongo
-      .collection('Paciente')
-      .countDocuments(match),
-  ]);
+      mongo
+        .collection('Paciente')
+        .countDocuments(match),
+    ]);
 
-  return {
-    edges: pacientes.map((p: any) => ({
-      node: { ...p, id_paciente: p._id.toString() },
-      cursor: p._id.toString(),
-    })),
-    aggregate: {
-      count: total,
-    },
-  };
+    // 4. MAPEO CRÍTICO DE DATOS
+    return {
+      edges: pacientes.map((p: any) => ({
+        node: { 
+          ...p, 
+          // Importante: Asegurarnos que todos los campos requeridos por el DTO existan
+          id_paciente: p._id.toString(), 
+          nombre_paciente: p.nombre_paciente || '',
+          apellido_paciente: p.apellido_paciente || '',
+          dni: p.dni || '',
+        },
+        cursor: p._id.toString(),
+      })),
+      aggregate: {
+        count: total,
+      },
+    };
+  } catch (error) {
+    console.error("Error en getPacientes:", error);
+    throw new Error("No se pudo obtener la lista de pacientes");
+  }
 }

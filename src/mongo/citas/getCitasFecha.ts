@@ -1,28 +1,27 @@
-import { Logger } from "@nestjs/common";
-import { Db, ObjectId } from "mongodb";
-import { CitaEdge, CitaResultadoBusqueda } from "src/citas/cita.dto";
-import { CitaWhereInput } from "src/citas/cita.input";
+import { Logger } from '@nestjs/common';
+import { Db } from 'mongodb';
+import { CitaResultadoBusqueda, CitaEdge } from 'src/citas/cita.dto';
+import { CitaWhereInput } from 'src/citas/cita.input';
 
 export async function getCitasByfecha(
-  mongoConnection: Db,
-  limit: number,
-  skip: number,
+  mongo: Db,
+  skip = 0,
+  limit = 10,
   where?: CitaWhereInput,
-): Promise<CitaResultadoBusqueda | null> {
+): Promise<CitaResultadoBusqueda> {
   const logger = new Logger('getCitasByfecha');
+
   try {
-    const query: any[] = [];
+    const filtros: any[] = [];
 
-    // Siempre buscar las no finalizadas, si no se indica lo contrario
-    if (where?.finalizada !== undefined) {
-      query.push({ finalizada: where.finalizada });
-    } else {
-      query.push({ finalizada: false });
-    }
+    // 🔹 finalizada (default: false)
+    filtros.push({
+      finalizada: where?.finalizada ?? false,
+    });
 
-    // Filtro por texto libre (buscar)
-    if (where?.buscar) {
-      query.push({
+    // 🔍 búsqueda libre
+    if (where?.buscar?.trim()) {
+      filtros.push({
         $or: [
           { motivoConsulta: { $regex: where.buscar, $options: 'i' } },
           { observaciones: { $regex: where.buscar, $options: 'i' } },
@@ -30,69 +29,73 @@ export async function getCitasByfecha(
       });
     }
 
-    // Filtro por motivo exacto
-    if (where?.motivoConsulta) {
-      query.push({ motivoConsulta: { $regex: new RegExp(where.motivoConsulta, 'i') } });
+    // 📝 motivo
+    if (where?.motivoConsulta?.trim()) {
+      filtros.push({
+        motivoConsulta: { $regex: where.motivoConsulta, $options: 'i' },
+      });
     }
 
-    // Filtro por observaciones exactas
-    if (where?.observaciones) {
-      query.push({ observaciones: { $regex: new RegExp(where.observaciones, 'i') } });
+    // 📝 observaciones
+    if (where?.observaciones?.trim()) {
+      filtros.push({
+        observaciones: { $regex: where.observaciones, $options: 'i' },
+      });
     }
 
-    // Filtro por fecha exacta (rango del día)
-    // Filtro por fecha exacta (rango del día en UTC)
+    // 📅 rango de fecha
+    // 📅 Rango de fecha mejorado
     if (where?.fechaProgramada) {
-      const base = new Date(where.fechaProgramada);
-      const desde = new Date(base);
-      desde.setUTCHours(0, 0, 0, 0);
+      const dateFilter: any = {};
 
-      const hasta = new Date(base);
-      hasta.setUTCHours(23, 59, 59, 999);
+      if (where.fechaProgramada) {
+        dateFilter.$gte = new Date(where.fechaProgramada);
+      }
+      if (where.fechaProgramada) {
+        dateFilter.$lte = new Date(where.fechaProgramada);
+      }
 
-      query.push({ fechaProgramada: { $gte: desde, $lte: hasta } });
+      if (Object.keys(dateFilter).length > 0) {
+        filtros.push({ fechaProgramada: dateFilter });
+      }
     }
 
-    const matchStage = query.length > 0 ? { $match: { $and: query } } : { $match: {} };
+    const match = filtros.length ? { $and: filtros } : {};
 
-    // Aquí está la corrección: usar matchStage y agregar skip y limit
-    const citas = await mongoConnection
-      .collection('Cita')
-      .aggregate([
-        matchStage,
-        { $skip: skip },
-        { $limit: limit }
-      ])
-      .toArray();
+    const [citas, total] = await Promise.all([
+      mongo
+        .collection('Cita')
+        .find(match)
+        .skip(skip)
+        .limit(limit)
+        .toArray(),
 
-    const cantidad = await mongoConnection
-      .collection('Cita')
-      .countDocuments(query.length > 0 ? { $and: query } : {});
+      mongo.collection('Cita').countDocuments(match),
+    ]);
 
-    const edges: CitaEdge[] = citas.map((cita: any) => ({
-      node: {
-        ...cita,
-        id_cita: cita._id.toString(),
-
-        doctor: cita.doctor
-          ? {
-            ...cita.doctor,
-            id_doctor: cita.doctor._id.toString(),
-          }
-          : null,
-      },
-      cursor: cita._id.toString(),
-    }));
-
+   const edges: CitaEdge[] = citas.map((cita: any) => ({
+  node: {
+    ...cita,
+    id_cita: cita._id.toString(),
+    doctor: cita.doctor ? {
+      ...cita.doctor,
+      id_doctor: cita.doctor._id?.toString(),
+    } : null,
+    // Importante añadir esto si el paciente tiene _id de Mongo
+    paciente: cita.paciente ? {
+      ...cita.paciente,
+      id_paciente: cita.paciente._id?.toString(),
+    } : null,
+  },
+  cursor: cita._id.toString(),
+}));
 
     return {
-      aggregate: {
-        count: cantidad,
-      },
+      aggregate: { count: total },
       edges,
     };
   } catch (error) {
     logger.error(error);
-    throw new Error('Error al buscar el dato estático de las citas');
+    throw error; // 👈 no tapes el error real
   }
 }
