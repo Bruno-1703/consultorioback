@@ -1,4 +1,4 @@
-import { Args, Int, Mutation, Query, Resolver, Context } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver, Context, GraphQLISODateTime } from '@nestjs/graphql';
 import { Cita, CitaResultadoBusqueda } from './cita.dto';
 import { CitaDiagnosticoInput, CitaInput, CitaReprogramarInput, CitaWhereInput } from './cita.input';
 import { CitaService } from './cita.service';
@@ -103,9 +103,11 @@ async cargarDiagnosticoCita(
 @Mutation(() => String)
 async reprogramarCita(
   @Args('citaId', { type: () => String }) citaId: string,
-  @Args('fechaProgramada', { type: () => Date }) fechaProgramada: Date,
+  @Args('fechaProgramada', { type: () => GraphQLISODateTime })
+  fechaProgramada: Date,
 ): Promise<string> {
   return this.citaService.reprogramarCita(citaId, fechaProgramada);
 }
+
 
 }

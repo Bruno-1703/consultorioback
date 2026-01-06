@@ -22,7 +22,6 @@ async getPacientes(
   where?: PacienteWhereInput,
 ) {
   return this.pacienteService.getPacientes(
-    // user.centroSaludId, // 🔐
     skip,
     limit,
     where,

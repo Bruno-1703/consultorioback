@@ -380,18 +380,17 @@ async createCita(
     res.setHeader('Content-Disposition', 'attachment; filename=reporte-citas.xlsx');
     res.end(buffer);
   }
-  async reprogramarCita(
-  citaId: string,
-  fechaProgramada: Date,
-): Promise<string> {
+async reprogramarCita(citaId: string, fechaProgramada: Date): Promise<string> {
   await this.prisma.client.cita.update({
     where: { id_cita: citaId },
     data: {
       fechaProgramada,
+      cancelada: false,
     },
   });
 
   return 'Cita reprogramada correctamente';
 }
+
 
 }

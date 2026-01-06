@@ -36,8 +36,9 @@ export class PacienteService {
       this.logger.debug('Buscando pacientes con criterios:', where);
       const pacientes = await getPacientes(
         this.prisma.mongodb,
+         skip,
         limit,
-        skip,
+       
         where,
       );
 
