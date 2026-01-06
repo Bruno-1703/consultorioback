@@ -61,12 +61,7 @@ export class UsuarioService {
           dni: data.dni,
           telefono: data.telefono,
           // Si envías centroSaludId, creamos la entrada en la tabla intermedia UsuarioCentro
-          centros: data.centroSaludId ? {
-            create: {
-              centroSaludId: data.centroSaludId,
-              rol: data.rol_usuario || 'usuario'
-            }
-          } : undefined
+    
         },
       });
 
@@ -86,13 +81,7 @@ export class UsuarioService {
         where: { id_Usuario: usuarioId },
         data: {
           ...rest,
-          // Si hay un cambio de rol, lo replicamos en la tabla intermedia
-          centros: data.rol_usuario ? {
-            updateMany: {
-              where: { usuarioId: usuarioId }, // Para todas sus sedes
-              data: { rol: data.rol_usuario }
-            }
-          } : undefined
+  
         },
       });
 

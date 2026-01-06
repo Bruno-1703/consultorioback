@@ -5,7 +5,6 @@ import { Enfermedad } from 'src/enfermedad/enfermedad.dto';
 import { Paciente } from 'src/paciente/paciente.dto';
 import { UsuarioInput } from 'src/users/usuario.input';
 import { Usuario } from 'src/users/usuario.dto';
-import { CentroSalud } from 'src/centroSalud/centro-salud.dto';
 
 @ObjectType()
 export class Cita {

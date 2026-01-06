@@ -52,7 +52,6 @@ export class MedicamentosService {
       this.logger.debug('Creando medicamento');
       const medicamento = await this.prisma.client.medicamento.create({
         data: {
-          centroSalud: { connect: { id: "" } },
           id_medicamento: data.id_medicamento,
           nombre_med: data.nombre_med,
           marca: data.marca,

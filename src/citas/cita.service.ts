@@ -50,7 +50,7 @@ export class CitaService {
     where: CitaInput,
   ): Promise<CitaResultadoBusqueda> {
     try {
-      return await getCitasByfecha(this.prisma.mongodb, skip, limit, where);
+      return await getCitasByfecha(this.prisma.mongodb,limit, skip,  where);
     } catch (error) {
       this.logger.error('Error al buscar citas por fecha', error);
       throw new Error('Error al buscar citas');
@@ -76,8 +76,6 @@ async createCita(
         finalizada: false,
 
         registradoPorId: data.registradoPorId,
-
-        // 🔹 EMBEDDED TYPES
         doctor: {
           id_Usuario: data.doctor.id_Usuario,
           nombre_usuario: data.doctor.nombre_usuario,
@@ -95,9 +93,7 @@ async createCita(
           nombre_paciente: paciente.nombre_paciente,
           apellido_paciente: paciente.apellido_paciente,
         },
-
-        // 🔹 FK DIRECTO (SIN connect)
-        centroSaludId: centroSaludId,
+ 
       },
     });
 
@@ -115,9 +111,6 @@ async createCita(
     throw error; // dejalo así hasta que todo esté estable
   }
 }
-
-
-
 
   async updateCita(
     data: CitaInput,

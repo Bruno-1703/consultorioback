@@ -1,12 +1,12 @@
 import { Logger } from '@nestjs/common';
-import { Db } from 'mongodb';
+import { Db, ObjectId } from 'mongodb'; // Importa ObjectId
 import { CitaResultadoBusqueda, CitaEdge } from 'src/citas/cita.dto';
 import { CitaWhereInput } from 'src/citas/cita.input';
 
 export async function getCitasByfecha(
   mongo: Db,
-  skip = 0,
-  limit = 10,
+  skip ,
+  limit ,
   where?: CitaWhereInput,
 ): Promise<CitaResultadoBusqueda> {
   const logger = new Logger('getCitasByfecha');
@@ -14,12 +14,25 @@ export async function getCitasByfecha(
   try {
     const filtros: any[] = [];
 
-    // 🔹 finalizada (solo si viene definida)
-    if (typeof where?.finalizada === 'boolean') {
-      filtros.push({ finalizada: where.finalizada });
-    }
+    // 1. FILTRO DE FECHA (REVISADO)
+   // FILTRO DE FECHA (1 SOLA FECHA, BIEN HECHO)
+if (where?.fechaProgramada) {
+  const inicioDia = new Date(where.fechaProgramada);
+  inicioDia.setHours(0, 0, 0, 0);
 
-    // 🔍 búsqueda libre
+  const finDia = new Date(where.fechaProgramada);
+  finDia.setHours(23, 59, 59, 999);
+
+  filtros.push({
+    fechaProgramada: {
+      $gte: inicioDia,
+      $lte: finDia,
+    },
+  });
+}
+
+
+    // 2. BÚSQUEDA LIBRE
     if (where?.buscar?.trim()) {
       filtros.push({
         $or: [
@@ -29,61 +42,35 @@ export async function getCitasByfecha(
       });
     }
 
-    // 📝 motivo
-    if (where?.motivoConsulta?.trim()) {
-      filtros.push({
-        motivoConsulta: { $regex: where.motivoConsulta, $options: 'i' },
-      });
-    }
-
-    // 📝 observaciones
-    if (where?.observaciones?.trim()) {
-      filtros.push({
-        observaciones: { $regex: where.observaciones, $options: 'i' },
-      });
-    }
-
-    // ✅ SIN filtro por fecha (frontend ya no lo envía)
-
     const match = filtros.length ? { $and: filtros } : {};
 
-    const [citas, total] = await Promise.all([
-      mongo
-        .collection('Cita')
-        .find(match)
-        .skip(skip)
-        .limit(limit)
-        .toArray(),
+    // 🚨 DEBUG CRÍTICO: Mira la consola de tu servidor (terminal de NestJS)
+    // Copia lo que salga aquí y pégalo en una consola de MongoDB para ver si trae algo
+    console.log("QUERY MONGODB:", JSON.stringify(match));
 
+    const [citas, total] = await Promise.all([
+      mongo.collection('Cita').find(match).skip(skip).limit(limit).toArray(),
       mongo.collection('Cita').countDocuments(match),
     ]);
 
+    // Mapeo seguro para evitar errores de TypeScript
     const edges: CitaEdge[] = citas.map((cita: any) => ({
       node: {
         ...cita,
         id_cita: cita._id.toString(),
-        doctor: cita.doctor
-          ? {
-              ...cita.doctor,
-              id_doctor: cita.doctor._id?.toString(),
-            }
-          : null,
-        paciente: cita.paciente
-          ? {
-              ...cita.paciente,
-              id_paciente: cita.paciente._id?.toString(),
-            }
-          : null,
+        // Forzamos que los campos requeridos existan aunque sea vacíos
+        motivoConsulta: cita.motivoConsulta || "Sin motivo",
+        paciente: cita.paciente ? { ...cita.paciente, id_paciente: cita.paciente._id?.toString() } : null,
+        doctor: cita.doctor ? { ...cita.doctor, id_doctor: cita.doctor._id?.toString() } : null,
       },
       cursor: cita._id.toString(),
     }));
 
-    return {
-      aggregate: { count: total },
-      edges,
-    };
+    return { aggregate: { count: total }, edges };
   } catch (error) {
-    logger.error(error);
+    logger.error("Error en getCitasByfecha:", error);
     throw error;
   }
+
+
 }

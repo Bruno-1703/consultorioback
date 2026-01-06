@@ -44,33 +44,6 @@ type CitaMedicamento {
   id_medicamento String
   nombre_med     String?
 }
-//****************************************************************************************************
-model CentroSalud {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  nombre      String
-  tipo        String   // "CIC" o "CONSULTORIO"
-  direccion   String?
-
-  // Relaciones
-  usuarios    UsuarioCentro[]
-  citas       Cita[]
-  pacientes   Paciente[]  
-  medicamentos Medicamento[]
-}
-// Esta es la tabla clave: vincula a Gisela con distintos centros y distintos roles
-model UsuarioCentro {
-  id             String      @id @default(auto()) @map("_id") @db.ObjectId
-  usuarioId      String      @db.ObjectId
-  centroSaludId  String      @db.ObjectId
-  rol            String      // "ADMIN", "DOCTOR", "SECRETARIA"
-  
-  usuario        Usuario     @relation(fields: [usuarioId], references: [id_Usuario])
-  centroSalud    CentroSalud @relation(fields: [centroSaludId], references: [id])
-
-  @@unique([usuarioId, centroSaludId]) // Evita que un usuario se duplique en el mismo centro
-}
-
-// ---------------------------- MODELOS EXISTENTES MODIFICADOS ------------------------------------
 
 model Cita {
   id_cita           String   @id @default(auto()) @map("_id") @db.ObjectId  
@@ -92,11 +65,7 @@ model Cita {
 
   finalizada        Boolean @default(false)
   registradoPorId   String?
-
-  centroSaludId     String @db.ObjectId
-  centroSalud       CentroSalud @relation(fields: [centroSaludId], references: [id])
 }
-
 model Estudio {
   id_estudio         String   @id @default(auto()) @map("_id") @db.ObjectId
   fecha_realizacion  DateTime
@@ -107,7 +76,6 @@ model Estudio {
   medico_solicitante String?
   urgente            Boolean?
 }
-
 model Medicamento {
   id_medicamento         String    @id @default(auto()) @map("_id") @db.ObjectId
   nombre_med             String?
@@ -122,10 +90,7 @@ model Medicamento {
   prescripcion_requerida Boolean?
   eliminadoLog           Boolean  @default(false)
   stock                  Int       @default(0) 
-  centroSaludId String      @db.ObjectId
-  centroSalud   CentroSalud @relation(fields: [centroSaludId], references: [id])
 }
-
 model Enfermedad {
   id_enfermedad String  @id @default(auto()) @map("_id") @db.ObjectId
   nombre_enf    String
@@ -153,8 +118,7 @@ model Paciente {
   nacionalidad      String?    // Nuevo
   eliminadoLog      Boolean  @default(false)
 
-  centroSaludId     String   @db.ObjectId
-  centroSalud       CentroSalud @relation(fields: [centroSaludId], references: [id])
+
 }
 model Usuario {
   id_Usuario     String  @id @default(auto()) @map("_id") @db.ObjectId
@@ -170,7 +134,6 @@ model Usuario {
   telefono         String?
   resetToken        String?
   resetTokenExpiry  DateTime?
-  centros           UsuarioCentro[]
 }
 
 

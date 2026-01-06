@@ -1,35 +1,32 @@
-import { PacienteWhereInput } from "src/paciente/paciente.input";
-import { diacriticSensitiveRegex } from "../estudios/getEstudios";
 import { Db } from "mongodb";
 import { PacientesResultadoBusqueda } from "src/paciente/paciente.dto";
+import { PacienteWhereInput } from "src/paciente/paciente.input";
+import { diacriticSensitiveRegex } from "../estudios/getEstudios";
 
 export async function getPacientes(
   mongo: Db,
-  skip = 0,
-  limit = 10,
+  skip ,
+  limit ,
   where?: PacienteWhereInput,
 ): Promise<PacientesResultadoBusqueda> {
 
   const filtros: any[] = [];
 
-  // 1. Filtro de Eliminados (Se mantiene igual)
+  // ✅ Eliminados (ROBUSTO)
   filtros.push({
-    $or: [
-      { eliminadoLog: false },
-      { eliminadoLog: { $exists: false } },
-    ],
+    eliminadoLog: { $ne: true },
   });
 
-  // 2. Filtro por DNI
+  // ✅ DNI (TIPO CORRECTO)
   if (where?.dni?.trim()) {
-    filtros.push({ dni: where.dni.trim() });
+    filtros.push({ dni: Number(where.dni) });
   }
 
-  // 3. Filtro por Nombre/Apellido con Regex (Se mantiene tu lógica de diacríticos)
+  // ✅ Nombre / Apellido (regex OK)
   if (where?.nombre_paciente?.trim()) {
     const regex = new RegExp(
       diacriticSensitiveRegex(where.nombre_paciente),
-      'i',
+      "i",
     );
 
     filtros.push({
@@ -42,40 +39,34 @@ export async function getPacientes(
 
   const match = filtros.length ? { $and: filtros } : {};
 
-  try {
-    const [pacientes, total] = await Promise.all([
-      mongo
-        .collection('Paciente')
-        .find(match)
-        .sort({ apellido_paciente: 1 }) // Orden alfabético
-        .skip(skip)
-        .limit(limit)
-        .toArray(),
+  const [pacientes, total] = await Promise.all([
+    mongo
+      .collection("Paciente")
+      .find(match)
+      .collation({ locale: "es", strength: 1 })
+      .sort({ apellido_paciente: 1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray(),
 
-      mongo
-        .collection('Paciente')
-        .countDocuments(match),
-    ]);
+    mongo
+      .collection("Paciente")
+      .countDocuments(match),
+  ]);
 
-    // 4. MAPEO CRÍTICO DE DATOS
-    return {
-      edges: pacientes.map((p: any) => ({
-        node: { 
-          ...p, 
-          // Importante: Asegurarnos que todos los campos requeridos por el DTO existan
-          id_paciente: p._id.toString(), 
-          nombre_paciente: p.nombre_paciente || '',
-          apellido_paciente: p.apellido_paciente || '',
-          dni: p.dni || '',
-        },
-        cursor: p._id.toString(),
-      })),
-      aggregate: {
-        count: total,
+  return {
+    edges: pacientes.map((p: any) => ({
+      node: {
+        ...p,
+        id_paciente: p._id.toString(),
+        nombre_paciente: p.nombre_paciente ?? "",
+        apellido_paciente: p.apellido_paciente ?? "",
+        dni: String(p.dni ?? ""),
       },
-    };
-  } catch (error) {
-    console.error("Error en getPacientes:", error);
-    throw new Error("No se pudo obtener la lista de pacientes");
-  }
+      cursor: p._id.toString(),
+    })),
+    aggregate: {
+      count: total,
+    },
+  };
 }

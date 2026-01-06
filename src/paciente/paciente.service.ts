@@ -54,7 +54,6 @@ export class PacienteService {
     try {
       this.logger.debug('Creando paciente');
       const pacienteData: Prisma.PacienteCreateInput = {
-        centroSalud: { connect: { id: centroSaludId } },
         dni: data.dni,
         nombre_paciente: data.nombre_paciente,
         apellido_paciente: data.apellido_paciente,
@@ -182,7 +181,6 @@ export class PacienteService {
       return this.prisma.client.paciente.findFirst({
         where: {
           dni,
-          centroSaludId,
           eliminadoLog: false,
         },
       });

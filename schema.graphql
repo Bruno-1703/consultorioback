@@ -155,27 +155,6 @@ type CitaResultadoBusqueda {
   aggregate: AggregateCount!
 }
 
-type CentroSalud {
-  id: ID!
-  nombre: String!
-  tipo: String!
-  direccion: String
-}
-
-type CentroSaludEdge {
-  node: CentroSalud!
-  cursor: String!
-}
-
-type AggregateCentroCount {
-  count: Int!
-}
-
-type CentroSaludResultadoBusqueda {
-  edges: [CentroSaludEdge!]!
-  aggregate: AggregateCentroCount!
-}
-
 type Query {
   getCita(id: String!): Cita
   getCitas(skip: Int, limit: Int, where: CitaWhereInput): CitaResultadoBusqueda!
@@ -193,8 +172,6 @@ type Query {
   getUsuario(email: String!): Usuario
   getUsuarios(skip: Int, limit: Int, where: UsuarioWhereInput): UsuarioResultadoBusqueda!
   getUsuarioById(id: String!): Usuario
-  getCentros(skip: Int, limit: Int, where: CentroSaludWhereInput): CentroSaludResultadoBusqueda!
-  misCentros(usuarioId: String!, skip: Int, limit: Int): CentroSaludResultadoBusqueda!
 }
 
 input CitaWhereInput {
@@ -331,13 +308,6 @@ input UsuarioWhereInput {
   centroSaludId: String
 }
 
-input CentroSaludWhereInput {
-  id: ID
-  nombre: String
-  tipo: String
-  direccion: String
-}
-
 type Mutation {
   createCita(data: CitaInput!, paciente: PacienteCitaInput!): String!
   updateCita(data: CitaInput!, citaId: String!): String!
@@ -368,8 +338,6 @@ type Mutation {
   deleteUsuario(id: String!): String!
   solicitarRecuperacionPassword(email: String!): String!
   resetearPassword(token: String!, nuevaPassword: String!): String!
-  createCentro(data: CentroSaludInput!): CentroSalud!
-  vincularUsuarioACentro(usuarioId: String!, centroId: String!, rol: String!): String!
 }
 
 input CitaInput {
@@ -416,10 +384,4 @@ input UsuarioInput {
   telefono: String
   dni: String!
   centroSaludId: String
-}
-
-input CentroSaludInput {
-  nombre: String!
-  tipo: String!
-  direccion: String
 }
