@@ -63,7 +63,6 @@ export class CitaService {
 async createCita(
   data: CitaInput,
   paciente: PacienteCitaInput,
-
 ): Promise<string> {
   try {
     const cita = await this.prisma.client.cita.create({
@@ -71,29 +70,32 @@ async createCita(
         motivoConsulta: data.motivoConsulta,
         observaciones: data.observaciones,
         fechaProgramada: new Date(data.fechaProgramada),
-
         cancelada: false,
-        finalizada: false,        
+        finalizada: false,
 
         registradoPorId: data.registradoPorId,
+
         doctor: {
-          id_Usuario: data.doctor.id_Usuario,
-          nombre_usuario: data.doctor.nombre_usuario,
-          email: data.doctor.email,
-          especialidad: data.doctor.especialidad,
-          matricula: data.doctor.matricula,
-          telefono: data.doctor.telefono,
-          nombre_completo: data.doctor.nombre_completo,
-          dni: data.doctor.dni,
+          set: {
+            id_Usuario: data.doctor.id_Usuario,
+            nombre_usuario: data.doctor.nombre_usuario,
+            email: data.doctor.email,
+            especialidad: data.doctor.especialidad,
+            matricula: data.doctor.matricula,
+            telefono: data.doctor.telefono,
+            nombre_completo: data.doctor.nombre_completo,
+            dni: data.doctor.dni,
+          }
         },
 
         paciente: {
-          id_paciente: paciente.id_paciente,
-          dni: paciente.dni,
-          nombre_paciente: paciente.nombre_paciente,
-          apellido_paciente: paciente.apellido_paciente,
+          set: {
+            id_paciente: paciente.id_paciente,
+            dni: paciente.dni,
+            nombre_paciente: paciente.nombre_paciente,
+            apellido_paciente: paciente.apellido_paciente,
+          }
         },
- 
       },
     });
 
@@ -101,17 +103,17 @@ async createCita(
       "CREATE",
       data.registradoPorId,
       "Secretaría",
-       `Actualización de datos administrativos`,
-
+      `Actualización de datos administrativos`,
       cita.id_cita,
     );
 
     return "Cita creada exitosamente";
   } catch (error) {
     this.logger.error("Error REAL al crear cita 👉", error);
-    throw error; // dejalo así hasta que todo esté estable
+    throw error;
   }
 }
+
 
   async updateCita(
     data: CitaInput,

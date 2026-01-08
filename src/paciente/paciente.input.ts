@@ -3,8 +3,8 @@ import { InputType, Field, Int, ID } from '@nestjs/graphql';
 
 @InputType()
 export class PacienteInput {
-  @Field(() => String, { nullable: true })
-  dni?: string;
+ @Field(() => String, )
+dni: string;
 
   @Field(() => String, { nullable: true })
   nombre_paciente?: string;
