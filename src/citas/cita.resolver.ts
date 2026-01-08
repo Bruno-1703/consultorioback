@@ -36,15 +36,11 @@ export class CitaResolver {
   }
 @Mutation(() => String)
 async createCita(
-  @Args({ name: 'data', type: () => CitaInput }) data: CitaInput,
-  @Args('paciente', { type: () => PacienteCitaInput }) paciente: PacienteCitaInput,
-    @Context() ctx: any,
-
+  @Args('data') data: CitaInput,
+  @Args('paciente') paciente: PacienteCitaInput,
 ): Promise<string> {
-  const user = ctx.req.user;
-  const centroSaludId = user.centroSaludId;
-  // Pasamos data.centroSaludId como tercer argumento
-  return this.citaService.createCita(data, paciente,centroSaludId);
+
+  return this.citaService.createCita(data, paciente);
 }
 
   @Mutation(() => String)

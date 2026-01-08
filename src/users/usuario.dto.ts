@@ -36,8 +36,7 @@ export class Usuario {
   @Field(() => String, { nullable: true })
   dni: string;
 
-  @Field(() => String, { nullable: true }) 
-  centroSaludId?: string;
+
 
 }
 @ObjectType()

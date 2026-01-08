@@ -12,6 +12,7 @@ export async function getPacientes(
 
   const filtros: any[] = [];
 
+  
   // ✅ Eliminados (ROBUSTO)
   filtros.push({
     eliminadoLog: { $ne: true },

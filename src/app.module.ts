@@ -12,11 +12,12 @@ import { EmailModule } from './email/email.module';
 import { BackupModule } from './backup/backup.module';
 import { StatusController } from './status.controller';
 import { UploadController } from './upload.controller';
+import { PrismaModule } from './prisma/prisma.module';
 
 
 @Module({
   imports: [
-    PrismaClient,
+    PrismaModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'schema.graphql',

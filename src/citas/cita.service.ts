@@ -63,7 +63,7 @@ export class CitaService {
 async createCita(
   data: CitaInput,
   paciente: PacienteCitaInput,
-  centroSaludId: string,
+
 ): Promise<string> {
   try {
     const cita = await this.prisma.client.cita.create({
@@ -73,7 +73,7 @@ async createCita(
         fechaProgramada: new Date(data.fechaProgramada),
 
         cancelada: false,
-        finalizada: false,
+        finalizada: false,        
 
         registradoPorId: data.registradoPorId,
         doctor: {
@@ -101,7 +101,8 @@ async createCita(
       "CREATE",
       data.registradoPorId,
       "Secretaría",
-      `Creación de cita en centro ID: ${centroSaludId}`,
+       `Actualización de datos administrativos`,
+
       cita.id_cita,
     );
 

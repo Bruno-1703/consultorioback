@@ -19,6 +19,13 @@ export async function getCitasByfecha(
 if (where?.fechaProgramada) {
   const inicioDia = new Date(where.fechaProgramada);
   inicioDia.setHours(0, 0, 0, 0);
+  
+// 3. FILTRO POR REGISTRADO POR
+if (where?.registradoPorId) {
+  filtros.push({
+    registradoPorId: where.registradoPorId,
+  });
+}
 
   const finDia = new Date(where.fechaProgramada);
   finDia.setHours(23, 59, 59, 999);

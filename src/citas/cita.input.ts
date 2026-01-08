@@ -23,6 +23,7 @@ export class CitaInput {
   @Field(() => Date, { nullable: true })
   fechaProgramada?: Date;
 
+
   @Field(() => Boolean, { nullable: true })
   finalizada?: boolean;
 
@@ -84,7 +85,7 @@ export class CitaWhereInput {
 
   @Field(() => UsuarioCitaInput, { nullable: true })
   doctor?: UsuarioCitaInput;
-  
+
   @Field(() => ID, { nullable: true })
   registradoPorId?: string;
 
