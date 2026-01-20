@@ -1,4 +1,4 @@
-import { InputType, Field, ID } from '@nestjs/graphql';
+import { InputType, Field, ID, GraphQLISODateTime } from '@nestjs/graphql';
 import { EnfermedadInput } from 'src/enfermedad/enfermedad.input';
 import { EstudioInput } from 'src/estudios/estudio.input';
 import { MedicamentoInput } from 'src/medicamentos/medicamento.input';
@@ -56,9 +56,8 @@ export class CitaWhereInput {
   @Field(() => Boolean, { nullable: true })
   finalizada?: boolean;
 
-  @Field(() => Date, { nullable: true })
+    @Field(() => GraphQLISODateTime, { nullable: true })
   fechaProgramada?: Date;
-
   @Field(() => String, { nullable: true })
   observaciones?: string;
 

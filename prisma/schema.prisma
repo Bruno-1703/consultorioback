@@ -92,14 +92,16 @@ model Medicamento {
   stock                  Int       @default(0) 
 }
 model Enfermedad {
-  id_enfermedad String  @id @default(auto()) @map("_id") @db.ObjectId
-  nombre_enf    String
-  sintomas      String
-  gravedad      String?
-  eliminadoLog       Boolean @default(false)
-
+  id_enfermedad       String   @id @default(auto()) @map("_id") @db.ObjectId
+  nombre_enf          String
+  sintomas            String?
+  tipo                String?
+  gravedad            String?
+  tratamiento         String?
+  eliminadoLog        Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
-
 model Paciente {
   id_paciente       String         @id @default(auto()) @map("_id") @db.ObjectId
   dni               String?

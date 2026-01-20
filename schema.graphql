@@ -63,6 +63,10 @@ type Enfermedad {
   nombre_enf: String!
   sintomas: String
   gravedad: String
+  tratamiento: String
+  eliminadoLog: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type EnfermedadEdge {
@@ -218,9 +222,11 @@ input MedicamentoInput {
 
 input EnfermedadInput {
   id_enfermedad: String
-  nombre_enf: String
+  nombre_enf: String!
   sintomas: String
+  tipo: String
   gravedad: String
+  tratamiento: String
 }
 
 input PacienteCitaInput {
@@ -290,8 +296,9 @@ input PacienteWhereInput {
 input EnfermedadWhereInput {
   id_enfermedad: String
   nombre_enf: String
-  sintomas: String
+  tipo: String
   gravedad: String
+  eliminadoLog: Boolean
 }
 
 input UsuarioWhereInput {
@@ -329,7 +336,7 @@ type Mutation {
   ElimiarPacienteLog(pacienteId: String!): String!
   EliminarPaciente(pacienteId: String!): String!
   createEnfermedad(data: EnfermedadInput!): String!
-  updateEnfermedad(data: EnfermedadInput!, enfermedadId: String!): String!
+  updateEnfermedad(data: ActualizarEnfermedadInput!): String!
   deleteEnfermedad(id: String!): String!
   createUsuario(data: UsuarioInput!): String!
   updateUsuario(data: UsuarioInput!, usuarioId: String!): String!
@@ -354,7 +361,7 @@ input CitaDiagnosticoInput {
 }
 
 input PacienteInput {
-  dni: String
+  dni: String!
   nombre_paciente: String
   apellido_paciente: String
   edad: Int
@@ -368,6 +375,15 @@ input PacienteInput {
   email: String
   direccion: String
   nacionalidad: String
+}
+
+input ActualizarEnfermedadInput {
+  id_enfermedad: String
+  nombre_enf: String
+  sintomas: String
+  tipo: String
+  gravedad: String
+  tratamiento: String
 }
 
 input UsuarioInput {

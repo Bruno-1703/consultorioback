@@ -19,26 +19,56 @@ export async function getCitas(
 
     const query: any[] = [];
 
-    // FILTRO DNI PACIENTE
-    // Buscar solo como string
-    // FILTRO DNI PACIENTE
+    // ------------------------------------------------------------------------------------------------
+    // 1) FILTRO POR PACIENTE
+    // ------------------------------------------------------------------------------------------------
+    if (where?.paciente?.id_paciente) {
+      query.push({ "paciente.id_paciente": where.paciente.id_paciente });
+    }
+
     if (where?.paciente?.dni) {
       query.push({ "paciente.dni": where.paciente.dni });
     }
 
+    // ------------------------------------------------------------------------------------------------
+    // En tu archivo del backend donde está getCitas:
 
+    // ... (dentro del try, después del filtro de paciente)
 
-    // FILTRO DOCTOR
-    if (where?.doctor) {
-      const d = where.doctor;
+    // 2) FILTRO DOCTOR - ¡DESCOMENTAR Y VERIFICAR!
+   // 2) FILTRO DOCTOR - Mejora la búsqueda para cubrir datos viejos y nuevos
+// --- Dentro de getCitas en el Backend ---
 
-      if (d.id_Usuario) query.push({ "doctor.id_Usuario": d.id_Usuario });
-      if (d.dni) query.push({ "doctor.dni": d.dni });
-      if (d.nombre_usuario) query.push({ "doctor.nombre_usuario": d.nombre_usuario });
-      if (d.email) query.push({ "doctor.email": d.email });
-      if (d.matricula) query.push({ "doctor.matricula": d.matricula });
-      if (d.telefono) query.push({ "doctor.telefono": d.telefono });
-      if (d.nombre_completo) query.push({ "doctor.nombre_completo": d.nombre_completo });
+if (where?.doctor) {
+  const d = where.doctor;
+  const doctorConditions = [];
+
+  // Agregamos las condiciones que existan en el input
+  if (d.id_Usuario) doctorConditions.push({ "doctor.id_Usuario": d.id_Usuario });
+  if (d.dni) doctorConditions.push({ "doctor.dni": d.dni });
+
+  // Si hay condiciones de doctor, las unimos con un $or 
+  // Esto permite que traiga la cita si coincide el ID O el DNI
+  if (doctorConditions.length > 0) {
+    query.push({ $or: doctorConditions });
+  }
+
+}
+    // ------------------------------------------------------------------------------------------------
+    // 3) FILTRO DE BÚSQUEDA GENERAL
+    // ------------------------------------------------------------------------------------------------
+    if (where?.buscar && where.buscar.trim() !== "") {
+      const texto = where.buscar.trim();
+
+      query.push({
+        $or: [
+          { motivoConsulta: { $regex: texto, $options: "i" } },
+          { observaciones: { $regex: texto, $options: "i" } },
+          { "paciente.nombre_paciente": { $regex: texto, $options: "i" } },
+          { "paciente.apellido_paciente": { $regex: texto, $options: "i" } },
+          { "paciente.dni": { $regex: texto, $options: "i" } },
+        ],
+      });
     }
 
     logger.log("QUERY ARMADO:");
@@ -51,17 +81,16 @@ export async function getCitas(
     logger.log("MATCH FINAL:");
     console.log(JSON.stringify(matchStage, null, 2));
 
-    // EJECUTAR CONSULTA SIN SORT/LIMIT PARA VER SI MATCHEA ALGO
+    // Preview
     const preview = await mongoConnection
       .collection("Cita")
       .aggregate([matchStage], { allowDiskUse: true })
       .toArray();
 
-    logger.log("PREVIEW RESULTADOS (antes de skip/limit):");
-    console.log(preview);
+    logger.log("PREVIEW RESULTADOS:", preview.length);
 
-    // CONSULTA REAL
-    const consulta = mongoConnection
+    // Query principal
+    const citas = await mongoConnection
       .collection("Cita")
       .aggregate(
         [
@@ -71,19 +100,17 @@ export async function getCitas(
           { $limit: limit || 10 },
         ],
         { allowDiskUse: true },
-      );
-
-    const citas = await consulta.toArray();
-
-    logger.log("RESULTADOS FINALES:");
-    console.log(citas);
-
-    const consultaCantidad = await mongoConnection
-      .collection("Cita")
-      .aggregate([matchStage, { $count: "cantidad" }])
+      )
       .toArray();
 
-    const cantidad = consultaCantidad[0]?.cantidad || 0;
+    logger.log("RESULTADOS FINALES:", citas.length);
+
+    const cantidad = (
+      await mongoConnection
+        .collection("Cita")
+        .aggregate([matchStage, { $count: "cantidad" }])
+        .toArray()
+    )[0]?.cantidad || 0;
 
     const edges: CitaEdge[] = citas.map((cita: any) => ({
       node: { ...cita, id_cita: cita._id.toString() },
